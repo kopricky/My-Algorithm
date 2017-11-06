@@ -6,7 +6,7 @@ public:
     vector<int> kind;   //所属しているグループ番号
     vector<vector<int> > inc;   //グループのメンバー
     UF(){}
-    UF(int node_size){ sz = node_size; kind.resize(sz),inc.resize(sz); rep(i,sz){ kind[i] = i; inc[i].pb(i); } }
+    UF(int node_size){ sz = node_size; kind.resize(sz),inc.resize(sz); rep(i,sz){ kind[i] = i; inc[i].push_back(i); } }
     bool same(int a,int b){ return kind[a] == kind[b]; }
     void unite(int a,int b)
     { if(same(a,b)) return; if(inc[kind[a]].size() < inc[kind[b]].size()) swap(a,b);

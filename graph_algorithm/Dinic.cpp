@@ -22,7 +22,7 @@ void bfs(int s)
 	while(!que.empty()){
 		int v = que.front();
 		que.pop();
-		rep(i,(int)G[v].size()){
+		rep(i,G[v].size()){
 			edge &e = G[v][i];
 			if(e.cap > 0 && level[e.to] < 0){
 				level[e.to] = level[v] + 1;

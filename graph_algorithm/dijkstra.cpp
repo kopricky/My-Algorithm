@@ -1,8 +1,7 @@
 typedef pair<int,int> P;
 
 struct edge{
-	int to;
-	int cost;
+	int to,cost;
 };
 
 int d[MAX_N];

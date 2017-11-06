@@ -50,7 +50,7 @@ int scc(int node_size)	//強連結成分の数を示す
 		}
 	}
 	rep(i,node_size){
-		rep(j,(int)G[i].size()){
+		rep(j,G[i].size()){
 			if(cmp[i] != cmp[G[i][j]]){
 				graph[cmp[i]].push_back(cmp[G[i][j]]);
 			}

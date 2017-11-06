@@ -16,7 +16,7 @@ void add_edge(int from,int to)
 void dfs(int v)
 {
 	used[v] = true;
-	for(int i=0;i<G[v].size();i++){
+	rep(i,G[v].size()){
 		if(!used[G[v][i]]){
 			dfs(G[v][i]);
 		}
@@ -28,7 +28,7 @@ void rdfs(int v,int k)
 {
 	used[v] = true;
 	cmp[v] = k;
-	for(int i=0;i<rG[v].size();i++){
+	rep(i,rG[v].size()){
 		if(!used[rG[v][i]]){
 			rdfs(rG[v][i],k);
 		}
@@ -46,7 +46,7 @@ int scc(int n)	//強連結成分の数を示す
 	}
 	fill(used,used+n,0);
 	int k=0;
-	for(int i=post_order.size()-1;i>=0;i--){
+	for(int i=(int)post_order.size()-1;i>=0;i--){
 		if(!used[post_order[i]]){
 			rdfs(post_order[i],k++);
 		}
@@ -56,7 +56,7 @@ int scc(int n)	//強連結成分の数を示す
 
 bool sat(int n,vector<P> vec) //aVbなら(0,1),bV¬cなら(1,5)みたいな
 {
-    rep(i,(int)vec.size()){
+    rep(i,vec.size()){
         add_edge((vec[i].first+n)%(2*n),vec[i].second);
         add_edge((vec[i].second+n)%(2*n),vec[i].first);
     }

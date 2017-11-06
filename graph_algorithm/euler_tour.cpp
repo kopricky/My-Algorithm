@@ -7,11 +7,11 @@ void dfs(int u,int p)
 {
     id[u] = ord.size();
     lb[u] = (int)ord.size();
-    ord.pb(u);
+    ord.push_back(u);
     rep(i,G[u].size()){
         if(G[u][i] != p){
             dfs(G[u][i],u);
-            ord.pb(u);
+            ord.push_back(u);
         }
     }
     rb[u] = (int)ord.size() - 1;
@@ -26,13 +26,13 @@ void dfs(int u,int p)
 {
     id[u] = ord.size();
     lb[u] = (int)ord.size();
-    ord.pb(u);
+    ord.push_back(u);
     rep(i,G[u].size()){
         if(G[u][i] != p){
             dfs(G[u][i],u);
         }
     }
-    ord.pb(u);
+    ord.push_back(u);
     rb[u] = (int)ord.size() - 1;
 }
 
@@ -46,7 +46,7 @@ void dfs(int u,int p)
 {
     id[u] = ord.size();
     lb[u] = (int)ord.size();
-    ord.pb(u);
+    ord.push_back(u);
     rep(i,G[u].size()){
         if(G[u][i] != p){
             dfs(G[u][i],u);

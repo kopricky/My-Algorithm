@@ -10,7 +10,7 @@ void dfs(int v,int p,int &k)
 	visit[v] = true;
 	ord[v] = k++;
 	low[v] = ord[v];
-	rep(i,(int)G[v].size()){
+	rep(i,G[v].size()){
 		int w = w;
 		if(!visit[w]){
 			dfs(w,v,k);
@@ -38,7 +38,7 @@ void restrict_dfs(int u,int p,int kind,queue<int>& que)
 {
     visit[u] = true;
     cmp[u] = kind;
-    rep(i,(int)G[u].size()){
+    rep(i,G[u].size()){
 		int w = G[u][i];
         if(check[u][i].second){
             if(!visit[w]){
@@ -74,7 +74,7 @@ int make_bcgraph(int node_size)
             }
         }
     }
-    rep(i,(int)bridge.size()){
+    rep(i,bridge.size()){
         int a = cmp[bridge[i].first];
         int b = cmp[bridge[i].second];
         graph[a].push_back(b), graph[b].push_back(a);
