@@ -1,4 +1,3 @@
-// longlongで宣言するときはINT_MAXを要変更
 template<typename V> class segtree {
 private:
     int n,sz;
@@ -67,7 +66,7 @@ public:
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
-            return pair<V,int>(INT_MAX,-1);
+            return pair<V,int>(numeric_limits<V>::max(),-1);
         }
         if(a <= l && r <= b){
             return pair<V,int>(node[k],node_id[k]);

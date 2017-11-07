@@ -1,4 +1,3 @@
-//longlongで宣言するときはINT_MAXを要変更
 template<typename V> class segtree {
 private:
     int n; vector<V> node, lazy;
@@ -33,7 +32,7 @@ public:
     V query(int a, int b, int k=0, int l=0, int r=-1) {
         if(r < 0) r = n;
         eval(k, l, r);
-        if(b <= l || r <= a) return INT_MAX;
+        if(b <= l || r <= a) return numeric_limits<V>::max();
         if(a <= l && r <= b) return node[k];
         V vl = query(a, b, 2*k+1, l, (l+r)/2), vr = query(a, b, 2*k+2, (l+r)/2, r);
         return min(vl,vr);
