@@ -1,11 +1,17 @@
-typedef pair<int,int>P;
+typedef pair<int,int> P;
 
 vector<int> G[MAX_N];
-vector<int> deg;
+int deg[MAX_N];
 
-void tsort(int n, vector<int>& res) {
+void add_edge(int from,int to)
+{
+	G[from].push_back(to);
+	deg[to]++;
+}
+
+void tsort(int V, vector<int>& res) {
 	queue<int> que;
-	rep(i,n){
+	rep(i,V){
         if(deg[i] == 0){
             que.push(i);
         }
@@ -20,7 +26,7 @@ void tsort(int n, vector<int>& res) {
             }
         }
 	}
-	if(*max_element(deg.begin(),deg.end()) != 0){
+	if(*max_element(deg,deg+V) != 0){
         res.clear();
     }
 }
@@ -31,12 +37,10 @@ int main()
     ios::sync_with_stdio(false);
     int n,m;
     cin >> n >> m;
-    deg.resize(n);
     rep(i,m){
         int a,b;
         cin >> a >> b;
-        G[a].push_back(b);
-        deg[b]++;
+		add_edge(a,b);
     }
     vector<int> res;
     tsort(n,res);
