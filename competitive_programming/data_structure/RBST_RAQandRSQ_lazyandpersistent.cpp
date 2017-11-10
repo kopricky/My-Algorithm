@@ -1,49 +1,15 @@
-//永続化遅延処理平衡二分木
-#include <bits/stdc++.h>
-#define ll long long
-#define INF 1000000005
-#define MOD 1000000007
-#define EPS 1e-10
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-#define rrep(i,n) for(int i=(int)(n)-1;i>=0;--i)
-#define srep(i,s,t) for(int i=(int)(s);i<(int)(t);++i)
-#define each(a,b) for(auto (a): (b))
-#define all(v) (v).begin(),(v).end()
-#define len(v) (int)(v).size()
-#define zip(v) sort(all(v)),v.erase(unique(all(v)),v.end())
-#define cmx(x,y) x=max(x,y)
-#define cmn(x,y) x=min(x,y)
-#define fi first
-#define se second
-#define pb push_back
-#define show(x) cout<<#x<<" = "<<(x)<<endl
-#define spair(p) cout<<#p<<": "<<p.fi<<" "<<p.se<<endl
-#define svec(v) cout<<#v<<":";rep(kbrni,v.size())cout<<" "<<v[kbrni];cout<<endl
-#define sset(s) cout<<#s<<":";each(kbrni,s)cout<<" "<<kbrni;cout<<endl
-#define smap(m) cout<<#m<<":";each(kbrni,m)cout<<" {"<<kbrni.first<<":"<<kbrni.second<<"}";cout<<endl
+//永続化遅延処理型平衡二分探索木
+const int max_size = 27000000;
 
-using namespace std;
-
-typedef pair<int,int> P;
-typedef pair<ll,ll> pll;
-typedef vector<int> vi;
-typedef vector<vi> vvi;
-typedef vector<ll> vl;
-typedef vector<double> vd;
-typedef vector<P> vp;
-typedef vector<string> vs;
-
-const int max_size = 30000000;
-
-template <typename T> class RBST
-{
+template <typename T> class RBST {
 public:
     struct node{
         T val, lazy, al;
         int st_size;   // 部分木のサイズ
         node* left; node* right;
+        bool lazy_flag;
         node(){};
-        node(T v) : val(v), al(v), left(nullptr), right(nullptr), st_size(1), lazy(0){}
+        node(T v) : val(v), al(v), left(nullptr), right(nullptr), st_size(1), lazy(0), lazy_flag(false){}
         ~node() { delete left; delete right; }
     };
     using pnn = pair<node*,node*>;
@@ -76,17 +42,22 @@ public:
     node* push(node* t){
         if(!t) return t;
         t = fix(t);
-        if(t->left){
-            t->left = fix(t->left);
-    		t->left->lazy = opr2(t->left->lazy, t->lazy);
+        if(t->lazy_flag){
+            if(t->left){
+                t->left = fix(t->left);
+                t->left->lazy_flag = true;
+                t->left->lazy = opr2(t->left->lazy, t->lazy);
+            }
+            if(t->right){
+                t->right = fix(t->right);
+                t->right->lazy_flag = true;
+                t->right->lazy = opr2(t->right->lazy,t->lazy);
+            }
+            t->val = opr2(t->val, t->lazy);
+            t->al = opr1(que(t->left), opr1(t->val, que(t->right)));
+            t->lazy = id2;
+            t->lazy_flag = false;
         }
-        if(t->right){
-            t->right = fix(t->right);
-            t->right->lazy = opr2(t->right->lazy,t->lazy);
-        }
-        t->val = opr2(t->val, t->lazy);
-        t->al = opr1(que(t->left), opr1(t->val, que(t->right)));
-        t->lazy = id2;
         return t;
     }
     node* update(node *t){
@@ -157,8 +128,10 @@ public:
         auto sl = split(sr.first, l);
         node* lr = sl.second;
         lr->lazy = val;
+        lr->lazy_flag = true;
         root = merge(merge(sl.first,sl.second),sr.second);
     }
+    //[r,s)を[p,q)にコピー
     void trans(int p, int q, int r, int s){
         auto sq = split(root,q);
         auto sp = split(sq.first,p);
@@ -173,36 +146,3 @@ public:
         return res;
     }
 };
-
-int main()
-{
-    int n,q;
-    scanf("%d%d",&n,&q);
-    RBST<ll> rb;
-    rb.x.resize(n);
-    rep(i,n){
-        cin >> rb.x[i];
-    }
-    rb.build();
-    rep(i,q){
-        int a;
-        scanf("%d",&a);
-        if(a == 1){
-            int b,c,d;
-            scanf("%d%d%d",&b,&c,&d);
-            rb.add(b-1,c,d);
-        }else if(a == 2){
-            int b,c,d,e;
-            scanf("%d%d%d%d",&b,&c,&d,&e);
-            rb.trans(b-1,c,d-1,e);
-        }else{
-            int b,c;
-            scanf("%d%d",&b,&c);
-            cout << rb.query(b-1,c) << "\n";
-        }
-        if(rb.pool_size >= max_size / 2){
-            rb.rebuild(rb.root);
-        }
-    }
-    return 0;
-}
