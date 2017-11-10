@@ -1,46 +1,10 @@
-#include <bits/stdc++.h>
-#define ll long long
-#define INF 1000000005
-#define MOD 1000000007
-#define EPS 1e-10
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-#define rrep(i,n) for(int i=(int)(n)-1;i>=0;--i)
-#define srep(i,s,t) for(int i=(int)(s);i<(int)(t);++i)
-#define each(a,b) for(auto (a): (b))
-#define all(v) (v).begin(),(v).end()
-#define len(v) (int)(v).size()
-#define zip(v) sort(all(v)),v.erase(unique(all(v)),v.end())
-#define cmx(x,y) x=max(x,y)
-#define cmn(x,y) x=min(x,y)
-#define fi first
-#define se second
-#define pb push_back
-#define show(x) cout<<#x<<" = "<<(x)<<endl
-#define spair(p) cout<<#p<<": "<<p.fi<<" "<<p.se<<endl
-#define svec(v) cout<<#v<<":";rep(kbrni,v.size())cout<<" "<<v[kbrni];cout<<endl
-#define sset(s) cout<<#s<<":";each(kbrni,s)cout<<" "<<kbrni;cout<<endl
-#define smap(m) cout<<#m<<":";each(kbrni,m)cout<<" {"<<kbrni.first<<":"<<kbrni.second<<"}";cout<<endl
-
-using namespace std;
-
-typedef pair<int,int> P;
-typedef pair<ll,ll> pll;
-typedef vector<int> vi;
-typedef vector<vi> vvi;
-typedef vector<ll> vl;
-typedef vector<double> vd;
-typedef vector<P> vp;
-typedef vector<string> vs;
-
-const int MAX_N = 100005;
-
 template <typename T> class RBST {
 public:
     struct node{
-        T val;
+        T val, que;
         int st_size;   // 部分木のサイズ
         node* left; node* right;
-        node(T v) : val(v), left(nullptr), right(nullptr), st_size(1){}
+        node(T v) : val(v), left(nullptr), right(nullptr), st_size(1), que(v){}
         ~node() { delete left; delete right; }
     };
     node *root;
@@ -48,13 +12,15 @@ public:
     RBST() : root(nullptr) {}
     ~RBST() {}
     int size(node* t) { return t ? t->st_size : 0; }
+    T min_(node* t) { return t ? t->que : std::numeric_limits<T>::max(); }
     node* update(node *t) {
         node* l = t->left; node* r = t->right;
         t->st_size = size(l) + size(r) + 1;
+        t->que = min({min_(l), min_(r), t->val});
         return t;
     }
     unsigned rnd(){
-        static unsigned x = 123456789, y = 362436069, z = 521288629, w = 86675123;
+        static unsigned x = 123456789, y = 362436069, z = 521288629, w = 86675;
         unsigned t = (x^(x<<11));
         x = y,y = z,z = w;
         return (w = (w^(w>>19))^(t^(t>>8)));
@@ -118,10 +84,26 @@ public:
     }
     //k番目の値をvalに変更
     void set(int k, T val) {
-        pnn sr = split(root, k+1);
-        pnn sl = split(sr.first, k);
-        pnn lr = sl.second;
+        auto sr = split(root, k+1);
+        auto sl = split(sr.first, k);
+        auto lr = sl.second;
         lr->val = val;
         root = merge(merge(sl.first, lr), sr.second);
+    }
+    //区間内で循環シフト
+    void shift(int l,int r)
+    {
+        auto sr = split(root, r);
+        auto sl = split(sr.first, l);
+        auto sm = split(sl.second, r-l-1);
+        root = merge(merge(sl.first,sm.second),merge(sm.first,sr.second));
+    }
+    T query(int l, int r) {
+        auto sr = split(root, r);
+        auto sl = split(sr.first, l);
+        auto lr = sl.second;
+        T val = min_(lr);
+        root = merge(merge(sl.first, lr), sr.second);
+        return val;
     }
 };

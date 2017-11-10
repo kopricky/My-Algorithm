@@ -1,4 +1,4 @@
-//ARC030Dの実装
+//永続化遅延処理平衡二分木
 #include <bits/stdc++.h>
 #define ll long long
 #define INF 1000000005
@@ -47,7 +47,7 @@ public:
         ~node() { delete left; delete right; }
     };
     using pnn = pair<node*,node*>;
-    node* pool; //永続配列
+    node* memo; //永続配列
     int pool_size;
     node* root;
     T id1,id2;  //opr1,opr2の単位元
@@ -60,15 +60,15 @@ public:
     	return l + r;
     }
     RBST(){
-        pool = new node[max_size];
+        memo = new node[max_size];
         id1 = id2 = 0;
     }
     //永続化
     node* fix(node* t){
         if(!t)  return t;
         if(pool_size >= max_size) assert(false);
-        pool[pool_size] = *t;
-        return &pool[pool_size++];
+        memo[pool_size] = *t;
+        return &memo[pool_size++];
     }
     int size(node* t) { return t ? t->st_size : 0; }
     T que(node* t) { return t ? t->al + t->lazy*size(t) : id1; }
@@ -134,8 +134,8 @@ public:
     	pool_size = 0;
     	node *res = nullptr;
     	for (int i = 0; i < node_size; i++) {
-    		pool[pool_size] = node(x[i]);
-    		res = merge(res, &pool[pool_size++]);
+    		memo[pool_size] = node(x[i]);
+    		res = merge(res, &memo[pool_size++]);
     	}
     	root = res;
     }
