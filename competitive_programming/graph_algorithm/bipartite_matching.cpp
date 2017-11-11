@@ -1,16 +1,16 @@
-struct edge
-{
-    int to,cap,rev;
-};
-//max_flowで結果を返す
+//二部グラフの頂点数がそれぞれn,m
+//BM bm(n,m);
+//適宜add_edge(２つの集合間のedgeのみaddする)
+//BM.comp()で最大マッチングの数を計算
 class BM {
-private:
+public:
+    struct edge{
+        int to,cap,rev;
+    };
     vector<vector<edge> > G;
     vector<int> level;
     vector<int> iter;
     int u,v;
-
-public:
     BM(int U,int V){
         u = U,v = V;
         G.resize(u+v+2);
@@ -23,22 +23,16 @@ public:
             init_edge(u+i+1,u+v+1);
         }
     }
-
-    void init_edge(int from,int to)
-    {
+    void init_edge(int from,int to){
         G[from].push_back((edge){to,1,G[to].size()});
     	G[to].push_back((edge){from,0,G[from].size()-1});
     }
-
-    void add_edge(int from,int to)
-    {
+    void add_edge(int from,int to){
         from += 1,to += u+1;
     	G[from].push_back((edge){to,INF,G[to].size()});
     	G[to].push_back((edge){from,0,G[from].size()-1});
     }
-
-    void bfs(int s)
-    {
+    void bfs(int s){
         fill(level.begin(),level.end(),-1);
     	queue<int> que;
     	level[s] = 0;
@@ -55,9 +49,7 @@ public:
     		}
     	}
     }
-
-    int dfs(int v,int t,int f)
-    {
+    int dfs(int v,int t,int f){
     	if(v==t){
     		return f;
     	}
@@ -74,9 +66,7 @@ public:
     	}
     	return 0;
     }
-
-    int max_flow()
-    {
+    int comp(){
     	int flow = 0;
         int s=0,t=u+v+1;
     	for(;;){

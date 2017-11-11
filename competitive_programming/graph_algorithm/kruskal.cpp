@@ -1,11 +1,9 @@
-struct edge{
-	int u;
-	int v;
-	int cost;
-	bool operator<(const edge& another) const {
-		return cost < another.cost;
-	}
-};
+//最小全域木のコストが頂点数がn,枝数がm
+//krusukal<int> kr(n,m);
+//適宜add_edge
+//kr.comp()で最小全域木のコストが返る
+
+#define rep(i,n) for(int i=0;i<(int)(n);++i)
 
 class UF {
 private:
@@ -20,24 +18,41 @@ public:
     bool same(int x,int y){ return find(x) == find(y); }
 };
 
-edge es[MAX_N];
-int par[MAX_N];
-int rrank[MAX_N];
-
-int kruskal(int n,int m){
-	UF uf(n);
-	int res = 0;
-	int cnt = 0;
-	rep(i,m){
-		edge e = es[i];
-		if(!uf.same(e.u,e.v)){
-			uf.unite(e.u,e.v);
-			res += e.cost;
-			cnt++;
-			if(cnt == n-1){
-				break;
+template<typename T> class kruskal{
+public:
+	struct edge{
+		int u,v;
+		T cost;
+		bool operator<(const edge& another) const {
+			return cost < another.cost;
+		}
+	};
+	vector<edge> es;
+	vector<int> par,rrank;
+	int edge_id;
+	int V,E;
+	kruskal(int node_size,int edge_size){
+		edge_id = 0, V = node_size, E = edge_size;
+		es.resize(edge_size),par.resize(node_size),rrank(node_size);
+	}
+	void add_edge(int u,int v,T cost){
+		es[edge_id++] = (edge){u,v,cost};
+	}
+	T comp(){
+		UF uf(V);
+		T res = 0;
+		int cnt = 0;
+		rep(i,E){
+			edge e = es[i];
+			if(!uf.same(e.u,e.v)){
+				uf.unite(e.u,e.v);
+				res += e.cost;
+				cnt++;
+				if(cnt == V-1){
+					break;
+				}
 			}
 		}
+		return res;
 	}
-	return res;
-}
+};

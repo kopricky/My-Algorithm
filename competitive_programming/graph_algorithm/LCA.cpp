@@ -1,6 +1,10 @@
-int depth[MAX_N],id[MAX_N];
-vector<int> ord;
-vector<int> G[MAX_N];
+//頂点数がn
+//LCA lca(n);
+//適宜add_edge
+//lca.make();
+//lca.comp(u,v)でu,vのLCAを計算
+
+#define rep(i,n) for(int i=0;i<(int)(n);++i)
 
 template<typename V> class segtree {
 private:
@@ -59,30 +63,38 @@ public:
     }
 };
 
-void dfs(int u,int p,int k)
-{
-    id[u] = (int)ord.size();
-    ord.push_back(u);
-    depth[u] = k;
-    rep(i,G[u].size()){
-        if(G[u][i] != p){
-            dfs(G[u][i],u,k+1);
-            ord.push_back(u);
+class LCA {
+public:
+    void dfs(int u,int p,int k){
+        id[u] = (int)ord.size();
+        ord.push_back(u);
+        depth[u] = k;
+        rep(i,G[u].size()){
+            if(G[u][i] != p){
+                dfs(G[u][i],u,k+1);
+                ord.push_back(u);
+            }
         }
     }
-}
-
-segtree<int> st;
-
-void lca_make(){
-	dfs(0,-1,0);
-    vector<int> stvec((int)ord.size());
-	rep(i,ord.size()){
-		stvec[i] = depth[ord[i]];
-	}
-    st.resize(stvec);
-}
-
-int lca(int u,int v){
-	return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
-}
+    vector<int> depth,id,ord;
+    vector<vector<int> > G;
+    segtree<int> st;
+    LCA(int node_size){
+        depth.resize(node_size),id.resize(node_size);
+        G.resize(node_size);
+    }
+    void add_edge(int u,int v){
+        G[u].push_back(v),G[v].push_back(v);
+    }
+    void make(){
+        dfs(0,-1,0);
+        vector<int> stvec((int)ord.size());
+    	rep(i,ord.size()){
+    		stvec[i] = depth[ord[i]];
+    	}
+        st.resize(stvec);
+    }
+    int comp(int u,int v){
+    	return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
+    }
+};

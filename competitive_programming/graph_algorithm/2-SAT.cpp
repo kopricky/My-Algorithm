@@ -1,83 +1,87 @@
+//頂点数がMAX_N
+//SAT st(MAX_N);
+//st.ok(vec) 充足可能性判定
+//vecには節 aV¬bなら(0,MAX_N+1), ¬bVcなら(MAX_N+1,2)のようにペアをもたせる
+//st.restore(vec) 解構築
+#define rep(i,n) for(int i=0;i<(int)(n);++i)
 typedef pair<int,int> P;
 
-vector<int> G[2*MAX_N];
-vector<int> rG[2*MAX_N];
-vector<int> graph[2*MAX_N];
-vector<int> post_order; //帰りがけ順の並び
-bool used[2*MAX_N]; //すでに調べたかどうか
-int cmp[2*MAX_N];	//属する強連結成分のトポロジカル順序
+class SAT {
+public:
+	vector<vector<int> > G,rG;
+	vector<int> post_order; //帰りがけ順の並び
+	vector<bool> used; //すでに調べたかどうか
+	vector<int> cmp;	//属する強連結成分のトポロジカル順序
+	int V;	//頂点数
 
-void add_edge(int from,int to)
-{
-	G[from].push_back(to);
-	rG[to].push_back(from);
-}
-
-void dfs(int v)
-{
-	used[v] = true;
-	rep(i,G[v].size()){
-		if(!used[G[v][i]]){
-			dfs(G[v][i]);
+	SAT(int node_size){
+		V = node_size;
+		G.resize(2*node_size),rG.resize(2*node_size);
+		used.resize(2*node_size),cmp.resize(2*node_size);
+	}
+	void add_edge(int from,int to){
+		G[from].push_back(to);
+		rG[to].push_back(from);
+	}
+	void dfs(int v){
+		used[v] = true;
+		rep(i,G[v].size()){
+			if(!used[G[v][i]]){
+				dfs(G[v][i]);
+			}
+		}
+		post_order.push_back(v);
+	}
+	void rdfs(int v,int k){
+		used[v] = true;
+		cmp[v] = k;
+		rep(i,rG[v].size()){
+			if(!used[rG[v][i]]){
+				rdfs(rG[v][i],k);
+			}
 		}
 	}
-	post_order.push_back(v);
-}
-
-void rdfs(int v,int k)
-{
-	used[v] = true;
-	cmp[v] = k;
-	rep(i,rG[v].size()){
-		if(!used[rG[v][i]]){
-			rdfs(rG[v][i],k);
+	int scc(){
+		fill(used.begin(),used.end(),false);
+		post_order.clear();
+		for(int v=0;v<2*V;v++){
+			if(!used[v]){
+				dfs(v);
+			}
 		}
-	}
-}
-
-int scc(int n)	//強連結成分の数を示す
-{
-	fill(used,used+n,0);
-	post_order.clear();
-	for(int v=0;v<n;v++){
-		if(!used[v]){
-			dfs(v);
+		fill(used.begin(),used.end(),false);
+		int k=0;
+		for(int i=(int)post_order.size()-1;i>=0;i--){
+			if(!used[post_order[i]]){
+				rdfs(post_order[i],k++);
+			}
 		}
+		return k;
 	}
-	fill(used,used+n,0);
-	int k=0;
-	for(int i=(int)post_order.size()-1;i>=0;i--){
-		if(!used[post_order[i]]){
-			rdfs(post_order[i],k++);
-		}
+	//充足可能性判定
+	bool ok(vector<P>& vec){
+	    rep(i,vec.size()){
+	        add_edge((vec[i].first+V)%(2*V),vec[i].second);
+	        add_edge((vec[i].second+V)%(2*V),vec[i].first);
+	    }
+	    scc();
+	    rep(i,V){
+	        if(cmp[i] == cmp[V+i]){
+	            return false;
+	        }
+	    }
+	    return true;
 	}
-	return k;
-}
-
-bool sat(int n,vector<P> vec) //aVbなら(0,1),bV¬cなら(1,5)みたいな
-{
-    rep(i,vec.size()){
-        add_edge((vec[i].first+n)%(2*n),vec[i].second);
-        add_edge((vec[i].second+n)%(2*n),vec[i].first);
-    }
-    scc(2*n);
-    rep(i,n){
-        if(cmp[i] == cmp[n+i]){
-            return false;
-        }
-    }
-    return true;
-}
-
-vector<int> restore(int n)  //真のものは1,偽のものは0を返す
-{
-    vector<int> vec(n);
-    rep(i,n){
-        if(cmp[i] > cmp[n+i]){
-            vec[i] = 1;
-        }else{
-            vec[i] = 0;
-        }
-    }
-    return vec;
-}
+	//真のものは1,偽のものは0を返す(解の構成)
+	vector<int> restore(){
+	    vector<int> vec(V);
+	    rep(i,V){
+	        if(cmp[i] > cmp[V+i]){
+	            vec[i] = 1;
+	        }else{
+	            vec[i] = 0;
+	        }
+	    }
+	    return vec;
+	}
+};

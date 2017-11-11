@@ -1,3 +1,4 @@
+//バグはないけどtopological_sort_queueの方を使った方がいいかも
 vector<int> G[MAX_N];
 int color[MAX_N];
 deque<int> L;
