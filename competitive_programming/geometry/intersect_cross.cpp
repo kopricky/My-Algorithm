@@ -101,11 +101,12 @@ C crosspointLL(const L &l, const L &m)
     }
     return m[0] + B / A * (m[1] - m[0]);
 }
-//円と直線の交点
+//crosspointCLに使用する関数(命名が謎です)
 double gettime(C c1,C c2)
 {
     return (dot(c1,c2) < 0 ? -1.0 : 1.0 ) * abs(c2) / abs(c1);
 }
+//円と直線の交点
 vector<C> crosspointCL(C c1,double r1,L l)
 {
     C a=l[0], b=l[1];
@@ -121,6 +122,7 @@ vector<C> crosspointCL(C c1,double r1,L l)
     res.push_back(a+base*RR);
     return res;
 }
+
 //円と線分の交点
 vector<C> crosspointCS(C c1,double r1,L s)
 {
