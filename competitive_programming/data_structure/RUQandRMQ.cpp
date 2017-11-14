@@ -2,7 +2,7 @@ template<typename V> class segtree {
 private:
     int n,sz; vector<V> node, lazy; vector<bool> lazyFlag;
 public:
-    segtree(vector<V> v) {
+    segtree(vector<V>& v) {
         sz = (int)v.size(); n = 1;
         while(n < sz) n *= 2;
         node.resize(2*n-1); lazy.resize(2*n-1, 0); lazyFlag.resize(2*n-1,false);

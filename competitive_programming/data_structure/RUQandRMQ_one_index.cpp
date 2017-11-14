@@ -4,7 +4,7 @@ private:
     vector<V> node;
     vector<int> node_id;
 public:
-    segtree(vector<V> v){
+    segtree(vector<V>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){

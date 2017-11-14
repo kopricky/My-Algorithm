@@ -4,7 +4,7 @@ private:
     vector<V> node, lazy;
 
 public:
-    segtree(vector<V> v) {
+    segtree(vector<V>& v) {
         sz = (int)v.size();
         n = 1;
         while(n < sz){
