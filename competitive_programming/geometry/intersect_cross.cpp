@@ -12,6 +12,7 @@ namespace std
 
 struct L : public vector<C>
 {
+    L(){}
     L(const C a, const C b) {
         push_back(a); push_back(b);
     }
