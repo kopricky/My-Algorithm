@@ -38,7 +38,7 @@ public:
         return &memo[pool_size++];
     }
     int size(node* t) { return t ? t->st_size : 0; }
-    T que(node* t) { return t ? t->al + t->lazy*size(t) : id1; }
+    T que(node* t) { return t ? opr2(t->al,t->lazy*size(t)) : id1; }
     //遅延伝播
     node* push(node* t){
         if(!t) return t;
@@ -64,7 +64,7 @@ public:
     node* update(node *t){
         node* l = t->left; node* r = t->right;
         t->st_size = size(l) + size(r) + 1;
-        t->al = que(l) + que(r) + t->val;
+        t->al = opr1(opr1(que(l),que(r)),t->val);
         return t;
     }
     unsigned rnd(){

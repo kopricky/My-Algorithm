@@ -1,5 +1,5 @@
 //最小全域木のコストが頂点数がn,枝数がm
-//krusukal<int> kr(n,m);
+//Krusukal<int> kr(n,m);
 //適宜add_edge
 //kr.comp()で最小全域木のコストが返る
 
@@ -18,7 +18,7 @@ public:
     bool same(int x,int y){ return find(x) == find(y); }
 };
 
-template<typename T> class kruskal{
+template<typename T> class Kruskal{
 public:
 	struct edge{
 		int u,v;
@@ -29,20 +29,20 @@ public:
 	};
 	vector<edge> es;
 	vector<int> par,rrank;
-	int edge_id;
-	int V,E;
-	kruskal(int node_size,int edge_size){
-		edge_id = 0, V = node_size, E = edge_size;
-		es.resize(edge_size),par.resize(node_size),rrank(node_size);
+	int V;
+    Kruskal(int node_size){
+        V = node_size;
+		par.resize(node_size), rrank.resize(node_size);
 	}
 	void add_edge(int u,int v,T cost){
-		es[edge_id++] = (edge){u,v,cost};
+		es.push_back((edge){u,v,cost});
 	}
-	T comp(){
+	T make(){
 		UF uf(V);
 		T res = 0;
 		int cnt = 0;
-		rep(i,E){
+        sort(es.begin(),es.end());
+		rep(i,es.size()){
 			edge e = es[i];
 			if(!uf.same(e.u,e.v)){
 				uf.unite(e.u,e.v);

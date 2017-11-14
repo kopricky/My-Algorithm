@@ -1,3 +1,4 @@
+//これはverifiedされてません
 typedef pair<long long,long long> P;
 
 int hash_dp[MAX_N];

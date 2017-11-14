@@ -40,5 +40,6 @@ public:
 		if(*max_element(deg.begin(),deg.end()) != 0){
 	        res.clear();
 	    }
+		return res;
 	}
 };
