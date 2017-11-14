@@ -47,14 +47,3 @@ struct Miller{
 };
 
 Miller miller;
-
-int main()
-{
-    int n;
-    cin >> n;
-    if(miller.check(n)){
-        cout << "Prime\n";
-    }else{
-        cout << "Not Prime\n";
-    }
-}
