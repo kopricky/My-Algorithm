@@ -224,5 +224,8 @@ int main()
         cout << v24[i] << " ";
     }
     cout << "\n";
+
+    //集合TでSの部分集合全体をなめる(空集合は除く)
+    for(int T=S;T>0;T=(T-1)&S){}
 	return 0;
 }
