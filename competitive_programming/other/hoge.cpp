@@ -227,5 +227,6 @@ int main()
 
     //集合TでSの部分集合全体をなめる(空集合は除く)
     for(int T=S;T>0;T=(T-1)&S){}
+    __builtin_popcount();
 	return 0;
 }
