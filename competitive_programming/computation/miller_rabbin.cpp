@@ -1,7 +1,7 @@
 struct Miller{
     const vector<ll> v = {2,7,61}; // < 4,759,123,141 ≒ 4×10^9
     //const vector<ll> v = {2,3,5,7,11,13,17}; < 341,550,071,728,321 ≒　3*10^14
-    //const vector<ll> v = {2,3,5,7,11,13,17,19,23,29,31,37} 2^64までいける
+    //const vector<ll> v = {2,3,5,7,11,13,17,19,23,29,31,37}; 2^64までいける
     // x^k (mod m)
     ll modpow(ll x, ll k, ll m){
         ll res = 1;
@@ -45,5 +45,3 @@ struct Miller{
         return true;
     }
 };
-
-Miller miller;

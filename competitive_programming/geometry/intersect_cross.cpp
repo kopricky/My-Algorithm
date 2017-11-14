@@ -101,6 +101,12 @@ C crosspointLL(const L &l, const L &m)
     }
     return m[0] + B / A * (m[1] - m[0]);
 }
+//点pを直線l上に射影
+C projection(const L &l, const C p)
+{
+    double t = dot(p-l[0], l[0]-l[1]) / norm(l[0]-l[1]);
+    return l[0] + t*(l[0]-l[1]);
+}
 //crosspointCLに使用する関数(命名が謎です)
 double gettime(C c1,C c2)
 {
