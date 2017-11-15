@@ -25,7 +25,7 @@ double getcrossarea(vector<C> t,C c1,double r1)
     }
     return res;
 }
-//凸包を求める
+//凸包を求める(O(nlogn))
 vector<C> convex_full(vector<C> ps)
 {
     int n = ps.size(), k = 0;
@@ -48,7 +48,7 @@ bool isconvex(const vector<C> &ps)
     }
     return true;
 }
-//多角形の面積
+//多角形の符号付き面積(左回りが正)
 double area(const vector<C> &ps)
 {
     double A = 0;
