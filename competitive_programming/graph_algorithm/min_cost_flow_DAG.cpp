@@ -1,4 +1,4 @@
-//負の辺が存在しない場合の最小費用流(Dijkstraでポテンシャルを計算可能)
+//DAGになっている場合の最小費用流(ポテンシャルをトポソDPを用いて計算)
 //最小費用がint,頂点数がn
 //min_cost_flow<int> mcf(n);
 //適宜add_edge
@@ -9,7 +9,47 @@ public:
         int to,cap;
         T cost;
         int rev;
+        bool is_rev;
     };
+	class tsort {
+	public:
+        vector<vector<edge> >& G;
+		vector<int> deg;
+	    vector<int> order;
+        int V;
+	    tsort(vector<vector<edge> >& g) : G{g}{
+            V = (int)G.size();
+	        deg.resize(V,0);
+            rep(i,V){
+                for(edge& e : G[i]){
+                    if(!e.is_rev){
+                        deg[e.to]++;
+                    }
+                }
+            }
+        }
+	    void solve() {
+	        queue<int> que;
+	        rep(i,V){
+	            if(deg[i] == 0){
+	                que.push(i);
+	            }
+	        }
+	        while(!que.empty()){
+	            int p = que.front();
+	            que.pop();
+	            order.push_back(p);
+	            rep(i,G[p].size()){
+	                if(--deg[G[p][i].to] == 0){
+	                    que.push(G[p][i].to);
+	                }
+	            }
+	        }
+	        if(*max_element(deg.begin(),deg.end()) != 0){
+	            order.clear();
+	        }
+	    }
+	}
 	using pti = pair<T,int>;
     vector<vector<edge> > G;
 	vector<T> h,dist;
@@ -18,16 +58,30 @@ public:
     int V;
     min_cost_flow(int node_size){
         V = node_size;
+        ts.init();
 		inf = numeric_limits<T>::max() / 100;
         G.resize(V), h.resize(V), dist.resize(V), prevv.resize(V), preve.resize(V);
 	}
     void add_edge(int from, int to, int cap, T cost){
-        G[from].push_back((edge){to, cap, cost, (int)G[to].size()});
-        G[to].push_back((edge){from, 0, -cost, (int)G[from].size() - 1});
+        G[from].push_back((edge){to, cap, cost, (int)G[to].size(),false});
+        G[to].push_back((edge){from, 0, -cost, (int)G[from].size() - 1,true});
     }
     T solve(int s,int t,int f){
         T res = 0;
 		fill(h.begin(),h.end(),0);
+        tsort ts(G);
+        ts.solve();
+        rep(i,V){
+            h[i] = inf;
+        }
+        h[s] = 0;
+        for(int i : ts.order){
+            if(h[i] != inf){
+                rep(j,g[i]){
+                    h[g[i][j]] = min(h[g[i][j]],h[i]+g_cost[i][j]);
+                }
+            }
+        }
         while(f > 0){
             priority_queue<pti,vector<pti>,greater<pti> > que;
             fill(dist.begin(),dist.end(),inf);

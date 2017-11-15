@@ -1,4 +1,4 @@
-//負の辺が存在しない場合の最小費用流(Dijkstraでポテンシャルを計算可能)
+//負の辺が存在する場合の最小費用流(ベルマンフォードでポテンシャルを計算可能)
 //最小費用がint,頂点数がn
 //min_cost_flow<int> mcf(n);
 //適宜add_edge
@@ -27,7 +27,24 @@ public:
     }
     T solve(int s,int t,int f){
         T res = 0;
-		fill(h.begin(),h.end(),0);
+        fill(h.begin(),h.end(),inf);
+        h[s] = 0;
+        bool update = true;
+        while(update){
+            update = false;
+            rep(v,V){
+                if(h[v] == inf){
+                    continue;
+                }
+                rep(i,G[v].size()){
+                    edge& e = G[v][i];
+                    if(e.cap > 0 && h[e.to] > h[v] + e.cost){
+                        h[e.to] = h[v] + e.cost;
+                        update = true;
+                    }
+                }
+            }
+        }
         while(f > 0){
             priority_queue<pti,vector<pti>,greater<pti> > que;
             fill(dist.begin(),dist.end(),inf);
