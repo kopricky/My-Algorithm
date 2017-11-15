@@ -31,7 +31,7 @@ public:
 		while(!que.empty()){
 			int p = que.front();
 	        que.pop();
-			res.push_back(p);
+			order.push_back(p);
 			rep(i,G[p].size()){
 	            if(--deg[G[p][i]] == 0){
 	                que.push(G[p][i]);
@@ -39,8 +39,7 @@ public:
 	        }
 		}
 		if(*max_element(deg.begin(),deg.end()) != 0){
-	        res.clear();
+	        order.clear();
 	    }
-		return res;
 	}
 };
