@@ -26,7 +26,7 @@ double getcrossarea(vector<C> t,C c1,double r1)
     return res;
 }
 //凸包を求める(O(nlogn))
-vector<C> convex_full(vector<C> ps)
+vector<C> convex_hull(vector<C> ps)
 {
     int n = (int)ps.size(), k = 0;
     sort(ps.begin(), ps.end());
@@ -111,7 +111,7 @@ vector<C> convex_intersection(vector<C>& ps,vector<C>& qs)
 	if(rs.size() <= 1){
         return rs;
     }
-	return convex_full(rs);
+	return convex_hull(rs);
 }
 //凸多角形の直径を求める(キャリパー法)
 //maxi,maxjが最遠点対となる
