@@ -16,7 +16,7 @@ double getarea(C c1,double r1,C a,C b)
 }
 double getcrossarea(vector<C> t,C c1,double r1)
 {
-    int n=t.size();
+    int n = (int)t.size();
     if(n<3) return 0;
     double res=0;
     rep(i,n){
@@ -28,7 +28,7 @@ double getcrossarea(vector<C> t,C c1,double r1)
 //凸包を求める(O(nlogn))
 vector<C> convex_full(vector<C> ps)
 {
-    int n = ps.size(), k = 0;
+    int n = (int)ps.size(), k = 0;
     sort(ps.begin(), ps.end());
     vector<C> ch(2*n);
     for (int i = 0; i < n; ch[k++] = ps[i++]){
@@ -117,7 +117,7 @@ vector<C> convex_intersection(vector<C>& ps,vector<C>& qs)
 //maxi,maxjが最遠点対となる
 double convex_diameter(const vector<C> &ps)
 {
-    const int n = ps.size();
+    const int n = (int)ps.size();
     int is = 0, js = 0;
     for (int i = 1; i < n; ++i) {
         if (imag(ps[i]) > imag(ps[is])) is = i;
