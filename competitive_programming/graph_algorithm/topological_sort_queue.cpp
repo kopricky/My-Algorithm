@@ -10,6 +10,7 @@ class tsort {
 public:
 	vector<vector<int> > G;
 	vector<int> deg;
+	vector<int> order;
 	int V;
 	tsort(int node_size){
 		V = node_size;
@@ -19,8 +20,8 @@ public:
 		G[from].push_back(to);
 		deg[to]++;
 	}
-	vector<int> make() {
-		vector<int> res;
+	void solve() {
+		vector<int> order;
 		queue<int> que;
 		rep(i,V){
 	        if(deg[i] == 0){
