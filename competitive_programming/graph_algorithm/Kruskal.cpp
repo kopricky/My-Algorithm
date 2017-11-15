@@ -37,7 +37,7 @@ public:
 	void add_edge(int u,int v,T cost){
 		es.push_back((edge){u,v,cost});
 	}
-	T make(){
+	T solve(){
 		UF uf(V);
 		T res = 0;
 		int cnt = 0;

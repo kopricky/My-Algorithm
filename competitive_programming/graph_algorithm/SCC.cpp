@@ -39,7 +39,7 @@ public:
 			}
 		}
 	}
-	void comp(){
+	void solve(){
 		fill(used.begin(),used.end(),0);
 		post_order.clear();
 		for(int v=0;v<V;v++){

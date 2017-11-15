@@ -66,7 +66,7 @@ public:
     	}
     	return 0;
     }
-    int comp(){
+    int solve(){
     	int flow = 0;
         int s=0,t=u+v+1;
     	for(;;){

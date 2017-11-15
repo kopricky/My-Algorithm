@@ -24,7 +24,7 @@ public:
 		es[edge_id++] = (edge){from,to,cost};
 	}
 	//sからたどり着ける負の閉路検出可能
-	void comp(int s){
+	void solve(int s){
 		int cnt = 0;
 		d[s] = 0;
 		while(cnt < V){

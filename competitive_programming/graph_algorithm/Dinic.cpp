@@ -58,7 +58,7 @@ public:
     	return 0;
     }
     //最大流を計算
-    T max_flow(int s,int t)
+    T solve(int s,int t)
     {
     	T flow = 0;
     	for(;;){
