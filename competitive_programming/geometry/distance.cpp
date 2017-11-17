@@ -32,3 +32,9 @@ double distanceSP(const L &s, const C p)
     if (intersectSP(s, r)) return abs(r - p);
     return min(abs(s[0] - p), abs(s[1] - p));
 }
+//線分と線分の距離
+double distanceSS(const L &s, const L &t)
+{
+    if (intersectSS(s, t)) return 0;
+    return min(min(distanceSP(s, t[0]), distanceSP(s, t[1])),min(distanceSP(t, s[0]), distanceSP(t, s[1])));
+}

@@ -14,7 +14,7 @@ double getarea(C c1,double r1,C a,C b)
     }
     return res;
 }
-double getcrossarea(vector<C>& t,C c1,double r1)
+double getcrossarea(const vector<C>& t,C c1,double r1)
 {
     int n = (int)t.size();
     if(n<3) return 0;
@@ -26,7 +26,7 @@ double getcrossarea(vector<C>& t,C c1,double r1)
     return res;
 }
 //凸包を求める(O(nlogn))
-vector<C> convex_hull(vector<C>& ps)
+vector<C> convex_hull(vector<C> ps)
 {
     int n = (int)ps.size(), k = 0;
     sort(ps.begin(), ps.end());
@@ -84,7 +84,7 @@ int contains(const vector<C>& ps, const C p)
   return flag ? 2 : 0;
 }
 //凸多角形の交差
-vector<C> convex_intersection(vector<C>& ps,vector<C>& qs)
+vector<C> convex_intersection(const vector<C>& ps,const vector<C>& qs)
 {
 	vector<C> rs;
 	int a = ps.size(),b = qs.size();
@@ -107,7 +107,7 @@ vector<C> convex_intersection(vector<C>& ps,vector<C>& qs)
         }
 	}
 	sort(rs.begin(),rs.end());
-	rs.erase(unique(all(rs)),rs.end());
+	rs.erase(unique(rs.begin(),rs.end()),rs.end());
 	if(rs.size() <= 1){
         return rs;
     }

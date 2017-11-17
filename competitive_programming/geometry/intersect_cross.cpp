@@ -1,5 +1,7 @@
+#define EPS 1e-12
+#define rep(i,n) for(int i=0;i<(int)(n);++i)
+
 typedef complex<double> C;
-typedef pair<int,int>P;
 
 const double PI = 4*atan(1.0);
 
@@ -114,7 +116,7 @@ double gettime(C c1,C c2)
     return (dot(c1,c2) < 0 ? -1.0 : 1.0 ) * abs(c2) / abs(c1);
 }
 //円と直線の交点
-vector<C> crosspointCL(C c1,double r1,L& l)
+vector<C> crosspointCL(C c1,double r1,const L& l)
 {
     C a=l[0], b=l[1];
     vector<C> res;
@@ -131,7 +133,7 @@ vector<C> crosspointCL(C c1,double r1,L& l)
 }
 
 //円と線分の交点
-vector<C> crosspointCS(C c1,double r1,L& s)
+vector<C> crosspointCS(C c1,double r1,const L& s)
 {
     vector<C> tmp=crosspointCL(c1,r1,s);
     vector<C> res;
@@ -143,10 +145,10 @@ vector<C> crosspointCS(C c1,double r1,L& s)
     return res;
 }
 //円どうしの交点
-L crosspointCC(const C c1, const double r1, const C c2, const double r2)
+L crosspointCC(C c1, double r1, C c2, double r2)
 {
-  C a = conj(c2-c1), b = (r2*r2-r1*r1-(c2-c1)*conj(c2-c1)), c = r1*r1*(c2-c1);
-  C d = b*b-4.0*a*c;
-  C z1 = (-b+sqrt(d))/(2.0*a)+c1, z2 = (-b-sqrt(d))/(2.0*a)+c1;
-  return L(z1, z2);
+    C a = conj(c2-c1), b = (r2*r2-r1*r1-(c2-c1)*conj(c2-c1)), c = r1*r1*(c2-c1);
+    C d = b*b-4.0*a*c;
+    C z1 = (-b+sqrt(d))/(2.0*a)+c1, z2 = (-b-sqrt(d))/(2.0*a)+c1;
+    return L(z1, z2);
 }
