@@ -1,11 +1,11 @@
-template<typename T> class knapsaq{
+template<typename T> class knapsack{
 public:
     int V,W;
     int id;
     vector<T> v,deqv;
     //dpテーブル使い回し
     vi dp,deq,w,m;
-    knapsaq(int node_size,int max_w){
+    knapsack(int node_size,int max_w){
         V = node_size, W = max_w, id = 0;
         dp.resize(W+1,0),deq.resize(W+1),deqv.resize(W+1);
         v.resize(V),w.resize(V),m.resize(V);
