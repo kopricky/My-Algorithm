@@ -40,7 +40,7 @@ void dfs(int u,int p)
 vector<int> G[MAX_N];
 vector<int> ord;
 int lb[MAX_N],rb[MAX_N],id[MAX_N];
-//rb[u]はuを根とする部分木の中のordの最大id
+//uを根とする部分木は[lb[u],rb[u])で表せる
 
 void dfs(int u,int p)
 {
@@ -52,5 +52,5 @@ void dfs(int u,int p)
             dfs(G[u][i],u);
         }
     }
-    rb[u] = (int)ord.size() - 1;
+    rb[u] = (int)ord.size();
 }

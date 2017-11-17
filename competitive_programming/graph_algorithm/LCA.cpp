@@ -4,8 +4,6 @@
 //lca.make();
 //lca.comp(u,v)でu,vのLCAを計算
 
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-
 template<typename V> class segtree {
 private:
     int n,sz; vector<V> node; vector<int> node_id;

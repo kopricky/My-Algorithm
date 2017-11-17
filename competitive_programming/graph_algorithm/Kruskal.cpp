@@ -3,8 +3,6 @@
 //適宜add_edge
 //kr.comp()で最小全域木のコストが返る
 
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-
 class UF {
 private:
     int sz; vector<int> par,nrank;

@@ -3,8 +3,6 @@
 //適宜add_edge
 //bf.comp(出発点)でdに最短路長が入る
 
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-
 template<typename T> class bellman_ford {
 public:
 	struct edge{

@@ -3,8 +3,6 @@
 //sc.comp()で強連結成分分解
 //sc.make_graph()で強連結成分分解後のグラフを構築
 
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-
 class SCC {
 public:
 	vector<vector<int> > G,rG;
