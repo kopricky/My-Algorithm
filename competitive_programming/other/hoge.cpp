@@ -224,9 +224,21 @@ int main()
         cout << v24[i] << " ";
     }
     cout << "\n";
-
+    //bit演算テク
     //集合TでSの部分集合全体をなめる(空集合は除く)
     for(int T=S;T>0;T=(T-1)&S){}
+    //TがUに含まれるかどうか判定
+    ~U&T==0；
+    //集合Tで部分集合Uに含まれる部分集合全体をなめる
+    for (int T = (1 << num) - 1; T >= 0; --T) {
+        T &= U;
+        //処理
+    }
+    //集合TでTを含む部分集合全体をなめる
+    for (int i = T; i < (1 << num); i=(i+1)|T) {}
+    //集合Tで要素数kの部分集合全体をなめる
+    int x, y;
+    for (int T = (1 << k) - 1; T < (1 << N); x = T & -T, y = T + x, T = (((T & ~y) / x) >> 1) | y) {}
     __builtin_popcount();
 	return 0;
 }
