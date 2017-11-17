@@ -14,7 +14,7 @@ double getarea(C c1,double r1,C a,C b)
     }
     return res;
 }
-double getcrossarea(vector<C> t,C c1,double r1)
+double getcrossarea(vector<C>& t,C c1,double r1)
 {
     int n = (int)t.size();
     if(n<3) return 0;
@@ -26,7 +26,7 @@ double getcrossarea(vector<C> t,C c1,double r1)
     return res;
 }
 //凸包を求める(O(nlogn))
-vector<C> convex_hull(vector<C> ps)
+vector<C> convex_hull(vector<C>& ps)
 {
     int n = (int)ps.size(), k = 0;
     sort(ps.begin(), ps.end());
@@ -41,7 +41,7 @@ vector<C> convex_hull(vector<C> ps)
     return ch;
 }
 //凸性判定
-bool isconvex(const vector<C> &ps)
+bool isconvex(const vector<C>& ps)
 {
     rep(i,ps.size()){
         if (ccw(ps[(i+ps.size()-1) % ps.size()],ps[i],ps[(i+1) % ps.size()])) return false;
@@ -49,7 +49,7 @@ bool isconvex(const vector<C> &ps)
     return true;
 }
 //多角形の符号付き面積(左回りが正)
-double area(const vector<C> &ps)
+double area(const vector<C>& ps)
 {
     double A = 0;
     rep(i,ps.size()){
@@ -58,7 +58,7 @@ double area(const vector<C> &ps)
     return A / 2.0;
 }
 //凸多角形を直線で切断した時の左側の図形
-vector<C> convex_cut(const vector<C> &ps, const L &l)
+vector<C> convex_cut(const vector<C>& ps, const L& l)
 {
     vector<C> Q;
     rep(i,ps.size()){
@@ -115,7 +115,7 @@ vector<C> convex_intersection(vector<C>& ps,vector<C>& qs)
 }
 //凸多角形の直径を求める(キャリパー法)
 //maxi,maxjが最遠点対となる
-double convex_diameter(const vector<C> &ps)
+double convex_diameter(const vector<C>& ps)
 {
     const int n = (int)ps.size();
     int is = 0, js = 0;
