@@ -3,7 +3,6 @@
 //適宜add_edge
 //ts.make()でresに結果が返る(閉路がある場合はresになにも入っていない)
 
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
 typedef pair<int,int> P;
 
 class tsort {
