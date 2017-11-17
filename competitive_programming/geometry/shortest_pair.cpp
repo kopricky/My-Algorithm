@@ -4,7 +4,7 @@ bool compyx(C c1,C c2)
 }
 
 //最近点対を求める
-double closest_pair(C *a, int n)
+double closest_pair(C a, int n)
 {
     if(n<=1) return INF;
     int m=n/2;
@@ -23,7 +23,7 @@ double closest_pair(C *a, int n)
     }
     return d;
 }
-double compute_shortest(C *a,int n)
+double compute_shortest(C a,int n)
 {
     sort(a,a+n);
     return closest_pair(a,n);

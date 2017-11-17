@@ -67,32 +67,32 @@ int ccw(C a, C b, C c)
     return 0;   //b--a--c on line
 }
 //直線どうしの交差判定(同一直線はTrue)
-bool intersectLL(const L &l, const L &m)
+bool intersectLL(const L& l, const L& m)
 {
     return abs(cross(l[1]-l[0], m[1]-m[0])) > EPS || abs(cross(l[1]-l[0], m[0]-l[0])) < EPS;
 }
 //直線と線分の交差判定(一点共有も交差と判定)
-bool intersectLS(const L &l, const L &s)
+bool intersectLS(const L& l, const L& s)
 {
     return cross(l[1]-l[0], s[0]-l[0]) * cross(l[1]-l[0], s[1]-l[0]) < EPS;
 }
 //直線と点の交差(共有)判定
-bool intersectLP(const L &l, const C p)
+bool intersectLP(const L& l, const C p)
 {
     return abs(cross(l[1]-p, l[0]-p)) < EPS;
 }
 //線分どうしの交差判定(一点共有も交差と判定)
-bool intersectSS(const L &s, const L &t)
+bool intersectSS(const L& s, const L& t)
 {
     return ccw(s[0],s[1],t[0])*ccw(s[0],s[1],t[1]) <= 0 && ccw(t[0],t[1],s[0])*ccw(t[0],t[1],s[1]) <= 0;
 }
 //線分と点の交差(共有)判定
-bool intersectSP(const L &s, const C p)
+bool intersectSP(const L& s, const C p)
 {
     return abs(s[0]-p)+abs(s[1]-p)-abs(s[1]-s[0]) < EPS;
 }
 //直線および線分の交点
-C crosspointLL(const L &l, const L &m)
+C crosspointLL(const L& l, const L& m)
 {
     double A = cross(l[1] - l[0], m[1] - m[0]);
     double B = cross(l[1] - l[0], l[1] - m[0]);
@@ -103,7 +103,7 @@ C crosspointLL(const L &l, const L &m)
     return m[0] + B / A * (m[1] - m[0]);
 }
 //点pを直線l上に射影
-C projection(const L &l, const C p)
+C projection(const L& l, const C p)
 {
     double t = dot(p-l[0], l[0]-l[1]) / norm(l[0]-l[1]);
     return l[0] + t*(l[0]-l[1]);
@@ -114,7 +114,7 @@ double gettime(C c1,C c2)
     return (dot(c1,c2) < 0 ? -1.0 : 1.0 ) * abs(c2) / abs(c1);
 }
 //円と直線の交点
-vector<C> crosspointCL(C c1,double r1,L l)
+vector<C> crosspointCL(C c1,double r1,L& l)
 {
     C a=l[0], b=l[1];
     vector<C> res;
@@ -131,7 +131,7 @@ vector<C> crosspointCL(C c1,double r1,L l)
 }
 
 //円と線分の交点
-vector<C> crosspointCS(C c1,double r1,L s)
+vector<C> crosspointCS(C c1,double r1,L& s)
 {
     vector<C> tmp=crosspointCL(c1,r1,s);
     vector<C> res;
