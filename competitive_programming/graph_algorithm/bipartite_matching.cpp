@@ -24,13 +24,13 @@ public:
         }
     }
     void init_edge(int from,int to){
-        G[from].push_back((edge){to,1,G[to].size()});
-    	G[to].push_back((edge){from,0,G[from].size()-1});
+        G[from].push_back((edge){to,1,(int)G[to].size()});
+    	G[to].push_back((edge){from,0,(int)G[from].size()-1});
     }
     void add_edge(int from,int to){
         from += 1,to += u+1;
-    	G[from].push_back((edge){to,INF,G[to].size()});
-    	G[to].push_back((edge){from,0,G[from].size()-1});
+    	G[from].push_back((edge){to,INF,(int)G[to].size()});
+    	G[to].push_back((edge){from,0,(int)G[from].size()-1});
     }
     void bfs(int s){
         fill(level.begin(),level.end(),-1);
