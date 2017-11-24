@@ -1,7 +1,5 @@
 //これはverifyされてません
-typedef pair<long long,long long> P;
-
-int hash_dp[MAX_N];
+typedef pair<long long,long long> pll;
 
 class hashing
 {
@@ -37,11 +35,11 @@ public:
         hdp[u] = (val + num[k]) % mod;
         return;
     }
-    P comp_hash(vector<int>* graph,int node)
+    pll comp_hash(vector<int>* graph,int node)
     {
         vector<ll> vec1(node),vec2(node);
         hash_dfs(0,-1,0,mod1,rnum1,vec1,graph);
         hash_dfs(0,-1,0,mod2,rnum2,vec2,graph);
-        return P(vec1[0],vec2[0]);
+        return pll(vec1[0],vec2[0]);
     }
 };
