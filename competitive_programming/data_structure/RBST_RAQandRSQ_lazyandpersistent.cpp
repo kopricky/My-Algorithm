@@ -127,10 +127,10 @@ public:
     void range(int l, int r, T val){
         auto sr = split(root, r);
         auto sl = split(sr.first, l);
-        node* lr = sl.second;
+        auto lr = sl.second;
         lr->lazy = val;
         lr->lazy_flag = true;
-        root = merge(merge(sl.first,sl.second),sr.second);
+        root = merge(merge(sl.first,lr),sr.second);
     }
     //[r,s)を[p,q)にコピー
     void trans(int p, int q, int r, int s){
