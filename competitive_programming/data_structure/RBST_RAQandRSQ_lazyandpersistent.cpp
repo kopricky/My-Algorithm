@@ -124,7 +124,7 @@ public:
     	up(t);
         build();
     }
-    void add(int l, int r, T val){
+    void range(int l, int r, T val){
         auto sr = split(root, r);
         auto sl = split(sr.first, l);
         node* lr = sl.second;
