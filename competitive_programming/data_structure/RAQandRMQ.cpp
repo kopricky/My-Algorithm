@@ -1,9 +1,9 @@
 template<typename V> class segtree {
 private:
-    int n; vector<V> node, lazy;
+    int n,sz; vector<V> node, lazy;
 public:
     segtree(vector<V>& v) {
-        int sz = (int)v.size(); n = 1;
+        sz = (int)v.size(); n = 1;
         while(n < sz) n *= 2;
         node.resize(2*n-1); lazy.resize(2*n-1, 0);
         rep(i,sz) node[i+n-1] = v[i];
