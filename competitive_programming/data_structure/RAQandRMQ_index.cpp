@@ -1,4 +1,4 @@
-template<class V> class segtree {
+template<class V> class segtree{
 private:
     int n,sz;
     vector<V> node, lazy;
@@ -6,7 +6,7 @@ private:
     vector<bool> lazyFlag;
 
 public:
-    segtree(vector<V>& v) {
+    segtree(vector<V>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
@@ -30,8 +30,8 @@ public:
             }
         }
     }
-    void eval(int k, int l, int r) {
-        if(lazyFlag[k]) {
+    void eval(int k, int l, int r){
+        if(lazyFlag[k]){
             node[k] = lazy[k];
             if(r - l > 1) {
                 lazy[k*2+1] = lazy[k*2+2] = lazy[k];
@@ -40,18 +40,17 @@ public:
             lazyFlag[k] = false;
         }
     }
-    void range(int a, int b, V x, int k=0, int l=0, int r=-1) {
+    void range(int a, int b, V x, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
-            eval(k, l, r);
+        eval(k, l, r);
         if(b <= l || r <= a){
             return;
         }
-        if(a <= l && r <= b) {
+        if(a <= l && r <= b){
             lazy[k] = x;
             lazyFlag[k] = true;
             eval(k, l, r);
-        }
-        else {
+        }else{
             range(a, b, x, 2*k+1, l, (l+r)/2);
             range(a, b, x, 2*k+2, (l+r)/2, r);
             if(node[k*2+1] < node[k*2+2]){
@@ -63,7 +62,7 @@ public:
             }
         }
     }
-    pair<V,int> query(int a, int b, int k=0, int l=0, int r=-1) {
+    pair<V,int> query(int a, int b, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
@@ -76,8 +75,7 @@ public:
         pair<V,int> vr = query(a, b, 2*k+2, (l+r)/2, r);
         return min(vl,vr);
     }
-    void print()
-    {
+    void print(){
         rep(i,sz){
             pair<V,int> p;
             p = query(i,i+1);

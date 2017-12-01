@@ -1,4 +1,4 @@
-template<typename V> class segtree {
+template<typename V> class segtree{
 private:
     int n,sz;
     vector<V> node;
@@ -17,8 +17,7 @@ public:
             node[i] = min(node[i*2+1],node[i*2+2]);
         }
     }
-    void update(int k,int a)
-    {
+    void update(int k,int a){
     	k += n-1;
     	node[k] = a;
     	while(k>0){
@@ -26,8 +25,7 @@ public:
     		node[k] = min(node[2*k+1],node[2*k+2]);
     	}
     }
-    V query(int a,int b,int k=0,int l=0,int r=-1)
-    {
+    V query(int a,int b,int k=0,int l=0,int r=-1){
         if(r < 0) r = n;
     	if(r <= a || b <= l){
     		return numeric_limits<V>::max();
@@ -40,11 +38,5 @@ public:
     		return min(vl,vr);
     	}
     }
-    void print()
-    {
-        rep(i,sz){
-            cout << query(i,i+1) << " ";
-        }
-        cout << endl;
-    }
+    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
 };
