@@ -1,6 +1,5 @@
-typedef pair<int,int> P;
-
 struct HLdecomposition{
+    using P = pair<int,int>;
     struct Centroid{
         int parid, pardepth, depth, sz;
         Centroid(int idx, int dep, int deep, int size) : parid(idx), pardepth(dep), depth(deep), sz(size){}

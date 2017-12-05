@@ -3,9 +3,8 @@
 //適宜add_edge
 //ts.make()でresに結果が返る(閉路がある場合はresになにも入っていない)
 
-typedef pair<int,int> P;
-
 class tsort {
+	using P = pair<int,int>;
 public:
 	vector<vector<int> > G;
 	vector<int> deg;

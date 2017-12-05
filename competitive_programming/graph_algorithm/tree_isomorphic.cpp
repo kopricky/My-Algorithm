@@ -1,9 +1,9 @@
 //これはverifyされてません
-typedef pair<long long,long long> pll;
 
 class hashing
 {
 private:
+    using pll = pair<long long,long long>;
     vector<ll> rnum1,rnum2;
     ll mod1,mod2;
     int node_size;
