@@ -1,6 +1,5 @@
-#define ll long long
-
 struct RollingHash {
+	using ll = long long;
 	static const ll mo0=1000000007,mo1=1000000009;
 	static ll mul0,mul1,mul2,mul3; static vector<ll> pmo[4];
 	static const ll add0=1000010007,add1=1003333331;
