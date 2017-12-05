@@ -1,9 +1,9 @@
 //頂点数がMAX_N
 //Articulation at(MAX_N);
 //at.artに関節点が入る
-typedef pair<int,int>P;
-
 class Articulation {
+	using P = pair<int,int>;
+public:
 	vector<vector<int> > G;
 	vector<int> ord;	//訪問時間
 	vector<int> low; //low[u]はuから高々1個の後退辺を通ってたどりつけるノードのordの最小値

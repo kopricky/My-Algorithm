@@ -4,9 +4,9 @@
 //vecには節 aV¬bなら(0,MAX_N+1), ¬bVcなら(MAX_N+1,2)のようにペアをもたせる
 //st.restore(vec) 解構築
 #define rep(i,n) for(int i=0;i<(int)(n);++i)
-typedef pair<int,int> P;
 
 class SAT {
+	using P = pair<int,int>;
 public:
 	vector<vector<int> > G,rG;
 	vector<int> post_order; //帰りがけ順の並び
