@@ -17,7 +17,7 @@ public:
             node[i] = min(node[i*2+1],node[i*2+2]);
         }
     }
-    void update(int k,int a){
+    void update(int k,V a){
     	k += n-1;
     	node[k] = a;
     	while(k>0){
