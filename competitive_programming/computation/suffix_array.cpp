@@ -1,4 +1,4 @@
-\class suffixarray{
+class suffixarray{
 public:
     int sz,index1,index2;
     vector<int> rnk,tmp,sa,lcp;
