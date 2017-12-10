@@ -1,14 +1,13 @@
 //頂点数がn
 //tsort ts(n);
 //適宜add_edge
-//ts.make()でresに結果が返る(閉路がある場合はresになにも入っていない)
+//ts.solve()でorderに結果が返る(閉路がある場合はorderになにも入っていない)
 
 class tsort {
 	using P = pair<int,int>;
 public:
 	vector<vector<int> > G;
-	vector<int> deg;
-	vector<int> order;
+	vector<int> deg, order;
 	int V;
 	tsort(int node_size){
 		V = node_size;
@@ -19,7 +18,6 @@ public:
 		deg[to]++;
 	}
 	void solve() {
-		vector<int> order;
 		queue<int> que;
 		rep(i,V){
 	        if(deg[i] == 0){
