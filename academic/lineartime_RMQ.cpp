@@ -1,97 +1,96 @@
-typedef pair<int,int>P;
-
-class node
-{
-public:
-    int id, val;
-    int par, left, right;
-};
-
 class RMQ
 {
 private:
-    vector<node> tree;
-    vector<int> arr;
-    vector<int> euler_tour, depth, diff, visit_id;
-    int node_size, root, arr_len, kind;
+    class RMQNode
+    {
+    public:
+        int id, val;
+        int par, left, right;
+        RMQNode(){};
+        RMQNode(int arg1, int arg2, int arg3, int arg4, int arg5) :
+                id(arg1), val(arg2), par(arg3), left(arg4), right(arg5){};
+    };
+    RMQNode** CartesianTree;
+    int *Arr, *EulerTour, *depth, *diff, *VisitId;
+    int NodeSize, root, ArrLen, kind;
 
-    vector<int> Block_arr, diff_bit;   //各ブロックで深さが最小になるようなインデックス　各ブロックのdiffの情報をビットに詰めたもの
-    vector<vector<int> > Sparse_Table;  //i番目から長さ2^kの区間に含まれるdepthのうち最小のインデックス
-    vector<vector<vector<int> > > Table_Lookup;
-    int block_size, block_rem, block_cnt, log_block_cnt;
-    void make_cartesian_tree();
-    void make_euler_tour(int cur_node, int& id, int cur_depth);
-    void make_Block_arr();
-    void make_Sparse_Table();
-    void make_diff_bit();
-    void make_Table_Lookup();
-    P PM_RMQ(int st, int ed);
+    int *BlockArr, *DiffBit;   //各ブロックで深さが最小になるようなインデックス　各ブロックのdiffの情報をビットに詰めたもの
+    int** SparseTable;  //i番目から長さ2^kの区間に含まれるdepthのうち最小のインデックス
+    int*** TableLookup;
+    int BlockSize, BlockRem, BlockCnt, LogBlockCnt;
+    void MakeCartesianTree();
+    void MakeEulerTour(int CurNode, int& id, int CurDepth);
+    void MakeBlockArr();
+    void MakeSparseTable();
+    void MakeDiffBit();
+    void MakeTableLookup();
+    pair<int,int> PM_RMQ(int st, int ed);
 public:
-    RMQ::RMQ(vector<int>& arg1, int arg2=0){     //arg2=1のときrange_max_queryを表す
-    int rmq(int st, int ed);
+    void build(vector<int>& arg1, int arg2);     //arg2=1のときrange_max_queryを表す
+    int query(int st, int ed);
 };
 
-RMQ::RMQ(vector<int>& arg1, int arg2=0){
-    node_size = (int)arg1.size();
-    assert(node_size >= 2);
-    arr.resize(node_size, 0);
+void RMQ::build(vector<int>& Arr, int arg2=0){  //arg2=1のときrange_max_queryを表す
+    NodeSize = (int)Arr.size();
+    assert(NodeSize >= 2);
     if(arg2){
-        for(int i = 0; i < node_size; i++){
-            arr[i] = -arg1[i];
-        }
-    }else{
-        for(int i = 0; i < node_size; i++){
-            arr[i] = arg1[i];
+        for(int i = 0; i < NodeSize; i++){
+            Arr[i] = -Arr[i];
         }
     }
     kind = arg2;
-    make_cartesian_tree();
-    euler_tour.resize(2 * node_size - 1, -1), depth.resize(2 * node_size - 1, -1);
-    diff.resize(2 * node_size - 2, -1), visit_id.resize(node_size, -1);
+    MakeCartesianTree();
+    EulerTour = new int[2 * NodeSize - 1], depth = new int[2 * NodeSize - 1];
+    diff = new int[2 * NodeSize - 2], VisitId = new int[NodeSize];
     int val = 0;
-    make_euler_tour(root, val, 0);
-    for(int i = 0;i < 2 * node_size - 2; i++){
+    MakeEulerTour(root, val, 0);
+    for(int i = 0;i < 2 * NodeSize - 2; i++){
         diff[i] = depth[i+1] - depth[i];
     }
     //±RMQの実装
-    arr_len = 2 * node_size - 1;
-    make_Block_arr();
-    make_Sparse_Table();
-    make_diff_bit();
-    make_Table_Lookup();
+    ArrLen = 2 * NodeSize - 1;
+    MakeBlockArr();
+    MakeSparseTable();
+    MakeDiffBit();
+    MakeTableLookup();
+    if(arg2){
+        for(int i = 0; i < NodeSize; i++){
+            Arr[i] = -Arr[i];
+        }
+    }
 }
 
-void RMQ::make_cartesian_tree()
+void RMQ::MakeCartesianTree()
 {
-    tree.resize(node_size);
-    for(int i = 0; i < node_size; i++){
-        tree[i] = (node){i, arr[i], -1, -1, -1};
+    CartesianTree = new RMQNode*[NodeSize];
+    for(int i = 0; i < NodeSize; i++){
+        CartesianTree[i] = new RMQNode(i, Arr[i], -1, -1, -1);
     }
-    stack<P> st;    //インデックス,値
-    st.push(make_pair(0,arr[0]));
+    stack<pair<int,int> > st;    //インデックス,値
+    st.push(make_pair(0,Arr[0]));
     root = 0;
-    for(int i = 1; i < node_size ; i++){
+    for(int i = 1; i < NodeSize ; i++){
         int buff;
         while(1){
             //iが根となる場合
             if(st.empty()){
-                st.push(make_pair(i, arr[i]));
-                tree[i].left = buff;
-                tree[buff].par = i;
+                st.push(make_pair(i, Arr[i]));
+                CartesianTree[i]->left = buff;
+                CartesianTree[buff]->par = i;
                 root = i;
                 break;
             }
             pair<int, int> top = st.top();
-            if(top.second <= arr[i]){
-                tree[i].par = top.first; //iの親を変更
-                int nd = tree[top.first].right;  //iの親の右下のノード
+            if(top.second <= Arr[i]){
+                CartesianTree[i]->par = top.first; //iの親を変更
+                int nd = CartesianTree[top.first]->right;  //iの親の右下のノード
                 //iの子となるものが存在する場合
                 if(nd != -1){
-                    tree[i].left = nd;  //iの親の右下のノードをiの左の子とする
-                    tree[nd].par = i; //iの親の右下のノードの親をiとする
+                    CartesianTree[i]->left = nd;  //iの親の右下のノードをiの左の子とする
+                    CartesianTree[nd]->par = i; //iの親の右下のノードの親をiとする
                 }
-                tree[top.first].right = i;  //iの親の右下の子をiとする
-                st.push(make_pair(i,arr[i]));
+                CartesianTree[top.first]->right = i;  //iの親の右下の子をiとする
+                st.push(make_pair(i,Arr[i]));
                 break;
             }
             buff = top.first;   //最後にpopされたものを暗記
@@ -100,36 +99,36 @@ void RMQ::make_cartesian_tree()
     }
 }
 
-void RMQ::make_euler_tour(int cur_node, int& id, int cur_depth)
+void RMQ::MakeEulerTour(int CurNode, int& id, int CurDepth)
 {
-    visit_id[cur_node] = id;
-    euler_tour[id] = cur_node;
-    depth[id++] = cur_depth;
-    if(tree[cur_node].left >= 0){
-        make_euler_tour(tree[cur_node].left, id, cur_depth+1);
-        euler_tour[id] = cur_node;
-        depth[id++] = cur_depth;
+    VisitId[CurNode] = id;
+    EulerTour[id] = CurNode;
+    depth[id++] = CurDepth;
+    if(CartesianTree[CurNode]->left >= 0){
+        MakeEulerTour(CartesianTree[CurNode]->left, id, CurDepth+1);
+        EulerTour[id] = CurNode;
+        depth[id++] = CurDepth;
     }
-    if(tree[cur_node].right >= 0){
-        make_euler_tour(tree[cur_node].right, id, cur_depth+1);
-        euler_tour[id] = cur_node;
-        depth[id++] = cur_depth;
+    if(CartesianTree[CurNode]->right >= 0){
+        MakeEulerTour(CartesianTree[CurNode]->right, id, CurDepth+1);
+        EulerTour[id] = CurNode;
+        depth[id++] = CurDepth;
     }
 }
 
-void RMQ::make_Block_arr()
+void RMQ::MakeBlockArr()
 {
-    block_size = ceil(log2(arr_len)/2);
-    block_cnt = (arr_len - 1) / block_size + 1;
-    block_rem = arr_len % block_size;
-    log_block_cnt = ceil(log2(block_cnt)) + 1;
-    Block_arr.resize(block_cnt);
-    for(int i = 0; i < block_cnt; i++){
+    BlockSize = ceil(log2(ArrLen)/2);
+    BlockCnt = (ArrLen - 1) / BlockSize + 1;
+    BlockRem = ArrLen % BlockSize;
+    LogBlockCnt = ceil(log2(BlockCnt)) + 1;
+    BlockArr = new int[BlockCnt];
+    for(int i = 0; i < BlockCnt; i++){
         int mn = INT_MAX;
         int mn_id = -1;
-        for(int j = 0; j < block_size; j++){
-            int now_id = i * block_size + j;
-            if(now_id >= arr_len){
+        for(int j = 0; j < BlockSize; j++){
+            int now_id = i * BlockSize + j;
+            if(now_id >= ArrLen){
                 break;
             }
             if(depth[now_id] < mn){
@@ -137,70 +136,79 @@ void RMQ::make_Block_arr()
                 mn_id = now_id;
             }
         }
-        Block_arr[i] = mn_id;
+        BlockArr[i] = mn_id;
     }
 }
 
-void RMQ::make_Sparse_Table()
+void RMQ::MakeSparseTable()
 {
-    Sparse_Table.resize(block_cnt, vector<int>(log_block_cnt, -1));
-    for(int i = 0; i < block_cnt; i++){
-        Sparse_Table[i][0] = Block_arr[i];
+    SparseTable = new int*[BlockCnt];
+    for(int i = 0; i < BlockCnt; i++){
+        SparseTable[i] = new int[LogBlockCnt];
     }
-    for(int j = 0; j < log_block_cnt - 1; j++){
-        for(int i = 0; i < block_cnt; i++){
-            if(i + (1 << j) >= block_cnt){
-                Sparse_Table[i][j + 1] = Sparse_Table[i][j];
+    for(int i = 0; i < BlockCnt; i++){
+        SparseTable[i][0] = BlockArr[i];
+    }
+    for(int j = 0; j < LogBlockCnt - 1; j++){
+        for(int i = 0; i < BlockCnt; i++){
+            if(i + (1 << j) >= BlockCnt){
+                SparseTable[i][j + 1] = SparseTable[i][j];
             }else{
-                if(depth[Sparse_Table[i][j]] <= depth[Sparse_Table[i + (1 << j)][j]]){
-                    Sparse_Table[i][j + 1] = Sparse_Table[i][j];
+                if(depth[SparseTable[i][j]] <= depth[SparseTable[i + (1 << j)][j]]){
+                    SparseTable[i][j + 1] = SparseTable[i][j];
                 }else{
-                    Sparse_Table[i][j + 1] = Sparse_Table[i + (1 << j)][j];
+                    SparseTable[i][j + 1] = SparseTable[i + (1 << j)][j];
                 }
             }
         }
     }
 }
 
-void RMQ::make_diff_bit()
+void RMQ::MakeDiffBit()
 {
-    diff_bit.resize(block_cnt, -1);
-    for(int i = 0; i < block_cnt; i++){
+    DiffBit = new int[BlockCnt];
+    for(int i = 0; i < BlockCnt; i++){
         int num = 0;
-        for(int j = 0; j < block_size - 1; j++){
-            int now_id = i * block_size + j;
-            if(now_id >= arr_len){
+        for(int j = 0; j < BlockSize - 1; j++){
+            int now_id = i * BlockSize + j;
+            if(now_id >= ArrLen){
                 break;
             }
             if(diff[now_id] > 0){
-                num += (1 << (block_size - j - 2));
+                num += (1 << (BlockSize - j - 2));
             }
         }
-        diff_bit[i] = num;
+        DiffBit[i] = num;
     }
 }
 
-void RMQ::make_Table_Lookup()
+void RMQ::MakeTableLookup()
 {
-    Table_Lookup.resize((1 << block_size), vector<vector<int> >(block_size + 1, vector<int>(block_size + 1, 0)));
+    TableLookup = new int**[(1 << BlockSize)];
+    for(int i = 0; i < (1 << BlockSize); i++){
+        TableLookup[i] = new int*[BlockSize + 1];
+        for(int j = 0; j < BlockSize + 1; j++){
+            TableLookup[i][j] = new int[BlockSize + 1];
+        }
+    }
     //0は減少,1は増加
-    for(int i = 0; i < (1 << block_size); i++){
-        vector<int> vec(block_size - 1, -1);
-        for(int j = 0; j < block_size; j++){
-            if(i & (1 << (block_size - j - 2))){
-                vec[j] = 1;
+    for(int i = 0; i < (1 << BlockSize); i++){
+        int* arr = new int[BlockSize - 1];
+        for(int j = 0; j < BlockSize; j++){
+            if(i & (1 << (BlockSize - j - 2))){
+                arr[j] = 1;
             }
         }
-        for(int j = 0; j < block_size; j++){
+        for(int j = 0; j < BlockSize; j++){
             int nw = 0, mn = 0, mn_id = j;
-            Table_Lookup[i][j][j+1] = j;
-            for(int k = j + 2; k <= block_size; k++){
-                nw += vec[k-2];
+            TableLookup[i][j][j+1] = j;
+            for(int k = j + 2; k <= BlockSize; k++){
+                nw += arr[k-2];
                 if(nw < mn){
                     mn = nw;
                     mn_id = k-1;
                 }
-                Table_Lookup[i][j][k] = mn_id;
+                TableLookup[i][j][k] = mn_id;
             }
         }
     }
@@ -209,58 +217,58 @@ void RMQ::make_Table_Lookup()
 //インデックスと値のpair
 pair<int, int> RMQ::PM_RMQ(int st, int ed)
 {
-    int st_block_id = (st == 0)?0:((st - 1) / block_size + 1);  //ブロック区間の開始
-    int ed_block_id = ed / block_size - 1;    //ブロック区間の終了
-    int st_id = st / block_size;
-    int ed_id = ed / block_size;
-    int st_rem = st % block_size;
-    int ed_rem = ed % block_size;
-    int st_val = Block_arr[st_id];
-    int ed_val = Block_arr[ed_id];
+    int st_block_id = (st == 0)?0:((st - 1) / BlockSize + 1);  //ブロック区間の開始
+    int ed_block_id = ed / BlockSize - 1;    //ブロック区間の終了
+    int st_id = st / BlockSize;
+    int ed_id = ed / BlockSize;
+    int st_rem = st % BlockSize;
+    int ed_rem = ed % BlockSize;
+    int st_val = BlockArr[st_id];
+    int ed_val = BlockArr[ed_id];
     int res, mn = INT_MIN;
     if(ed_block_id - st_block_id < 0){    //間にブロック区間がひとつもない場合
         if(st_id == ed_id){ //同じブロック区間に存在する場合
-            int id_kari = block_size * st_id + Table_Lookup[diff_bit[st_id]][st_rem][ed_rem + 1];
-            return make_pair(euler_tour[id_kari], arr[euler_tour[id_kari]]);
+            int id_kari = BlockSize * st_id + TableLookup[DiffBit[st_id]][st_rem][ed_rem + 1];
+            return make_pair(EulerTour[id_kari], Arr[EulerTour[id_kari]]);
         }else{
-            int cand1 = block_size * st_id + Table_Lookup[diff_bit[st_id]][st_rem][block_size];
-            int cand2 = block_size * ed_id + Table_Lookup[diff_bit[ed_id]][0][ed_rem + 1];
+            int cand1 = BlockSize * st_id + TableLookup[DiffBit[st_id]][st_rem][BlockSize];
+            int cand2 = BlockSize * ed_id + TableLookup[DiffBit[ed_id]][0][ed_rem + 1];
             if(depth[cand1] <= depth[cand2]){
-                return make_pair(euler_tour[cand1], arr[euler_tour[cand1]]);
+                return make_pair(EulerTour[cand1], Arr[EulerTour[cand1]]);
             }else{
-                return make_pair(euler_tour[cand2], arr[euler_tour[cand2]]);
+                return make_pair(EulerTour[cand2], Arr[EulerTour[cand2]]);
             }
         }
     }else{  //間にブロックっ区間が存在する場合
         int num = floor(log2(ed_block_id - st_block_id + 1));
-        int cand1 = Sparse_Table[st_block_id][num];
-        int cand2 = Sparse_Table[ed_block_id-(1 << num) + 1][num];
+        int cand1 = SparseTable[st_block_id][num];
+        int cand2 = SparseTable[ed_block_id-(1 << num) + 1][num];
         int c1,c2;
         if(depth[cand1] <= depth[cand2]){
             c1 = cand1;
         }else{
             c1 = cand2;
         }
-        int cand3 = block_size * st_id + Table_Lookup[diff_bit[st_id]][st_rem][block_size];
-        int cand4 = block_size * ed_id + Table_Lookup[diff_bit[ed_id]][0][ed_rem + 1];
+        int cand3 = BlockSize * st_id + TableLookup[DiffBit[st_id]][st_rem][BlockSize];
+        int cand4 = BlockSize * ed_id + TableLookup[DiffBit[ed_id]][0][ed_rem + 1];
         if(depth[cand3] <= depth[cand4]){
             c2 = cand3;
         }else{
             c2 = cand4;
         }
         if(depth[c1] <= depth[c2]){
-            return make_pair(euler_tour[c1], arr[euler_tour[c1]]);
+            return make_pair(EulerTour[c1], Arr[EulerTour[c1]]);
         }else{
-            return make_pair(euler_tour[c2], arr[euler_tour[c2]]);
+            return make_pair(EulerTour[c2], Arr[EulerTour[c2]]);
         }
     }
 }
 
 //範囲は[st,ed)
-int RMQ::rmq(int st, int ed)
+int RMQ::query(int st, int ed)
 {
     assert(st < ed);
-    pair<int, int> res = PM_RMQ(min(visit_id[st], visit_id[ed-1]), max(visit_id[st], visit_id[ed-1]));
+    pair<int, int> res = PM_RMQ(min(VisitId[st], VisitId[ed-1]), max(VisitId[st], VisitId[ed-1]));
     if(kind){
         return -res.second;
     }else{
