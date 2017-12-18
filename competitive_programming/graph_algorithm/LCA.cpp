@@ -63,6 +63,16 @@ public:
 
 class LCA {
 public:
+    vector<int> depth,id,ord;
+    vector<vector<int> > G;
+    segtree<int> st;
+    LCA(int node_size){
+        depth.resize(node_size),id.resize(node_size);
+        G.resize(node_size);
+    }
+    void add_edge(int u,int v){
+        G[u].push_back(v),G[v].push_back(v);
+    }
     void dfs(int u,int p,int k){
         id[u] = (int)ord.size();
         ord.push_back(u);
@@ -73,16 +83,6 @@ public:
                 ord.push_back(u);
             }
         }
-    }
-    vector<int> depth,id,ord;
-    vector<vector<int> > G;
-    segtree<int> st;
-    LCA(int node_size){
-        depth.resize(node_size),id.resize(node_size);
-        G.resize(node_size);
-    }
-    void add_edge(int u,int v){
-        G[u].push_back(v),G[v].push_back(v);
     }
     void build(){
         dfs(0,-1,0);
