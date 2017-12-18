@@ -1,10 +1,5 @@
-//頂点数がn
-//LCA lca(n);
-//適宜add_edge
-//lca.build();
-//lca.solve(u,v)でu,vのLCAを計算
 
-template<typename V> class segtree {
+template<typename V> class segtree{
 private:
     int n,sz; vector<V> node; vector<int> node_id;
 public:
@@ -26,8 +21,7 @@ public:
             }
         }
     }
-    void update(int k,int a)
-    {
+    void update(int k,int a){
     	k += n-1;
     	node[k] = a,node_id[k] = k-(n-1);
     	while(k>0){
@@ -39,8 +33,7 @@ public:
             }
     	}
     }
-    pair<V,int> query(int a,int b,int k=0,int l=0,int r=-1)
-    {
+    pair<V,int> query(int a,int b,int k=0,int l=0,int r=-1){
         if(r < 0) r = n;
     	if(r <= a || b <= l) return pair<V,int>(INT_MAX,-1);
     	if(a <= l && r <= b){
@@ -51,8 +44,7 @@ public:
     		return min(vl,vr);
     	}
     }
-    void print()
-    {
+    void print(){
         rep(i,sz){
             pair<V,int> p;
             p = query(i,i+1);
@@ -61,17 +53,18 @@ public:
     }
 };
 
-class LCA {
+class LCA{
 public:
-    vector<int> depth,id,ord;
+    vector<int> ord,depth,id;
     vector<vector<int> > G;
     segtree<int> st;
+    int V;
     LCA(int node_size){
-        depth.resize(node_size),id.resize(node_size);
-        G.resize(node_size);
+        V = node_size;
+        G.resize(V),depth.resize(V),id.resize(V,-1);
     }
-    void add_edge(int u,int v){
-        G[u].push_back(v),G[v].push_back(v);
+    void add_edge(int from,int to){
+        G[from].push_back(to),G[to].push_back(from);
     }
     void dfs(int u,int p,int k){
         id[u] = (int)ord.size();
@@ -85,7 +78,11 @@ public:
         }
     }
     void build(){
-        dfs(0,-1,0);
+        rep(i,V){
+            if(id[i] < 0){
+                dfs(i,-1,0);
+            }
+        }
         vector<int> stvec((int)ord.size());
     	rep(i,ord.size()){
     		stvec[i] = depth[ord[i]];
@@ -93,6 +90,6 @@ public:
         st.resize(stvec);
     }
     int solve(int u,int v){
-    	return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
+        return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
     }
 };
