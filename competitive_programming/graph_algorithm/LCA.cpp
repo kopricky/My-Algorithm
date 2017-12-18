@@ -1,8 +1,8 @@
 //頂点数がn
 //LCA lca(n);
 //適宜add_edge
-//lca.make();
-//lca.comp(u,v)でu,vのLCAを計算
+//lca.build();
+//lca.solve(u,v)でu,vのLCAを計算
 
 template<typename V> class segtree {
 private:
@@ -84,7 +84,7 @@ public:
     void add_edge(int u,int v){
         G[u].push_back(v),G[v].push_back(v);
     }
-    void make(){
+    void build(){
         dfs(0,-1,0);
         vector<int> stvec((int)ord.size());
     	rep(i,ord.size()){
@@ -92,7 +92,7 @@ public:
     	}
         st.resize(stvec);
     }
-    int comp(int u,int v){
+    int solve(int u,int v){
     	return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
     }
 };
