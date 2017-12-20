@@ -1,7 +1,8 @@
 class biconnected{
 public:
 	vector<vector<int> > G ,graph;
-	vector<int> check,ord,low,cmp;
+	vector<int> ord,low,cmp;
+    vector<vector<P> > check;
 	vector<P> bridge;
 	vector<bool> visit;
 	int V;
@@ -25,12 +26,12 @@ public:
 		ord[v] = k++;
 		low[v] = ord[v];
 		rep(i,(int)G[v].size()){
-			int w = w;
+			int w = G[v][i];
 			if(!visit[w]){
 				dfs(w,v,k);
 				low[v] = min(low[v],low[w]);
 				if(ord[v] < low[w]){
-					bridge.push_back(P(v,w));
+				    bridge.pb(P(v,w));
 	                check[v][i].second = 1;
 	                check[w][check[v][i].first].second = 1;
 				}
@@ -62,19 +63,19 @@ public:
 	        }
 	    }
 	}
-	//頂点数を返す
+	// 頂点数を返す
 	int make_bcgraph()
 	{
 		graph.resize(V);
 	    int num = 0;
-	    rep(i,node_size){
+	    rep(i,V){
 	        if(!visit[i]){
 	            dfs(i,-1,num);
 	        }
 	    }
-	    fill(visit,visit+node_size,false);
+	    fill(visit.begin(),visit.end(),false);
 	    int kind = 0;
-	    rep(i,node_size){
+	    rep(i,V){
 	        if(!visit[i]){
 	            queue<int> que;
 	            que.push(i);
