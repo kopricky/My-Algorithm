@@ -2,15 +2,21 @@ class biconnected{
 public:
 	vector<vector<int> > G ,graph;
 	vector<int> ord,low,cmp;
-    vector<vector<P> > check;
 	vector<P> bridge;
+	vector<vector<P> > check;
 	vector<bool> visit;
 	int V;
 	biconnected(int node_size){
 		V = node_size;
 		G.resize(V);
 		check.resize(V),ord.resize(V),low.resize(V);
-		cmp.resize(V),visit.resize(V,false);
+		cmp.resize(V),check.resize(V),visit.resize(V,false);
+	}
+	void add_edge(int u,int v)
+	{
+		G[u].push_back(v),G[v].push_back(u);
+		check[u].push_back(P((int)check[v].size(),0));
+		check[v].push_back(P((int)check[u].size()-1,0));
 	}
 	void build(){
 		int id = 0;
@@ -25,13 +31,13 @@ public:
 		visit[v] = true;
 		ord[v] = k++;
 		low[v] = ord[v];
-		rep(i,(int)G[v].size()){
+		for(int i = 0;i < (int)G[v].size();i++){
 			int w = G[v][i];
 			if(!visit[w]){
 				dfs(w,v,k);
 				low[v] = min(low[v],low[w]);
 				if(ord[v] < low[w]){
-				    bridge.pb(P(v,w));
+					bridge.push_back(P(v,w));
 	                check[v][i].second = 1;
 	                check[w][check[v][i].first].second = 1;
 				}
@@ -41,12 +47,11 @@ public:
 			}
 		}
 	}
-
-	void add_edge(int u,int v)
+	//辺が実際に存在することを仮定
+	bool isbridge(int u,int v)
 	{
-	    G[u].push_back(v),G[v].push_back(u);
-	    check[u].push_back(P((int)check[v].size(),0));
-	    check[v].push_back(P((int)check[u].size()-1,0));
+		if(ord[u] > ord[v]) swap(u,v);
+		return ord[u] < low[v];
 	}
 	void restrict_dfs(int u,int p,int kind,queue<int>& que)
 	{
@@ -63,7 +68,7 @@ public:
 	        }
 	    }
 	}
-	// 頂点数を返す
+	//頂点数を返す
 	int make_bcgraph()
 	{
 		graph.resize(V);
