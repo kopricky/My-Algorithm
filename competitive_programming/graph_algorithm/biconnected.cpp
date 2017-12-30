@@ -80,14 +80,14 @@ public:
 	    }
     }
 	// auxiliary graph を作る
-	int make_bctree()
+	void make_bctree()
 	{
 		tree.resize(V);
+		rebuild();
 	    rep(i,(int)bridge.size()){
 	        int a = cmp[bridge[i].first];
 	        int b = cmp[bridge[i].second];
 	        tree[a].push_back(b), tree[b].push_back(a);
 	    }
-	    return kind;
 	}
 };
