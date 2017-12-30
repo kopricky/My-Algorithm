@@ -1,22 +1,16 @@
 class biconnected{
 public:
-	vector<vector<int> > G ,graph;
+	vector<vector<int> > G,tree;
 	vector<int> ord,low,cmp;
+    vector<vector<P> > check;
 	vector<P> bridge;
-	vector<vector<P> > check;
 	vector<bool> visit;
-	int V;
+	int V,kind;
 	biconnected(int node_size){
 		V = node_size;
 		G.resize(V);
 		check.resize(V),ord.resize(V),low.resize(V);
-		cmp.resize(V),check.resize(V),visit.resize(V,false);
-	}
-	void add_edge(int u,int v)
-	{
-		G[u].push_back(v),G[v].push_back(u);
-		check[u].push_back(P((int)check[v].size(),0));
-		check[v].push_back(P((int)check[u].size()-1,0));
+		cmp.resize(V),visit.resize(V,false);
 	}
 	void build(){
 		int id = 0;
@@ -31,13 +25,13 @@ public:
 		visit[v] = true;
 		ord[v] = k++;
 		low[v] = ord[v];
-		for(int i = 0;i < (int)G[v].size();i++){
+		rep(i,(int)G[v].size()){
 			int w = G[v][i];
 			if(!visit[w]){
 				dfs(w,v,k);
 				low[v] = min(low[v],low[w]);
 				if(ord[v] < low[w]){
-					bridge.push_back(P(v,w));
+				    bridge.pb(P(v,w));
 	                check[v][i].second = 1;
 	                check[w][check[v][i].first].second = 1;
 				}
@@ -47,11 +41,12 @@ public:
 			}
 		}
 	}
-	//辺が実際に存在することを仮定
-	bool isbridge(int u,int v)
+
+	void add_edge(int u,int v)
 	{
-		if(ord[u] > ord[v]) swap(u,v);
-		return ord[u] < low[v];
+	    G[u].push_back(v),G[v].push_back(u);
+	    check[u].push_back(P((int)check[v].size(),0));
+	    check[v].push_back(P((int)check[u].size()-1,0));
 	}
 	void restrict_dfs(int u,int p,int kind,queue<int>& que)
 	{
@@ -68,18 +63,9 @@ public:
 	        }
 	    }
 	}
-	//頂点数を返す
-	int make_bcgraph()
-	{
-		graph.resize(V);
-	    int num = 0;
-	    rep(i,V){
-	        if(!visit[i]){
-	            dfs(i,-1,num);
-	        }
-	    }
+    void rebuild()
+    {
 	    fill(visit.begin(),visit.end(),false);
-	    int kind = 0;
 	    rep(i,V){
 	        if(!visit[i]){
 	            queue<int> que;
@@ -92,10 +78,15 @@ public:
 	            }
 	        }
 	    }
+    }
+	// auxiliary graph を作る
+	int make_bctree()
+	{
+		tree.resize(V);
 	    rep(i,(int)bridge.size()){
 	        int a = cmp[bridge[i].first];
 	        int b = cmp[bridge[i].second];
-	        graph[a].push_back(b), graph[b].push_back(a);
+	        tree[a].push_back(b), tree[b].push_back(a);
 	    }
 	    return kind;
 	}
