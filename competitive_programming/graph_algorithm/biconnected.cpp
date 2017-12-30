@@ -7,7 +7,7 @@ public:
 	vector<bool> visit;
 	int V,kind;
 	biconnected(int node_size){
-		V = node_size;
+		V = node_size; kind = 0;
 		G.resize(V);
 		check.resize(V),ord.resize(V),low.resize(V);
 		cmp.resize(V),visit.resize(V,false);
