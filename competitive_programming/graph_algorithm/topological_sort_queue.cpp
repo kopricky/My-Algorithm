@@ -1,7 +1,7 @@
 //頂点数がn
 //tsort ts(n);
 //適宜add_edge
-//ts.make()で可能かを判定し結果がresに入る
+//ts.solve()で可能かを判定し結果がresに入る
 
 #define rep(i,n) for(int i=0;i<(int)(n);++i)
 
@@ -18,7 +18,7 @@ public:
 		G[from].push_back(to);
 		deg[to]++;
 	}
- 	bool make() {
+ 	bool solve() {
 		queue<int> que;
 		rep(i,V){
 	        if(deg[i] == 0){
