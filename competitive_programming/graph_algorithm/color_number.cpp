@@ -1,4 +1,3 @@
-//集合のサイズは30まで
 class color_number
 {
 public:
