@@ -21,17 +21,17 @@ struct RollingHash {
 	}
 	pair<ll,ll> hash(int u,int l,int d,int r) {	//文字列sのインデックスu~d,l~rまでの部分文字列のハッシュ値
 		if(l>r||u>d) return make_pair(0,0);
-		while(pmo[0].size()<r+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
-		while(pmo[2].size()<d+2) pmo[2].pb(pmo[2].back()*mul2%mo0), pmo[3].pb(pmo[3].back()*mul3%mo1);
+		while((int)pmo[0].size()<r+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
+		while((int)pmo[2].size()<d+2) pmo[2].pb(pmo[2].back()*mul2%mo0), pmo[3].pb(pmo[3].back()*mul3%mo1);
 		return make_pair(comp(u,l,d,r,0,mo0),comp(u,l,d,r,1,mo1));
 	}
 	pair<ll,ll> hash(vector<string> s) { init(s); return hash(0,0,(int)s.size()-1,(int)s[0].size()-1); }	//文字列s全体のハッシュ値
 	static pair<ll,ll> rconcat(pair<ll,ll> L,pair<ll,ll> R,int len) {	//Lの右にRを結合する(lenはRの横方向の長さ)
-		while(pmo[0].size()<len+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
+		while((int)pmo[0].size()<len+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
 		return make_pair((R.first + L.first*pmo[0][len])%mo0,(R.second + L.second*pmo[1][len])%mo1);
 	}
 	static pair<ll,ll> cconcat(pair<ll,ll> L,pair<ll,ll> R,int len) {	//Lの下にRを結合する(lenはRの縦方向の長さ)
-		while(pmo[2].size()<len+2) pmo[2].pb(pmo[2].back()*mul2%mo0), pmo[3].pb(pmo[3].back()*mul3%mo1);
+		while((int)pmo[2].size()<len+2) pmo[2].pb(pmo[2].back()*mul2%mo0), pmo[3].pb(pmo[3].back()*mul3%mo1);
 		return make_pair((R.first + L.first*pmo[2][len])%mo0,(R.second + L.second*pmo[3][len])%mo1);
 	}
 };

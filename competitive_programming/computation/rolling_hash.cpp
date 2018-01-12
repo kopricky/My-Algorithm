@@ -13,13 +13,13 @@ struct RollingHash {
 	}
 	pair<ll,ll> hash(int l,int r) {	//文字列sのインデックスl~rまでの部分文字列のハッシュ値
 		if(l>r) return make_pair(0,0);
-		while(pmo[0].size()<r+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
+		while((int)pmo[0].size()<r+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
 		return make_pair((hash_[0][r+1]+(mo0-hash_[0][l]*pmo[0][r+1-l]%mo0))%mo0,
 			             (hash_[1][r+1]+(mo1-hash_[1][l]*pmo[1][r+1-l]%mo1))%mo1);
 	}
 	pair<ll,ll> hash(string s) { init(s); return hash(0,(int)s.size()-1); }	//文字列s全体のハッシュ値
 	static pair<ll,ll> concat(pair<ll,ll> L,pair<ll,ll> R,int RL) { //文字列L+Rのハッシュ値,RLはRの文字列の長さ
-		while(pmo[0].size()<RL+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
+		while((int)pmo[0].size()<RL+2) pmo[0].pb(pmo[0].back()*mul0%mo0), pmo[1].pb(pmo[1].back()*mul1%mo1);
 		return make_pair((R.first + L.first*pmo[0][RL])%mo0,(R.second + L.second*pmo[1][RL])%mo1);
 	}
 };
