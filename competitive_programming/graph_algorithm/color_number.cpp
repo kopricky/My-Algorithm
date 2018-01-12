@@ -1,5 +1,4 @@
-class color_number
-{
+class color_number {
 public:
     int V;
     vi adj,I;
