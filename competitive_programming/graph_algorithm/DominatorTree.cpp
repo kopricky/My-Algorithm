@@ -1,6 +1,5 @@
 //グラフGが連結であることを仮定
-class DominatorTree
-{
+class DominatorTree{
 public:
     struct UF{
         int V; vector<int> par,label;
