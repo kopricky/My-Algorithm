@@ -14,7 +14,7 @@ public:
 	}
 	//無向グラフの場合
 	void add_edge(int u,int v,T cost){
-		G[u].pb((edge){v,cost}),G[v].pb((edge){u,cost});
+		G[u].push_back((edge){v,cost}),G[v].push_back((edge){u,cost});
 	}
 	void solve(int s){
 		priority_queue<pti,vector<pti>,greater<pti> > que;
