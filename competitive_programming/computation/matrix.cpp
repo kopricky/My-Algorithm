@@ -105,7 +105,7 @@ public:
             }
         }
         rep(i,n){
-            int pivot = i;
+            int pivot = res;
             for(int j=i;j<n;j++){
                 if(abs(B[j][i]) > abs(B[pivot][i])){
                     pivot = j;
@@ -114,7 +114,7 @@ public:
             if(abs(B[pivot][i]) < EPS){
                 continue;
             }
-            swap(B[i],B[pivot]);
+            swap(B[res],B[pivot]);
             for(int j=i+1;j<n;j++){
                 B[i][j] /= B[i][i];
             }
