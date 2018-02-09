@@ -59,7 +59,7 @@ public:
         return X;
     }
     vector<T> operator*(const vector<T>& another){
-        if(this->c != another.size()){
+        if(this->c != (int)another.size()){
             cout << "掛け算失敗(サイズ不一致)" << endl;
             exit(1);
         }
@@ -95,38 +95,39 @@ public:
         }
         return X;
     }
-    int rank(){
-        int n = this->r;
-        int res = 0;
-        mat B(n,n);
-        rep(i,n){
-            rep(j,n){
-                B[i][j] = (*this)[i][j];
-            }
-        }
-        rep(i,n){
-            int pivot = i;
-            for(int j=i;j<n;j++){
-                if(abs(B[j][i]) > abs(B[pivot][i])){
-                    pivot = j;
-                }
-            }
-            if(abs(B[pivot][i]) < EPS){
-                continue;
-            }
-            swap(B[i],B[pivot]);
-            for(int j=i+1;j<n;j++){
-                B[i][j] /= B[i][i];
-            }
-            for(int j=i+1;j<n;j++){
-                for(int k=i+1;k<n;k++){
-                    B[j][k] -= B[j][i] * B[i][k];
-                }
-            }
-            res++;
-        }
-        return res;
-    }
+	int rank(){
+		int n = this->r;
+	    int m = this->c;
+	    int res = 0;
+	    mat B(n,m);
+	    for(int i=0;i<n;i++){
+	        for(int j=0;j<m;j++){
+				B[i][j] = (*this)[i][j];
+			}
+	    }
+	    for(int i=0;i<m;i++){
+	        if(res == n) return res;
+	        int pivot = res;
+	        for(int j=res+1;j<n;j++){
+	            if(abs(B[j][i]) > abs(B[pivot][i])){
+	                pivot = j;
+	            }
+	        }
+	        if(abs(B[pivot][i]) < EPS) continue;
+	        swap(B[pivot],B[res]);
+	        for(int j=m-1;j>=i;j--){
+	            B[res][j] /= B[res][i];
+	        }
+	        for (int j=res+1;j<n;j++){
+	            T temp = B[j][i];
+	            for (int k=i;k<m;k++) {
+	                B[j][k] -= B[res][k] * temp;
+	            }
+	        }
+	        res++;
+	    }
+	    return res;
+	}
     T det(){
         if(this->r != this->c){
             cout << "正方行列でない(行列式定義不可)" << endl;
