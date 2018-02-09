@@ -115,13 +115,12 @@ public:
 	        }
 	        if(abs(B[pivot][i]) < EPS) continue;
 	        swap(B[pivot],B[res]);
-	        for(int j=m-1;j>=i;j--){
+	        for(int j=i+1;j<m;j++){
 	            B[res][j] /= B[res][i];
 	        }
-	        for (int j=res+1;j<n;j++){
-	            T temp = B[j][i];
-	            for (int k=i;k<m;k++) {
-	                B[j][k] -= B[res][k] * temp;
+	        for(int j=res+1;j<n;j++){
+	            for(int k=i+1;k<m;k++){
+	                B[j][k] -= B[res][k]*B[j][i];
 	            }
 	        }
 	        res++;
