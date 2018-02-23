@@ -34,7 +34,7 @@ struct Miller{
             if(modpow(a,d,n) != 1){
               bool ok = true;
               for(ll r=0;r<s;r++){
-                if( modpow(a,d*(1LL << r),n) == n-1){
+                if(modpow(a,d*(1LL << r),n) == n-1){
                   ok = false;
                   break;
                 }
