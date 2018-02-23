@@ -1,3 +1,4 @@
+//lcp(高さ配列)も計算するときはコメントアウトをはずす
 class suffixarray{
 public:
     int sz,index1,index2;
@@ -8,6 +9,7 @@ public:
         sz = (int)s.size();
         rnk.resize(sz+1),tmp.resize(sz+1);
         make_sa();
+        // make_lcp();
     }
     void make_sa(){
         index1 = sz;
@@ -57,16 +59,3 @@ public:
         }
     }
 };
-
-bool contain(suffixarray& S,string& T){
-    int a = 0,b = S.sz;
-    while(b-a>1){
-        int c = (a+b)/2;
-        if(S.recs.compare(S.sa[c],T.length(),T)<0){
-            a = c;
-        }else{
-            b = c;
-        }
-    }
-    return S.recs.compare(S.sa[b],T.length(),T) == 0;
-}
