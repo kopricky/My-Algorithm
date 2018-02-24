@@ -11,7 +11,7 @@ public:
         lower_value(root,k,res);
         return res;
     }
-    //kを超える数の最大インデックス
+    //kを超える数の最小インデックス
     int upper_bound(const T k){ return upper_bound(root,k); }
     //kを超える最小の数
     T upper_value(const T k){
