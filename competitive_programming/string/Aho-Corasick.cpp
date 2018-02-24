@@ -6,14 +6,14 @@ const int NUMC = 26;
 class Trie {
 public:
 	vector<vector<int> > V;
-	int find(string s) {
+	int find(string s){
 		int cur=0;
 		rep(i,s.size()){
             if((cur=V[cur][s[i]+1])==0) return -1;
         }
 		return cur;
 	}
-	void create(vector<string> S) { // 0 is rep backtrack
+	void create(vector<string> S){ // 0 is rep backtrack
 		V.clear();
 		V.push_back(vector<int>(NUMC+1));
 		sort(S.begin(),S.end());
