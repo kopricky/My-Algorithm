@@ -2,8 +2,6 @@
 template <typename T> class RBST {
 public:
     RBST() : root(nullptr) {}
-    //k番目の値の参照を返す
-    T& operator[](int k){ return get(root,k); }
     //k番目に値を挿入
     void insert(int k, T val){
         root = insert(root, k, new node(val));
@@ -15,6 +13,8 @@ public:
         p->left = p->right = nullptr;
         delete p;
     }
+    //k番目の値の参照を返す
+    T& operator[](int k){ return get(root,k); }
     void print(){
         int sz = size(root);
         rep(i,sz) cout << (*this)[i] << " ";
@@ -25,6 +25,7 @@ private:
         T val;
         node *left, *right;
         int st_size;   // 部分木のサイズ
+        node(){}
         node(T v) : val(v), left(nullptr), right(nullptr), st_size(1){}
         ~node() { delete left; delete right; }
     };
@@ -44,7 +45,6 @@ private:
     }
     node* merge(node* l, node* r){
         if (!l || !r) return (!l) ? r : l;
-        update(l); update(r);
         if(rnd() % (size(l) + size(r)) < (unsigned)size(l)){
             l->right = merge(l->right, r);
             return update(l);
@@ -55,7 +55,6 @@ private:
     }
     pnn split(node* t, int k){   //木のサイズが(k,n-k)となるように分割する
         if(!t) return pnn(nullptr, nullptr);
-        update(t);
         if(k <= size(t->left)){
             pnn s = split(t->left, k);
             t->left = s.second;
