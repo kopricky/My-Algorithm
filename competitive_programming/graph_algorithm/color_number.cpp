@@ -1,8 +1,10 @@
-class color_number {
+//最小クリーク被覆は補グラフの彩色数を考える
+class ColorNumber {
 public:
     int V;
     vi adj,I;
-    color_number(int node_size){
+    const static int MOD = 1000000007;
+    ColorNumber(int node_size){
         V = node_size;
         adj.resize(V,0);
         rep(i,V){
