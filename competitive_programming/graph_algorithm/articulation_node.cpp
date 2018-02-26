@@ -1,19 +1,14 @@
-//頂点数がMAX_N
-//Articulation at(MAX_N);
-//at.artに関節点が入る
-typedef pair<int,int>P;
-
 class Articulation {
 public:
-	vector<vector<int> > G;
+	vector<vector<int> > G, graph;
 	vector<int> ord;	//訪問時間
 	vector<int> low; //low[u]はuから高々1個の後退辺を通ってたどりつけるノードのordの最小値
 	vector<bool> visit; //訪問したかどうかのフラグ
-	vector<bool> art;	//関節点かどうかの判定
+	vector<bool> art; //関節点かどうかの判定
 	int V;
 	Articulation(int node_size){
 		V = node_size;
-		G.resize(node_size),art.resize(node_size.false);
+		G.resize(node_size),art.resize(node_size,false);
 		ord.resize(node_size),low.resize(node_size),visit.resize(node_size,false);
 	}
 	void add_edge(int a,int b){
@@ -23,16 +18,16 @@ public:
 		visit[v] = true;
 		ord[v] = low[v] = k++;
 		int ct = 0;	//ノードvの次数
-		for(int i=0;i<(int)G[v].size();i++){
-			if(!visit[G[v][i]]){
+		for(int w : G[v]){
+			if(!visit[w]){
 				ct++;
-				dfs(G[v][i],v,k);
-				low[v] = min(low[v],low[G[v][i]]);	//子のノードのlowと比較する
-				if(p >= 0 && ord[v] <= low[G[v][i]]){
+				dfs(w,v,k);
+				low[v] = min(low[v],low[w]);	//子のノードのlowと比較する
+				if(p >= 0 && ord[v] <= low[w]){
 					art[v] = true;
 				}
-			}else if(G[v][i] != p && ord[G[v][i]] < low[v]){
-				low[v] = ord[G[v][i]];
+			}else if(w != p && ord[w] < low[v]){
+				low[v] = ord[w];
 			}
 		}
 		if(p == -1 && ct > 1){
@@ -40,14 +35,11 @@ public:
 		}
 	}
 	void solve(){
-		for(int i=0;i<node_size;i++){
+		rep(i,V){
 			int k = 0;
 			if(!visit[i]){
 				dfs(i, -1, k);
 			}
 		}
-	}
-	bool isarticulation(int node_id){
-		return art[node_id];
 	}
 };
