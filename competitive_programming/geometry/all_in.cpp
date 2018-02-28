@@ -1,14 +1,25 @@
-#define EPS 1e-12
+#define EPS 1e-10
 #define rep(i,n) for(int i=0;i<(int)(n);++i)
 
 typedef complex<double> C;
 
 const double PI = 4*atan(1.0);
 
+bool eq(double a,double b)
+{
+  return (-EPS<a-b&&a-b<EPS);
+}
+
 namespace std
 {
-    bool operator < (const C a, const C b) {
-        return a.real() != b.real() ? a.real() < b.real() : a.imag() < b.imag();
+    bool operator<(const C a, const C b){
+        return abs(a.real()-b.real())>EPS ? a.real()<b.real()-EPS : a.imag()<b.imag()-EPS;
+    }
+    bool operator==(const C a, const C b){
+        return (eq(a.real(),b.real()) && eq(a.imag(),b.imag()));
+    }
+    bool operator!=(const C a, const C b){
+        return !(a == b);
     }
 }
 
@@ -19,16 +30,6 @@ struct L : public vector<C>
         push_back(a); push_back(b);
     }
 };
-
-bool eq(double a,double b)
-{
-  return (-EPS<a-b&&a-b<EPS);
-}
-
-bool eq(C c1,C c2)
-{
-  return (eq(c1.real(),c2.real()) && eq(c1.imag(),c2.imag()));
-}
 
 //条件付きsqrt
 double Sqrt(double x)
@@ -138,7 +139,7 @@ vector<C> crosspointCS(C c1,double r1,const L& s)
     vector<C> tmp=crosspointCL(c1,r1,s);
     vector<C> res;
     rep(i,tmp.size()){
-        if(eq(abs(s[1]-s[0]),abs(s[0]-tmp[i])+abs(s[1]-tmp[i]))){
+        if(abs(s[1]-s[0]) == abs(s[0]-tmp[i])+abs(s[1]-tmp[i])){
             res.push_back(tmp[i]);
         }
     }
@@ -186,7 +187,7 @@ double distanceSS(const L &s, const L &t)
     if (intersectSS(s, t)) return 0;
     return min(min(distanceSP(s, t[0]), distanceSP(s, t[1])),min(distanceSP(t, s[0]), distanceSP(t, s[1])));
 }
-//円と多角形の共通部分の面積
+
 double getarea(C c1,double r1,C a,C b)
 {
     C va=c1-a,vb=c1-b;
@@ -202,6 +203,7 @@ double getarea(C c1,double r1,C a,C b)
     }
     return res;
 }
+//円と多角形の共通部分の面積
 double getcrossarea(const vector<C>& t,C c1,double r1)
 {
     int n = (int)t.size();
@@ -331,7 +333,6 @@ bool compyx(C c1,C c2)
     return c1.imag() != c2.imag() ? c1.imag() < c2.imag() : c1.real() < c2.real();
 }
 
-//最近点対を求める
 double closest_pair(C* a, int n)
 {
     if(n<=1) return 1e100;
@@ -351,6 +352,7 @@ double closest_pair(C* a, int n)
     }
     return d;
 }
+//最近点対を求める
 double compute_shortest(C* a,int n)
 {
     sort(a,a+n);
@@ -379,7 +381,7 @@ vector<L> gettangentCP(C c1,double r1,C p){
     C s=gettangentCP_(c1,r1,p,1);
     C t=gettangentCP_(c1,r1,p,-1);
     //点が円の周上にある場合
-    if(eq(s,t)){
+    if(s == t){
         res.push_back(L(s,s+(c1-p)*C(0,1)));
     }else{
         res.push_back(L(p,s));
