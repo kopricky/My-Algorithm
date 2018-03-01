@@ -3,36 +3,39 @@
 //適宜add_edge(２つの集合間のedgeのみaddする)
 //BM.solve()で最大マッチングの数を計算
 class BM {
-public:
-    struct edge{
+private:
+    struct edge {
         int to,cap,rev;
     };
     vector<vector<edge> > G;
     vector<int> level;
     vector<int> iter;
-    int u,v;
-    BM(int U,int V){
-        u = U,v = V;
-        G.resize(u+v+2);
-        level.resize(u+v+2);
-        iter.resize(u+v+2);
+    int U,V;
+
+public:
+    BM(int u,int v) {
+        U = u,V = v;
+        G.resize(U+V+2);
         rep(i,u){
             init_edge(0,i+1);
         }
         rep(i,v){
-            init_edge(u+i+1,u+v+1);
+            init_edge(U+i+1,U+V+1);
         }
     }
-    void init_edge(int from,int to){
+
+    void init_edge(int from,int to) {
         G[from].push_back((edge){to,1,(int)G[to].size()});
     	G[to].push_back((edge){from,0,(int)G[from].size()-1});
     }
-    void add_edge(int from,int to){
-        from += 1,to += u+1;
+
+    void add_edge(int from,int to) {
+        from += 1,to += U+1;
     	G[from].push_back((edge){to,1,(int)G[to].size()});
     	G[to].push_back((edge){from,0,(int)G[from].size()-1});
     }
-    void bfs(int s){
+
+    void bfs(int s) {
         fill(level.begin(),level.end(),-1);
     	queue<int> que;
     	level[s] = 0;
@@ -40,7 +43,7 @@ public:
     	while(!que.empty()){
     		int v = que.front();
     		que.pop();
-    		rep(i,G[v].size()){
+    		rep(i,(int)G[v].size()){
     			edge &e = G[v][i];
     			if(e.cap > 0 && level[e.to] < 0){
     				level[e.to] = level[v] + 1;
@@ -49,7 +52,8 @@ public:
     		}
     	}
     }
-    int dfs(int v,int t,int f){
+
+    int dfs(int v,int t,int f) {
     	if(v==t){
     		return f;
     	}
@@ -66,9 +70,12 @@ public:
     	}
     	return 0;
     }
-    int solve(){
+
+    int solve() {
+        level.resize(U+V+2);
+        iter.resize(U+V+2);
     	int flow = 0;
-        int s=0,t=u+v+1;
+        int s=0,t=U+V+1;
     	for(;;){
     		bfs(s);
     		if(level[t]<0){
@@ -76,7 +83,7 @@ public:
     		}
             fill(iter.begin(),iter.end(),0);
     		int f;
-    		while((f=dfs(s,t,INF)) > 0){
+    		while((f=dfs(s,t,numeric_limits<int>::max())) > 0){
     			flow += f;
     		}
     	}
