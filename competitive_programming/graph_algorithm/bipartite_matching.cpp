@@ -1,7 +1,7 @@
 //二部グラフの頂点数がそれぞれn,m
 //BM bm(n,m);
 //適宜add_edge(２つの集合間のedgeのみaddする)
-//BM.comp()で最大マッチングの数を計算
+//BM.solve()で最大マッチングの数を計算
 class BM {
 public:
     struct edge{
@@ -29,7 +29,7 @@ public:
     }
     void add_edge(int from,int to){
         from += 1,to += u+1;
-    	G[from].push_back((edge){to,INF,(int)G[to].size()});
+    	G[from].push_back((edge){to,1,(int)G[to].size()});
     	G[to].push_back((edge){from,0,(int)G[from].size()-1});
     }
     void bfs(int s){
