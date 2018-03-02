@@ -1,4 +1,4 @@
-//verifyしてません
+//verifyしてません(合ってそうですが...)
 const int POOL_SIZE = 20000000;
 //~番目は0_indexed
 template <typename T> class RBST {

@@ -1,3 +1,4 @@
+//永続配列
 const int CH_SIZE = 8;
 const int LOG_CH = 3;
 

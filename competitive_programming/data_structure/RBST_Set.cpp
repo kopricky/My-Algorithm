@@ -1,4 +1,3 @@
-//verifyしてません
 //~番目は0_indexed
 template <typename T> class RBST {
 public:

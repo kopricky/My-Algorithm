@@ -1,5 +1,5 @@
 //すべての頂点の出次数が1のグラフ(自己ループはない)
-//ループの番号はすべて負の数
+//ループの番号はすべて負の数(各ループ内の頂点のインデックスはすべて同じ)
 class FunctionalGraph {
 public:
     vector<vector<int> > loop;
