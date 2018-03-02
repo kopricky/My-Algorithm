@@ -1,8 +1,8 @@
 // max c * x s.t. A*x <= b, x >= 0
 class Simplex {
+private:
     using Arr = vector<double>;
     using Mat = vector<vector<double> >;
-private:
     bool LT(double a, double y){
         return y-a > EPS;
     }
@@ -41,10 +41,6 @@ private:
     	a[row+1][column-1] = -1;
     }
 
-public:
-    bool infinity, none;
-    double ans;
-    Arr x;
     void solve(Mat& a){
         for(int E = column-1;;){
     	    if(L < row){
@@ -100,6 +96,10 @@ public:
         }
     	ans = a[row][column];
     }
+public:
+    bool infinity, none;
+    double ans;
+    Arr x;
     Simplex(const Mat& A, const Arr& b, const Arr& c){
         Set(A,b,c);
         solve(a);
