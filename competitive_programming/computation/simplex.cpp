@@ -41,7 +41,7 @@ private:
     	a[row+1][column-1] = -1;
     }
 
-    void solve(Mat& a){
+    void solve(){
         for(int E = column-1;;){
     	    if(L < row){
                 swap(index[E],index[L+column]);
@@ -102,6 +102,6 @@ public:
     Arr x;
     Simplex(const Mat& A, const Arr& b, const Arr& c){
         Set(A,b,c);
-        solve(a);
+        solve();
     }
 };
