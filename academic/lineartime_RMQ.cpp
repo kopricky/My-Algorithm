@@ -1,3 +1,4 @@
+//Harel and Tarjan 1984 Bender and Farach-Colton 2000 を参照
 class RMQ
 {
 private:

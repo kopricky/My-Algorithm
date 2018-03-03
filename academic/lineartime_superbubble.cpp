@@ -1,3 +1,4 @@
+// Brankovic et al. 2015 を参照
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>

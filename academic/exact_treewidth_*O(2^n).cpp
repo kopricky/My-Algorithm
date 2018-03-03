@@ -1,3 +1,4 @@
+//Bodlaender et al. 2006 を参照
 #include<iostream>
 #include<vector>
 #include<algorithm>
