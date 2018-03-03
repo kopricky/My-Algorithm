@@ -1,3 +1,4 @@
+//veryfyしていません(veryfy問題を知らない)
 struct node {
     node* left; node* right; node* par;
     bool rev;
