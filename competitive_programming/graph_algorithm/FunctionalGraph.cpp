@@ -3,7 +3,9 @@
 class FunctionalGraph {
 public:
     vector<vector<int> > loop;
-    vector<int> nx,visit; //stはサイクルから生えた鎖のスタートの頂点
+    vector<int> nx,visit;
+    vector<vector<int> > G;
+    vector<int> st;
     int V;
     FunctionalGraph(int node_size){
         V = node_size;
@@ -40,6 +42,22 @@ public:
                 if((int)vec.size()){
                     loop.push_back(vec);
                 }
+            }
+        }
+        // make_graph();
+    }
+    void make_graph(){
+        G.resize(V);
+        vector<bool> flag(V,false);
+        rep(i,V){
+            if(visit[i] >= 0){
+                G[nx[i]].push_back(i);
+                flag[nx[i]] = (visit[nx[i]] < 0);
+            }
+        }
+        rep(i,V){
+            if(flag[i]){
+                st.push_back(i);
             }
         }
     }
