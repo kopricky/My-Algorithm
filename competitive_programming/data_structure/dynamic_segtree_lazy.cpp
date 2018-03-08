@@ -6,7 +6,7 @@ private:
     	T val, lazy;
         int st_size;
     	node *par, *left, *right;
-    	node() : val(identity), lazy(identity), st_size(0),
+    	node() : val(id2), lazy(id1), st_size(0),
             par(nullptr), left(nullptr), right(nullptr){}
     };
     void opr1(T& arg1,T arg2){
@@ -19,14 +19,15 @@ private:
     static const int MAX_SIZE = 100001;
     static node *root;
     static node pool[POOL_SIZE];
-    static const T identity = 0;
+    static const T id1 = (T)0;
+    static const T id2 = (T)0;
     int nw_size;
     node *alloc(){
         assert(nw_size < POOL_SIZE);
         return (&pool[nw_size++]);
     }
     void eval(node* k, int l, int r){
-        if(k->lazy != 0){
+        if(k->lazy != id1){
             opr1(k->val,k->lazy);
             if(r-l>1){
                 if(k->left){
@@ -36,7 +37,7 @@ private:
                     opr1(k->right->lazy, k->lazy / k->st_size * k->right->st_size);
                 }
             }
-            k->lazy = 0;
+            k->lazy = id1;
         }
     }
 public:
@@ -44,8 +45,8 @@ public:
     //a番目にxを追加
     void insert(int a, T x, node *k = root, int l = 0, int r = MAX_SIZE){
         eval(k, l, r);
-        k->val += x;
         k->st_size++;
+        k->val = opr2(k->val,x);
         if(r - l == 1){
             return;
         }
@@ -67,11 +68,11 @@ public:
         eval(k, l, r);
     	if(b <= l || r <= a) return;
     	if(a <= l && r <= b){
-            k->lazy += k->st_size * x;
+            opr1(k->lazy, k->st_size * x);
     		eval(k, l, r);
     		return;
     	}
-        k->val = 0;
+        k->val = id2;
     	if(k->left){
             range(a, b, x, k->left, l, (l+r)/2);
             opr1(k->val,k->left->val);
@@ -84,12 +85,12 @@ public:
     T query(int a, int b, node *k = root, int l=0, int r = MAX_SIZE){
         eval(k, l, r);
         if(b <= l || r <= a){
-            return identity;
+            return id2;
         }
         if(a <= l && r <= b){
             return k->val;
         }
-        T vl = identity,vr = identity;
+        T vl = id2,vr = id2;
         if(k->left){
             vl = query(a, b, k->left, l, (l+r)/2);
         }
