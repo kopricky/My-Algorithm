@@ -75,11 +75,11 @@ public:
         k->val = id2;
     	if(k->left){
             range(a, b, x, k->left, l, (l+r)/2);
-            opr1(k->val,k->left->val);
+            k->val = opr2(k->val,k->left->val);
     	}
         if(k->right){
             range(a, b, x, k->right, (l+r)/2, r);
-            opr1(k->val,k->right->val);
+            k->val = opr2(k->val,k->right->val);
         }
     }
     T query(int a, int b, node *k = root, int l=0, int r = MAX_SIZE){
