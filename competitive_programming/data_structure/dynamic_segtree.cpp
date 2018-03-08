@@ -1,0 +1,84 @@
+template<typename T> class dynamic_segtree{
+private:
+    struct node {
+    	T val;
+    	node *par, *left, *right;
+    	node() : val(identity), par(nullptr), left(nullptr), right(nullptr){}
+    };
+    void opr1(T& arg1,T arg2){
+        arg1 = arg2;
+    }
+    T opr2(T arg1,T arg2){
+        return min(arg1,arg2);
+    }
+    static const int POOL_SIZE = 4000000;
+    static const int MAX_SIZE = 100001;
+    static node *root;
+    static node pool[POOL_SIZE];
+    static const T identity = numeric_limits<T>::max();
+    int nw_size;
+    node *alloc(){
+        assert(nw_size < POOL_SIZE);
+        return (&pool[nw_size++]);
+    }
+public:
+    dynamic_segtree(){ nw_size = 0; root = alloc(); }
+    void insert(int a, T x, node *k = root, int l = 0, int r = MAX_SIZE){
+        k->val = opr2(k->val,x);
+        if(r - l == 1){
+            return;
+        }
+        if(a < (l + r) / 2){
+            if(!(k->left)){
+                k->left = alloc();
+                k->left->par = k;
+            }
+            insert(a, x, k->left, l, (l+r)/2);
+        }else{
+            if(!(k->right)){
+                k->right = alloc();
+                k->right->par = k;
+            }
+            insert(a, x, k->right, (l+r)/2, r);
+        }
+    }
+    void update(int a, T x, node *k = root, int l = 0, int r = MAX_SIZE){
+        if(r - l == 1){
+            opr1(k->val,x);
+            while(k->par){
+                k = k->par;
+                k->val = identity;
+                if(k->left){
+                    k->val = opr2(k->val,k->left->val);
+                }
+                if(k->right){
+                    k->val = opr2(k->val,k->right->val);
+                }
+            }
+            return;
+        }
+        if(a < (l + r) / 2){
+            update(a, x, k->left, l, (l+r)/2);
+        }else{
+            update(a, x, k->right, (l+r)/2, r);
+        }
+    }
+    T query(int a, int b, node *k = root, int l=0, int r = MAX_SIZE){
+        if(b <= l || r <= a){
+            return identity;
+        }
+        if(a <= l && r <= b){
+            return k->val;
+        }
+        T vl = identity,vr = identity;
+        if(k->left){
+            vl = query(a, b, k->left, l, (l+r)/2);
+        }
+        if(k->right){
+            vr = query(a, b, k->right, (l+r)/2, r);
+        }
+        return opr2(vl, vr);
+    }
+};
+template<typename T> class dynamic_segtree<T>::node* dynamic_segtree<T>::root;
+template<typename T> class dynamic_segtree<T>::node dynamic_segtree<T>::pool[POOL_SIZE];
