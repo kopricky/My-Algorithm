@@ -18,7 +18,6 @@ public:
             }
             table[i+1] = ++j;
         }
-        svec(table);
     }
     void search(const string& text){
         int head = 0, j = 0, tlen = (int)text.size();
