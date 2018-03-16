@@ -1,45 +1,44 @@
-//これはverifyされてません
-
-class hashing
+//非順序木の同型性判定(ハッシュ値を比較)
+class tree_hashing
 {
 private:
-    using pll = pair<long long,long long>;
-    vector<ll> rnum1,rnum2;
-    ll mod1,mod2;
-    int node_size;
+    static vector<ll> rnum[2];
+    static const ll mod[2];
+    int V;
+    vector<vector<int> > G;
 public:
-    hashing(int arg1){
-        node_size = arg1;
-        mod1=1000000007,mod2=1000000009;
+    tree_hashing(int node_size){
+        V = node_size;
+        G.resize(V);
         random_device rnd;
         mt19937 mt(rnd());
-        uniform_int_distribution<> rand1(0,mod1-1),rand2(0,mod2-1);
-        rnum1.resize(node_size),rnum2.resize(node_size);
-        rep(i,node_size){
-            rnum1[i] = rand1(mt),rnum2[i] = rand2(mt);
+        uniform_int_distribution<> rand1(0,mod[0]-1),rand2(0,mod[1]-1);
+        while((int)rnum[0].size() < V){
+            rnum[0].push_back(rand1(mt)), rnum[1].push_back(rand2(mt));
         }
     }
-    void hash_dfs(int u,int p,int k,const ll mod,const vector<ll>& num,vector<ll>& hdp,const vector<int>* g)
+    void add_edge(int a, int b){
+        G[a].push_back(b),G[b].push_back(a);
+    }
+    pair<ll,ll> hash_dfs(int u,int p,int d)
     {
-        if((int)g[u].size() == 1 && g[u][0] >= 0){
-            hdp[u] = 1;
-            return;
-        }
-        ll val = 1;
-        rep(i,g[u].size()){
-            if(g[u][i] != p){
-                hash_dfs(g[u][i],u,k+1,mod,num,hdp,g);
-                val = (val*hdp[g[u][i]]) % mod;
+        ll res[] = {1LL,1LL};
+        for(auto v : G[u]){
+            if(v != p){
+                auto val = hash_dfs(v,u,d+1);
+                res[0] = (res[0] * val.fi) % mod[0];
+                res[1] = (res[1] * val.se) % mod[1];
             }
         }
-        hdp[u] = (val + num[k]) % mod;
-        return;
+        rep(i,2){
+            res[i] = (res[i] + rnum[i][d]) % mod[i];
+        }
+        return make_pair(res[0],res[1]);
     }
-    pll comp_hash(vector<int>* graph,int node)
+    pair<ll,ll> hash(int root=0)
     {
-        vector<ll> vec1(node),vec2(node);
-        hash_dfs(0,-1,0,mod1,rnum1,vec1,graph);
-        hash_dfs(0,-1,0,mod2,rnum2,vec2,graph);
-        return pll(vec1[0],vec2[0]);
+        return hash_dfs(root,-1,0);
     }
 };
+vector<ll> tree_hashing::rnum[2];
+const ll tree_hashing::mod[] = {1000000007LL, 1000000009LL};
