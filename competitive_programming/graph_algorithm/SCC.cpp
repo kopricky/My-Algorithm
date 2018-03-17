@@ -1,65 +1,58 @@
-//頂点数がn
-//SCC sc(n);
-//sc.comp()で強連結成分分解
-//sc.make_graph()で強連結成分分解後のグラフを構築
-
-class SCC {
+class SCC{
 public:
-	vector<vector<int> > G,rG;
-	vector<int> post_order; //帰りがけ順の並び
-	vector<bool> used; //すでに調べたかどうか
-	vector<int> cmp;	//属する強連結成分のトポロジカル順序
-	vector<vector<int> > graph;	//強連結成分分解後のグラフ
-	int V,VV;	//強連結成分分解前後の頂点数
+	vector<vector<int> > G,rG,graph;
+	vector<int> vs,cmp;
+	vector<bool> used;
+	int V,cnt;
 	SCC(int node_size){
 		V = node_size;
-		G.resize(node_size),rG.resize(node_size),used.resize(node_size,false);
-		cmp.resize(node_size);
+		G.resize(V),rG.resize(V);
+		used.resize(V),cmp.resize(V);
 	}
 	void add_edge(int from,int to){
-		G[from].push_back(to), rG[to].push_back(from);
+		G[from].push_back(to);
+		rG[to].push_back(from);
 	}
-	void dfs(int v){
-		used[v] = true;
-		for(int i=0;i<(int)G[v].size();i++){
-			if(!used[G[v][i]]){
-				dfs(G[v][i]);
-			}
-		}
-		post_order.push_back(v);
-	}
-	void rdfs(int v,int k){
-		used[v] = true;
-		cmp[v] = k;
-		for(int i=0;i<(int)rG[v].size();i++){
-			if(!used[rG[v][i]]){
-				rdfs(rG[v][i],k);
-			}
-		}
-	}
-	void solve(){
-		fill(used.begin(),used.end(),0);
-		post_order.clear();
-		for(int v=0;v<V;v++){
+	void dfs(int u){
+		used[u] = true;
+		for(int v : G[u]){
 			if(!used[v]){
 				dfs(v);
 			}
 		}
-		fill(used.begin(),used.end(),0);
-		int k=0;
-		for(int i=(int)post_order.size()-1;i>=0;i--){
-			if(!used[post_order[i]]){
-				rdfs(post_order[i],k++);
+		vs.push_back(u);
+	}
+	void dfs(int u,const int k){
+		used[u] = true;
+		cmp[u] = k;
+		for(int v : rG[u]){
+			if(!used[v]){
+				dfs(v,k);
 			}
 		}
-		VV = k;
+	}
+	int solve(){ //強連結成分の数を返す
+		fill(used.begin(),used.end(),false);
+		rep(i,V){
+			if(!used[i]){
+				dfs(i);
+			}
+		}
+		fill(used.begin(),used.end(),false);
+		cnt = 0;
+		for(int i=V-1;i>=0;i--){
+			if(!used[vs[i]]){
+				dfs(vs[i],cnt++);
+			}
+		}
+		return cnt;
 	}
 	void make_graph(){
-		graph.resize(VV);
+		graph.resize(cnt);
 		rep(i,V){
-			rep(j,G[i].size()){
-				if(cmp[i] != cmp[G[i][j]]){
-					graph[i].push_back(G[i][j]);
+			for(int v : G[i]){
+				if(cmp[i] != cmp[v]){
+					graph[cmp[i]].push_back(cmp[v]);
 				}
 			}
 		}
