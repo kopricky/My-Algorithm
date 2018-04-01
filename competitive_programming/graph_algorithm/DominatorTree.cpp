@@ -47,7 +47,7 @@ public:
             }
         }
     }
-    void make(int root){
+    void build(int root){
         uf.init(V);
         int id = 0;
         dfs(root,-1,id);
