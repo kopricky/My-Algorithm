@@ -1,4 +1,3 @@
-
 template<typename V> class segtree{
 private:
     int n,sz; vector<V> node; vector<int> node_id;
@@ -91,5 +90,9 @@ public:
     }
     int solve(int u,int v){
         return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
+    }
+    int dist(int u,int v){
+        int lca = solve(u,v);
+        return depth[u] + depth[v] - 2*depth[lca];
     }
 };
