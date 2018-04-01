@@ -1,4 +1,3 @@
-//incのサイズ=連結成分の数にはなっていないことに注意(空のinc[i]があるから)
 class UF {
 private:
     int sz;
