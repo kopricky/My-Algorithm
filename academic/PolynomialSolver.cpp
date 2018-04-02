@@ -1,4 +1,5 @@
 //多項式の求根アルゴリズム(Laguerre's method)
+//単根については3次収束と高速であるが,多重根については線形収束であるため速度が遅くなる
 class PolynomialSolver
 {
 private:
