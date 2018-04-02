@@ -1,44 +1,44 @@
+//lcp(高さ配列)も計算するときはコメントアウトをはずす
 class SA_IS
 {
 private:
     using byte = unsigned char;
-    int n;
-    byte mask[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
+    byte mask[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
     #define tget(i) !!(t[(i)>>3]&mask[(i)&7])
     #define tset(i, b) t[(i)>>3]=(b) ? (mask[(i)&7]|t[(i)>>3]) : ((~mask[(i)&7])&t[(i)>>3])
     #define chr(i) (cs==sizeof(int)?((int*)s)[i]:((byte *)s)[i])
     #define isLMS(i) (i>0 && tget(i) && !tget(i-1))
-    void getBuckets(byte *s, int *bkt, int K, int cs, bool end=true){
+    void getBuckets(byte *s, int *bkt, int n, int K, int cs, bool end=true){
         fill(bkt, bkt + K + 1, 0);
         for(int i = 0; i < n; i++){
             bkt[chr(i)]++;
         }
-        rep(int i = 0,tmp = 0; i < K+1; i++){
+        for(int i = 0,tmp = 0; i < K+1; i++){
             tmp += bkt[i];
             bkt[i] = end ? tmp : tmp - bkt[i];
         }
     }
-    void induceSAl(byte *t, byte *s, int *bkt, int K, int cs, bool end=false){
-        getBuckets(s, bkt, K, cs, end);
+    void induceSAl(byte *t, byte *s, int *bkt, int n, int K, int cs){
+        getBuckets(s, bkt, n, K, cs, false);
         for(int i = 0; i < n; i++){
             if(sa[i]>0 && !tget(sa[i]-1)){
                 sa[bkt[chr(sa[i]-1)]++] = sa[i]-1;
             }
         }
     }
-    void induceSAs(byte *t, byte *s, int *bkt, int K, int cs, bool end=true){
-        getBuckets(s, bkt, K, cs, end);
+    void induceSAs(byte *t, byte *s, int *bkt, int n, int K, int cs){
+        getBuckets(s, bkt, n, K, cs, true);
         for(int i = n-1; i >= 0; i--){
             if(sa[i] > 0 && tget(sa[i]-1)){
                 sa[--bkt[chr(sa[i]-1)]] = sa[i]-1;
             }
         }
     }
-    void solve(byte *s, int K=128, int cs=1){
+    void make_sa(byte *s, int n, int K=128, int cs=1){
         byte t[(n >> 3)+1];
-        int bkt[K+1], n1=0, name=0;
-        tset(n-2,0), tset(n-1,1);
-        for(int i = n-3; i >=0; i--){
+        int bkt[K+1], n1 = 0, name = 0;
+        tset(n-2, 0), tset(n-1, 1);
+        for(int i = n - 3; i >=0; i--){
             tset(i, (chr(i)<chr(i+1) || (chr(i)==chr(i+1) && tget(i+1))));
         }
         getBuckets(s, bkt, n, K, cs);
@@ -48,14 +48,14 @@ private:
                 sa[--bkt[chr(i)]] = i;
             }
         }
-        induceSAl(t,s,bkt,K,cs);
-        induceSAs(t,s,bkt,K,cs);
+        induceSAl(t, s, bkt, n, K, cs);
+        induceSAs(t, s, bkt, n, K, cs);
         for(int i = 0; i < n; i++){
             if(isLMS(sa[i])){
                 sa[n1++] = sa[i];
             }
         }
-        fill(sa+n1, sa+n, -1);
+        fill(sa + n1, sa + n, -1);
         for(int i = 0, tmp = -1; i < n1; i++){
             int pos = sa[i], diff = false;
             for(int d = 0; d < n && !diff; d++){
@@ -74,13 +74,13 @@ private:
             }
         }
         if(name < n1){
-            solve(s1, n1, name - 1, sizeof(int));
+            make_sa((byte*)s1, n1, name - 1, sizeof(int));
         }else{
             for(int i = 0; i < n1; i++){
                 sa[s1[i]] = i;
             }
         }
-        getBuckets(s,bkt,n,K,cs);
+        getBuckets(s, bkt, n, K, cs);
         for(int i = 1, j = 0; i < n; i++){
             if(isLMS(i)){
                 s1[j++] = i;
@@ -94,28 +94,46 @@ private:
           int tmp = sa[i];
           sa[i] = -1, sa[--bkt[chr(tmp)]] = tmp;
         }
-        induceSAl(t, SA, s, bkt, n, K, cs);
-        induceSAs(t, SA, s, bkt, n, K, cs);
+        induceSAl(t, s, bkt, n, K, cs);
+        induceSAs(t, s, bkt, n, K, cs);
+    }
+    void make_lcp(){
+        lcp = new int[sz+1];
+        rnk = new int[sz+1];
+        for(int i = 0; i < sz; i++){
+            rnk[sa[i]] = i;
+        }
+        for(int i = 0, h = 0; i < sz; i++){
+            if(rnk[i] < sz - 1){
+                for(int j = sa[rnk[i]+1]; CS[i+h] == CS[j+h]; h++);
+                lcp[rnk[i]] = h;
+                if(h > 0) --h;
+            }
+        }
     }
 public:
-    bool contain(string S, int *sa, const string& T){
-        int a = 0, b = (int)S.length();
+    bool contain(const string& T){
+        int a = 0, b = sz;
         while(b - a > 1){
             int c = (a + b) / 2;
-            if(S.compare(sa[c], T.length(), T) < 0){
+            if(CS.compare(sa[c], T.length(), T) < 0){
                 a = c;
             }else{
                 b = c;
             }
         }
-        return S.compare(sa[b], T.length(), T) == 0;
+        return CS.compare(sa[b], T.length(), T) == 0;
     }
-    byte* s;
-    int* sa;
+    string CS;
+    byte* S;
+    int sz;
+    int *sa, *lcp, *rnk;
     SA_IS(string& arg){
-        n = (int)arg.size();
-        sa = new int[n+1];
-        s = (byte*)arg.c_str();
-        solve(s, n+1);
+        CS = arg;
+        sz = (int)arg.size();
+        sa = new int[sz+1];
+        S = (byte*)arg.c_str();
+        make_sa(S, sz+1);
+        make_lcp();
     }
 };
