@@ -2,9 +2,6 @@
 //ループにハマった(time_limit以上ループした)場合は添字をシャッフルして再度計算を行っている
 // max c * x s.t. A*x <= b, x >= 0
 class Simplex {
-public:
-	typedef vector<double> Arr;
-	typedef vector<Arr> Mat;
 private:
     struct SW {
         clock_t st;
@@ -15,8 +12,8 @@ private:
             return (clock() - st) * 1000 / CLOCKS_PER_SEC;
         }
     };
-    // using Arr = vector<double>;
-    // using Mat = vector<vector<double> >;
+    using Arr = vector<double>;
+    using Mat = vector<vector<double> >;
     bool LT(double a, double y){
         return y-a > EPS;
     }
