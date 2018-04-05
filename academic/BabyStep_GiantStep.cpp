@@ -31,7 +31,7 @@ ll mod_inverse(ll a, ll m)
 }
 
 //g^x ≡ y (mod p) の解xを求める (p^(1/2)logp)
-ll baby_step_giant_step(ll g, ll y, ll p)
+ll BabyStep_GiantStep(ll g, ll y, ll p)
 {
     ll m = floor(sqrt(p));
     map<ll,ll> mp;
