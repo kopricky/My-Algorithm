@@ -1,5 +1,4 @@
-//動作はint型のみ保証
-//long long型の二乗とかが怪しい(int_128とか使ったらいけるかも)
+//long long型の素数判定には__int128を用いる
 const vector<ll> numset = {2,7,61}; // < 4,759,123,141 ≒ 4×10^9
 //const vector<ll> numset = {2,3,5,7,11,13,17}; < 341,550,071,728,321 ≒　3*10^14
 //const vector<ll> numset = {2,3,5,7,11,13,17,19,23,29,31,37}; 2^64までいける
@@ -15,6 +14,18 @@ ll modpow(ll x, ll k, ll m){
     }
     return res;
 }
+// long long型の素数判定の場合
+// ll modpow(__int128 x, ll k, ll m){
+//     __int128 res = 1;
+//     while(k){
+//         if(k & 1){
+//             res = res * x % m;
+//         }
+//         k /= 2;
+//         x = x * x % m;
+//     }
+//     return res;
+// }
 // check if n is prime
 bool check(ll n){
     if(n < 2){
