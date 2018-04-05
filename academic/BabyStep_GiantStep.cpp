@@ -1,3 +1,5 @@
+#define ll long long
+
 ll mod_pow(ll a, ll b, ll m)
 {
     a %= m;
