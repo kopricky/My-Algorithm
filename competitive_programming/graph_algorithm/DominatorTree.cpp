@@ -1,4 +1,5 @@
 //グラフGが連結であることを仮定
+//結果はtreeに格納
 class DominatorTree{
 public:
     struct UF{
