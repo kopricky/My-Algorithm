@@ -64,6 +64,11 @@ double dot(const C a, const C b)
     return real(conj(a)*b);
 }
 
+C rot(C c,double th)
+{
+    return c * C(cos(th),sin(th));
+}
+
 int ccw(C a, C b, C c)
 {
     b -= a; c -= a;
@@ -262,6 +267,21 @@ vector<C> convex_cut(const vector<C>& ps, const L& l)
             Q.push_back(crosspointLL(L(A, B),l));
     }
     return Q;
+}
+//垂直二等分線
+L bisector(C a, C b){
+    C A = (a + b) * C(0.5, 0);
+    return L(A, A + rot(b - a, PI/2));
+}
+//ボロノイ図(正確にはvoronoi_cellを求める)
+//愚直であるため1つのvoronoi_cellを求めるのにかかる計算量がO(n^2)
+vector<C> voronoi(vector<C> poly, vector<C>& p, int s){
+    rep(i,(int)p.size()){
+        if (i != s){
+            poly = convex_cut(poly, bisector(p[s], p[i]));
+        }
+    }
+    return poly;
 }
 //点が多角形に包含されているか(0は含まれない,1は辺上,2は含まれる)
 int contains(const vector<C>& ps, const C p)
