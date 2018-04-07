@@ -63,7 +63,7 @@ double dot(const C a, const C b)
 {
     return real(conj(a)*b);
 }
-
+//回転
 C rot(C c,double th)
 {
     return c * C(cos(th),sin(th));
@@ -120,8 +120,7 @@ C projection(const L& l, const C p)
     double t = dot(p-l[0], l[0]-l[1]) / norm(l[0]-l[1]);
     return l[0] + t*(l[0]-l[1]);
 }
-//crosspointCLに使用する関数(命名が謎です)
-double gettime(C c1,C c2)
+double get(C c1,C c2)
 {
     return (dot(c1,c2) < 0 ? -1.0 : 1.0 ) * abs(c2) / abs(c1);
 }
@@ -135,7 +134,7 @@ vector<C> crosspointCL(C c1,double r1,const L& l)
     base/=length;
     if(r1+EPS<h)    return res;
     double w=Sqrt(r1*r1-h*h);
-    double LL=gettime(normalize(b-a),target-a)-w,RR=LL+w*2.0;
+    double LL=get(normalize(b-a),target-a)-w,RR=LL+w*2.0;
     res.push_back(a+base*LL);
     if(eq(LL,RR))   return res;
     res.push_back(a+base*RR);
