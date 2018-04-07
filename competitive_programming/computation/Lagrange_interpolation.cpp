@@ -76,29 +76,3 @@ ll comp(int deg,ll num,vector<int>& arg,vector<ll>& ret){
     }
     return ans;
 }
-
-int main(){
-    cin.tie(0);
-    ios::sync_with_stdio(false);
-    ll n,k;
-    cin >> n >> k;
-    if(n <= k+1){
-        ll ans = 0;
-        for(int i=1;i<=n;i++){
-            ans = add(ans,mod_pow(i,k));
-        }
-        cout << ans << endl;
-    }else{
-        vector<ll> res(k+2,0);
-        res[0] = 0;
-        for(int i=1;i<=k+1;i++){
-            res[i] = add(res[i-1],mod_pow(i,k));
-        }
-        make();
-        vector<int> arg(k+2);
-        rep(i,k+2){
-            arg[i] = i;
-        }
-        cout << comp(k+1,n,arg,res) << endl;
-    }
-}
