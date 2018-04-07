@@ -51,5 +51,6 @@ ll BabyStep_GiantStep(ll g, ll y, ll p)
             giant = giant * invgm % p;
         }
     }
+    //解なし
     return -1;
 }
