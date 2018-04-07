@@ -1,3 +1,4 @@
+//遅延処理(加算)を備えたmerge可能なheap(大きい方がTop(meldの不等号で変更可))
 template<typename T> class LazyHeap {
 public:
     struct node{
