@@ -2,7 +2,7 @@
 int LPS(const string& s)
 {
     int n = (int)s.size();
-    vector<vector<int> > dp(n+1,vector<int>(n+1,0));
+    vector<vector<int> > dp(n,vector<int>(n,0));
     rep(i,n){
         dp[i][i] = 1;
     }
