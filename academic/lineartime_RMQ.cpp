@@ -30,6 +30,7 @@ public:
 
 void RMQ::build(std::vector<int>& arg1, int arg2=0){
     node_size = (int)arg1.size();
+    //配列の長さが2以上を仮定
     assert(node_size >= 2);
     arr.resize(node_size, 0);
     if(arg2){

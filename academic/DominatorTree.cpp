@@ -1,5 +1,8 @@
-//グラフGが連結であることを仮定
-//結果はtreeに格納
+// sigmaさんのブログを参照
+// http://sigma425.hatenablog.com/entry/2015/12/25/224053
+// グラフGが連結であることを仮定
+// 結果はtreeに格納
+// Lengauer, Tarjan 1979
 class DominatorTree{
 public:
     struct UF{
