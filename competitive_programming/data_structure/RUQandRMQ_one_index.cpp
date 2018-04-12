@@ -10,7 +10,7 @@ public:
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1),node_id.resize(2*n-1);
+        node.resize(2*n-1,numeric_limits<V>::max()),node_id.resize(2*n-1);
         rep(i,sz){
             node[i+n-1] = v[i];
             node_id[i+n-1] = i;
@@ -25,7 +25,7 @@ public:
             }
         }
     }
-    void update(int k,int a){
+    void update(int k,V a){
     	k += n-1;
     	node[k] = a,node_id[k] = k-(n-1);
     	while(k>0){
