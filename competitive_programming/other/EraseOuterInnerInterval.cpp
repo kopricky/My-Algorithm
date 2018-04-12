@@ -1,4 +1,4 @@
-//区間(pair<int,int>)の配列が与えられたときに最内の区間および最外の区間を取り除く(前処理)
+//区間(pair<int,int>)の配列が与えられたときに最内の区間および最外の区間を取り除く(前処理で用いる)
 //外側の区間を削除
 typedef pair<int,int> P;
 vector<P> EraseOuterInterval(vector<P> vec)
