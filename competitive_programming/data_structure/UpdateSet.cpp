@@ -41,8 +41,6 @@ public:
                 rb = max(rb, p.se);
             }
         }
-        if(k){
-            st.insert(ptt(lb,rb));
-        }
+        if(k) st.insert(ptt(lb,rb));
     }
 };
