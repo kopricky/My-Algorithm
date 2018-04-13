@@ -25,7 +25,7 @@ public:
             }
         }
     }
-    void update(int k,int a){
+    void update(int k,V a){
     	k += n-1;
     	node[k] = a,node_id[k] = k-(n-1);
     	while(k>0){
