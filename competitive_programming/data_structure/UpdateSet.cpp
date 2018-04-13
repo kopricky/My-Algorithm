@@ -31,7 +31,7 @@ public:
         if(it != st.begin()){
             --it;
             ptt p = *it;
-            if(p.se > l){
+            if(p.se >= l){
                 st.erase(it);
                 if(!k) st.insert(ptt(p.fi,l));
                 lb = min(lb, p.fi);
