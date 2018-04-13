@@ -4,13 +4,13 @@ int rad[MAX_N];
 void manacher(string& S)
 {
     int np=0,nr=0;
-    while (np < S.size()) {
-        while(np-nr >= 0 && np+nr < S.size() && S[np-nr] == S[np+nr]){
+    while (np < (int)S.size()) {
+        while(np-nr >= 0 && np+nr < (int)S.size() && S[np-nr] == S[np+nr]){
             nr++;
         }
         R[np] = nr;
         int k = 1;
-        while(np-k >= 0 && np+k < S.size() && k+R[np-k] < nr){
+        while(np-k >= 0 && np+k < (int)S.size() && k+R[np-k] < nr){
             R[np+k] = R[np-k];
             k++;
         }

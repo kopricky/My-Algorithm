@@ -10,7 +10,7 @@ public:
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1);
+        node.resize(2*n-1, 0);
         lazy.resize(2*n-1, 0);
         rep(i,sz){
             node[i+n-1] = v[i];

@@ -11,7 +11,7 @@ public:
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1);
+        node.resize(2*n-1,numeric_limits<V>::max());
         node_id.resize(2*n-1);
         lazy.resize(2*n-1, 0);
         lazyFlag.resize(2*n-1,false);

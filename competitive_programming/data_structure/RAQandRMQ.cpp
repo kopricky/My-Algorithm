@@ -5,7 +5,7 @@ public:
     segtree(vector<V>& v){
         sz = (int)v.size(); n = 1;
         while(n < sz) n *= 2;
-        node.resize(2*n-1); lazy.resize(2*n-1, 0);
+        node.resize(2*n-1, numeric_limits<V>::max()); lazy.resize(2*n-1, 0);
         rep(i,sz) node[i+n-1] = v[i];
         for(int i=n-2; i>=0; i--) node[i] = min(node[i*2+1],node[i*2+2]);
     }
