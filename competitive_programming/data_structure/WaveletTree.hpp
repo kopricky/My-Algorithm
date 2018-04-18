@@ -1,7 +1,8 @@
 #include "../header.hpp"
 
-//(注)ビットベクターを用いていない
-//[l,r)のk番目の値などを求める
+//(注)ビットベクターを用いていないので正確にはWaveletTreeではない?
+//というかそもそもrankの実装しか(lcに対応)してない
+//[l,r)のk番目の値などを求める(一次元)
 //計算量は構築O(nlongn),クエリO(logn)
 template<typename T> class WaveletTree {
 public:
@@ -66,6 +67,7 @@ public:
             x[i+sz].second = i+sz;
         }
         sort(x.begin(), x.end());
+        //いわゆる座圧
         rep(i,n){
             d[0][x[i].second] = i;
         }
