@@ -1,10 +1,11 @@
+#include "../header.hpp"
 // きたまさ法を用いてk項間漸化式の第n項を計算する。O(k^2logn)
 // aが係数, xが初期値
 // 第1引数 : A[n] = a[0] * A[n-k] + a[1] * A[n-k+1] + ... + a[k-1] * A[n-1]
 // 第2引数 : A[0] = x[0], A[1] = x[1], ... , A[k-1] = x[k-1]
 
-typedef ll long long
-typedef MOD 1000000007
+#define ll long long
+#define MOD 1000000007
 
 void rec(int k, int n, vector<int>& a, vector<int>& t, vector<int>& c)
 {
