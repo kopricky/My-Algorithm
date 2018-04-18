@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //lcp(高さ配列)も計算するときはコメントアウトをはずす
 class SA_IS
 {
