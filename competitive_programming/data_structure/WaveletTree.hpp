@@ -1,4 +1,4 @@
-//(注)ビットベクターを用いていないので正確にはWaveletTreeではない?
+//(注)ビットベクターを用いていない
 //[l,r)のk番目の値などを求める
 //計算量は構築O(nlongn),クエリO(logn)
 template<typename T> class WaveletTree {
