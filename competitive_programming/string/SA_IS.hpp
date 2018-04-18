@@ -138,4 +138,8 @@ public:
         make_sa(S, sz+1);
         make_lcp();
     }
+    ~SA_IS(){
+        delete[] sa;
+        // delete[] lcp; delete[] rnk;
+    }
 };
