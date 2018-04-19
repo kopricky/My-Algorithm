@@ -1,3 +1,7 @@
+#include "../header.hpp"
+#define EPS 1e-10
+#define MOD 1000000007
+
 template<typename T> class mat : public vector<vector<T> > {
 private:
     int r,c;    //行,列
