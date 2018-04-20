@@ -1,24 +1,20 @@
+#include "../header.hpp"
+
 //頂点数がMAX_N
 //SAT st(MAX_N);
 //st.ok(vec) 充足可能性判定
 //vecには節 aV¬bなら(0,MAX_N+1), ¬bVcなら(MAX_N+1,2)のようにペアをもたせる
 //st.restore(vec) 解構築
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-
 class SAT {
 	using P = pair<int,int>;
 public:
+	int V;	//頂点数
 	vector<vector<int> > G,rG;
 	vector<int> post_order; //帰りがけ順の並び
 	vector<bool> used; //すでに調べたかどうか
 	vector<int> cmp;	//属する強連結成分のトポロジカル順序
-	int V;	//頂点数
 
-	SAT(int node_size){
-		V = node_size;
-		G.resize(2*node_size),rG.resize(2*node_size);
-		used.resize(2*node_size),cmp.resize(2*node_size);
-	}
+	SAT(int node_size) : V(node_size), G(2*V), rG(2*V), used(2*V), cmp(2*V){}
 	void add_edge(int from,int to){
 		G[from].push_back(to);
 		rG[to].push_back(from);

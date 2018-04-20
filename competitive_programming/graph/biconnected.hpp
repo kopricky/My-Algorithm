@@ -1,17 +1,16 @@
+#include "../header.hpp"
+
 class biconnected{
 public:
+	using P = pair<int, int>;
+	int V,kind;
 	vector<vector<int> > G,tree;
+	vector<vector<P> > check;
 	vector<int> ord,low,cmp;
-    vector<vector<P> > check;
 	vector<P> bridge;
 	vector<bool> visit;
-	int V,kind;
-	biconnected(int node_size){
-		V = node_size; kind = 0;
-		G.resize(V);
-		check.resize(V),ord.resize(V),low.resize(V);
-		cmp.resize(V),visit.resize(V,false);
-	}
+	biconnected(int node_size) : V(node_size), kind(0), G(V), check(V), ord(V), low(V)
+									,cmp(V), visit(V, false){}
 	void build(){
 		int id = 0;
 		rep(i,V){
@@ -31,7 +30,7 @@ public:
 				dfs(w,v,k);
 				low[v] = min(low[v],low[w]);
 				if(ord[v] < low[w]){
-				    bridge.pb(P(v,w));
+				    bridge.push_back(P(v,w));
 	                check[v][i].second = 1;
 	                check[w][check[v][i].first].second = 1;
 				}

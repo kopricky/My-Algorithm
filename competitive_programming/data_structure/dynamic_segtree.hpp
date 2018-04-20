@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename T> class dynamic_segtree{
 private:
     struct node {

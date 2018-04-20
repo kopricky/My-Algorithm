@@ -1,16 +1,15 @@
+#include "../header.hpp"
+
 //すべての頂点の出次数が1のグラフ(自己ループはない)
 //ループの番号はすべて負の数(各ループ内の頂点のインデックスはすべて同じ)
 class FunctionalGraph {
 public:
-    vector<vector<int> > loop;
+    int V;
     vector<int> nx,visit;
+    vector<vector<int> > loop;
     vector<vector<int> > G;
     vector<int> st;
-    int V;
-    FunctionalGraph(int node_size){
-        V = node_size;
-        nx.resize(V,0),visit.resize(V,0);
-    }
+    FunctionalGraph(int node_size)  : V(node_size), nx(V, 0), visit(V, 0){}
     void add_edge(int u,int v){
         nx[u] = v;
     }

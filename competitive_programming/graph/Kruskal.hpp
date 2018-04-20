@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //最小全域木のコストが頂点数がn,枝数がm
 //Krusukal<int> kr(n,m);
 //適宜add_edge
@@ -26,12 +28,8 @@ public:
 		}
 	};
 	vector<edge> es;
-	vector<int> par,rrank;
 	int V;
-    Kruskal(int node_size){
-        V = node_size;
-		par.resize(node_size), rrank.resize(node_size);
-	}
+    Kruskal(int node_size) : V(node_size){}
 	void add_edge(int u,int v,T cost){
 		es.push_back((edge){u,v,cost});
 	}
@@ -40,7 +38,7 @@ public:
 		T res = 0;
 		int cnt = 0;
         sort(es.begin(),es.end());
-		rep(i,es.size()){
+		rep(i,(int)es.size()){
 			edge e = es[i];
 			if(!uf.same(e.u,e.v)){
 				uf.unite(e.u,e.v);

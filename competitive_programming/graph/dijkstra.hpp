@@ -1,17 +1,16 @@
+#include "../header.hpp"
+
 //有向グラフの場合は要変更
 template<typename T> class Dijkstra {
 public:
 	struct edge{
 		int to; T cost;
 	};
+	int V;
 	vector<vector<edge> > G;
 	vector<T> d;
-	int V;
 	using pti = pair<T,int>;
-	Dijkstra(int node_size){
-		V = node_size;
-		G.resize(V),d.resize(V,numeric_limits<T>::max());
-	}
+	Dijkstra(int node_size) : V(node_size), G(V), d(V, numeric_limits<T>::max()){}
 	//無向グラフの場合
 	void add_edge(int u,int v,T cost){
 		G[u].push_back((edge){v,cost}),G[v].push_back((edge){u,cost});

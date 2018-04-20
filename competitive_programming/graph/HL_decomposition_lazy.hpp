@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 struct HLdecomposition{
     using P = pair<int,int>;
     struct Centroid{
@@ -97,8 +99,8 @@ struct HLdecomposition{
         tie(pathidA, pathdepthA) = info(a);
         tie(pathidB, pathdepthB) = info(b);
         while(pathidA != pathidB) {
+            func(index[pathidA], index[pathidA] + pathdepthA + 1);
             if(centroids[pathidA].depth > centroids[pathidB].depth) {
-                func(index[pathidA], index[pathidA] + pathdepthA + 1);
                 tie(pathidA, pathdepthA) = centroids[pathidA].Up();
             }else{
                 func(index[pathidB], index[pathidB] + pathdepthB + 1);
@@ -108,84 +110,5 @@ struct HLdecomposition{
         if(pathdepthA > pathdepthB) swap(pathdepthA, pathdepthB);
         func(index[pathidA] + pathdepthA, index[pathidA] + pathdepthB + 1);
     }
-    HLdecomposition(int SZ)
-    {
-        G.resize(SZ);
-        stsize.assign(SZ, -1);
-        nxpath.resize(SZ);
-        pathorder.resize(SZ);
-        pathid.resize(SZ);
-    }
-};
-
-
-template<typename V> class segtree {
-private:
-    int n,sz;
-    vector<V> node, lazy;
-
-public:
-    segtree(vector<V>& u,vector<V>& v) {
-        sz = (int)v.size();
-        n = 1;
-        while(n < sz){
-            n *= 2;
-        }
-        node.resize(2*n-1);
-        lazy.resize(2*n-1, id2);
-        rep(i,sz){
-            node[i+n-1] = v[i];
-        }
-        for(int i=n-2; i>=0; i--){
-            node[i] = opr1(node[i*2+1],node[i*2+2]);
-        }
-    }
-    V id1,id2;
-    V opr1(V x,V y){}
-    V opr2(V x,V y){}
-    void eval(int k, int l, int r) {
-        if(lazy[k] != id2) {
-            node[k] = opr2(node[k],lazy[k]);
-            if(r - l > 1) {
-                lazy[2*k+1] = opr1(lazy[2*k+1],lazy[k]);
-                lazy[2*k+2] = opr1(lazy[2*k+2],lazy[k]);
-            }
-            lazy[k] = id2;
-        }
-    }
-    void range(int a, int b, V x, int k=0, int l=0, int r=-1) {
-        if(r < 0) r = n;
-        eval(k, l, r);
-        if(b <= l || r <= a){
-            return;
-        }
-        if(a <= l && r <= b) {
-            lazy[k] = opr1(lazy[k],x);
-            eval(k, l, r);
-        }else{
-            range(a, b, x, 2*k+1, l, (l+r)/2);
-            range(a, b, x, 2*k+2, (l+r)/2, r);
-            node[k] = opr1(node[2*k+1],node[2*k+2]);
-        }
-    }
-    V query(int a, int b, int k=0, int l=0, int r=-1) {
-        if(r < 0) r = n;
-        eval(k, l, r);
-        if(b <= l || r <= a){
-            return id1;
-        }
-        if(a <= l && r <= b){
-            return node[k];
-        }
-        V vl = query(a, b, 2*k+1, l, (l+r)/2);
-        V vr = query(a, b, 2*k+2, (l+r)/2, r);
-        return opr1(vl,vr);
-    }
-    void print()
-    {
-        rep(i,sz){
-            cout << query(i,i+1) << " ";
-        }
-        cout << endl;
-    }
+    HLdecomposition(int V) : G(V), stsize(V, -1), nxpath(V), pathorder(V), pathid(V){}
 };

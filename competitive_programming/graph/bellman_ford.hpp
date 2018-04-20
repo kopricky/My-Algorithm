@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //頂点数がn,枝数がm
 //bellman_ford bf(n,m);
 //適宜add_edge
@@ -10,14 +12,10 @@ public:
 		int from,to;
 		T cost;
 	};
+	int V,E;
 	vector<int> d;
 	vector<edge> es;
-	int edge_id;
-	int V,E;
-	bellman_ford(int node_size){
-		edge_id = 0, V = node_size;
-		d.resize(node_size,numeric_limits<T>::max());
-	}
+	bellman_ford(int node_size) : V(node_size), d(V, numeric_limits<T>::max()){}
 	void add_edge(int from,int to,T cost){
 		es.push_back((edge){from,to,cost});
 	}

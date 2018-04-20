@@ -1,14 +1,14 @@
+#include "../header.hpp"
+
+//木の重心を求める
 class centroid
 {
 private:
+    int V;
     vector<vector<int> > G;
     vector<int> sz;
-    int V;
 public:
-    centroid(int node_size){
-        V = node_size;
-        G.resize(V),sz.resize(V,0);
-    }
+    centroid(int node_size) : V(node_size), G(V), sz(V, 0){}
     void add_edge(int u,int v){
         G[u].push_back(v),G[v].push_back(u);
     }

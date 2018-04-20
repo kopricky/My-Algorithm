@@ -1,16 +1,14 @@
+#include "../header.hpp"
+
 class Articulation {
 public:
-	vector<vector<int> > G, graph;
+	int V;
+	vector<vector<int> > G;
 	vector<int> ord;	//訪問時間
 	vector<int> low; //low[u]はuから高々1個の後退辺を通ってたどりつけるノードのordの最小値
 	vector<bool> visit; //訪問したかどうかのフラグ
 	vector<bool> art; //関節点かどうかの判定
-	int V;
-	Articulation(int node_size){
-		V = node_size;
-		G.resize(node_size),art.resize(node_size,false);
-		ord.resize(node_size),low.resize(node_size),visit.resize(node_size,false);
-	}
+	Articulation(int node_size) : V(node_size), G(V), ord(V), low(V), visit(V, false), art(V, false){}
 	void add_edge(int a,int b){
 		G[a].push_back(b),G[b].push_back(a);
 	}

@@ -7,10 +7,10 @@
 #define all(v) (v).begin(),(v).end()
 
 //座標の型, 値の型
-template<typename CandType, typename ValueType> class RangeTree
+template<typename CandidateType, typename ValueType> class RangeTree
 {
 private:
-    using CT = CandType;
+    using CT = CandidateType;
     using VT = ValueType;
     using pcc = pair<CT, CT>;
     using pci = pair<CT, int>;

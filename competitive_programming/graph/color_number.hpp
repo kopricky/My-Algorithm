@@ -1,17 +1,14 @@
+#include "../header.hpp"
+
 //彩色多項式の値を包除原理で計算
 //最小クリーク被覆は補グラフの彩色数を考える
 class ColorNumber {
 public:
     int V;
-    vi adj,I;
+    vector<int> adj,I;
     const static int MOD = 1000000007;
-    ColorNumber(int node_size){
-        V = node_size;
-        adj.resize(V,0);
-        rep(i,V){
-            adj[i] = (1 << i);
-        }
-        I.resize((1 << V),0);
+    ColorNumber(int node_size) : V(node_size), adj(V), I((1 << V), 0){
+        rep(i,V) adj[i] = (1 << i);
     }
     void add_edge(int u, int v){
         adj[u] |= (1 << v),adj[v] |= (1 << u);

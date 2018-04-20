@@ -1,14 +1,19 @@
+#include "../header.hpp"
+
 // insert→build→solveでansに全クエリに対する結果が格納
 // 以下は区間内の数の種類数についてのクエリが飛んでくる場合
 // 別の場合はadd,del,solveをいじる
 
+
 //現在の状態および値
+const int MAX_VAL = 30000;
+int a[MAX_VAL]; //要素
 int cnt[MAX_VAL]; //区間内のiの個数
 int res;        //区間内の種類の数
 
 struct Mo{
     vector<int> left,right,order,ans; vector<bool> v; int width,nl,nr,ptr,sz;
-    Mo(int n) : v(n,false), width((int) sqrt(n)), nl(0), nr(0), ptr(0){}
+    Mo(int n) : v(n,false), width((int)sqrt(n)), nl(0), nr(0), ptr(0){}
     void insert(int l, int r){ left.push_back(l); right.push_back(r); }   //クエリ[l,r)
     void build(){
         sz = (int)left.size();

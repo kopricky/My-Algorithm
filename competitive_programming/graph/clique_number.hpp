@@ -1,6 +1,9 @@
+#include "../header.hpp"
+
 //最大独立集合のサイズは補グラフのクリーク数を考える
 //最小頂点被覆は(頂点数)-(最大独立集合のサイズ)
 //kazumaさんの実装を参照(自分の実装より速度がだいぶ速い)
+//なお電通大の富田さんのものがもっと速いです
 class CliqueNumber{
 private:
 	static const int MAX_V = 210;
@@ -45,8 +48,7 @@ private:
 		return 0;
 	}
 public:
-	CliqueNumber(int node_size) {
-		V = node_size; ans = 0;
+	CliqueNumber(int node_size) : V(node_size), ans(0){
 		memset(el, 0, sizeof(int) * MAX_V * (MAX_V / 30 + 1));
 		memset(dp, 0, sizeof(int) * MAX_V);
 	}

@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //行きがけ、通りがけ、帰りがけのすべてを記録
 vector<int> G[MAX_N];
 vector<int> ord;

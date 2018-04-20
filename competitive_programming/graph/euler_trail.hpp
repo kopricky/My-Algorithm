@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //無向グラフ：全ての頂点の次数が偶数
 //有向グラフ：全ての頂点の相対次数が0
 //Hierholzer's Algorithm
@@ -5,15 +7,11 @@
 class EulerPath
 {
 public:
+    int V; bool directed;
     vector<map<int,int> > G;
     vector<int> degree,path;
-    int V; bool directed;
-    EulerPath(int node_size, bool isdirected=false){
-        V = node_size;
-        directed = isdirected;
-        G.resize(V);
-        degree.resize(V,0);
-    }
+    EulerPath(int node_size, bool isdirected=false) :
+            V(node_size), directed(isdirected), G(V), degree(V, 0){}
     void add_edge(int u,int v){
         if(directed){
             G[u][v]++;

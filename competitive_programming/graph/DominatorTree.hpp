@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //グラフGが連結であることを仮定
 //結果はtreeに格納
 class DominatorTree{
@@ -27,14 +29,12 @@ public:
             return label[x];
         }
     };
+    int V;
     vector<vector<int> > G,rG,bucket,tree;
 	vector<int> sdom,et,par,idom,dom;
-    int V; UF uf;
-    DominatorTree(int node_size){
-        V = node_size;
-        G.resize(V),rG.resize(V),bucket.resize(V),tree.resize(V);
-        sdom.resize(V,-1),et.resize(V),idom.resize(V),par.resize(V),dom.resize(V);
-    }
+    UF uf;
+    DominatorTree(int node_size) : V(node_size), G(V), rG(V), bucket(V), tree(V), sdom(V, -1)
+                                    , et(V), par(V), idom(V), dom(V){}
     void add_edge(int u,int v){
         G[u].push_back(v),rG[v].push_back(u);
     }
@@ -82,7 +82,7 @@ public:
 		for(int i=0;i<V;i++){
 			if(i != root){
 				if(i != root){
-					tree[idom[i]].pb(i);
+					tree[idom[i]].push_back(i);
 				}
 			}
 		}

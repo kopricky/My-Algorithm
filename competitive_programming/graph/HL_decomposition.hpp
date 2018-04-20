@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 struct HLdecomposition
 {
     using P = pair<int,int>;
@@ -127,12 +129,5 @@ struct HLdecomposition
         if(pathidA > pathidB) swap(pathidA, pathidB);
         func(pathordA, pathidA, pathidB + 1);
     }
-    HLdecomposition(int SZ)
-    {
-        G.resize(SZ);
-        stsize.assign(SZ, -1);
-        nxpath.resize(SZ);
-        pathorder.resize(SZ);
-        pathid.resize(SZ);
-    }
+    HLdecomposition(int V) : G(V), stsize(V, -1), nxpath(V), pathorder(V), pathid(V){}
 };

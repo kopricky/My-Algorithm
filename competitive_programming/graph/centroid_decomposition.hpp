@@ -1,20 +1,14 @@
+#include "../header.hpp"
+
 class CentroidDecomposition
 {
-public:
+private:
+    int V;
     vector<vector<int> > G;
     vector<bool> used;
     //sz:重心分解後の最大部分木に含まれる頂点の数(自分を含める)
     //par:重心分解後の親の頂点
     vector<int> sz,par;
-    //部分木に含まれる頂点
-    int V;
-    CentroidDecomposition(int node_size){
-        V = node_size;
-        G.resize(V);
-    }
-    void add_edge(int u,int v){
-        G[u].push_back(v),G[v].push_back(u);
-    }
     //部分木のサイズを計算
     void calcSize(int u,int p){
         sz[u] = 1;
@@ -50,8 +44,13 @@ public:
             }
         }
     }
+public:
+    CentroidDecomposition(int node_size) : V(node_size), G(V), used(V, false)
+                                                , sz(V, 0), par(V, -1){}
+    void add_edge(int u,int v){
+        G[u].push_back(v),G[v].push_back(u);
+    }
     void build(){
-        used.resize(V,false),sz.resize(V,0),par.resize(V,-1);
         cdBuild(0,-1);
     }
 };

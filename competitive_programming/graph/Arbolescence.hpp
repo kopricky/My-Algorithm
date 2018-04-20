@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //最小全域有向木(O(mlogn))
 //joisinoさんのブログを参照
 //http://joisino.hatenablog.com/entry/2017/01/11/230141
@@ -6,9 +8,7 @@ private:
     int sz; vector<int> par;
 public:
     UF(){}
-    UF(int node_size){
-        sz = node_size;
-        par.resize(sz);
+    UF(int node_size) : sz(node_size), par(sz){
         iota(par.begin(),par.end(),0);
     }
     int find(int x){
@@ -68,11 +68,7 @@ public:
     vector<int> used, from, from_cost;
     vector<typename LazyHeap<T>::node*> come;
     int V;
-    Arborescence(int node_size){
-        V = node_size;
-        used.resize(V, 0), from.resize(V), from_cost.resize(V);
-        come.resize(V, nullptr);
-    }
+    Arborescence(int node_size):V(node_size),used(V, 0),from(V),from_cost(V),come(V, nullptr){}
     void add_edge(int u, int v, T cost){
         es.push_back((edge){u,v,cost});
     }
