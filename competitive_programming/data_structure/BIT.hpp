@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename V> class BIT {
 private:
 	int n; vector<V> bit;

@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //POOL_SIZE および MAX_SIZE を問題に応じて変更
 //RAQ and RSQ の実装
 template<typename T> class dynamic_segtree{
