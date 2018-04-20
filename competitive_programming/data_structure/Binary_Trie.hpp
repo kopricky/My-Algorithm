@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 class BinaryTrie {
 public:
 	struct Node {
@@ -12,7 +14,7 @@ public:
 	//Trie木にxを加える
 	void add(int x) {
 		Node *curr = root;
-		rrep(i,30){
+		for(int i = 29; i >= 0; i--){
 			int y = x >> i & 1;
 			if (!curr->next[y]) {
 				curr->next[y] = new Node();

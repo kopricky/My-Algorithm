@@ -9,8 +9,8 @@ public:
             }
         }
     }
-    V sum(int i,int j){
         V s = 0;
+        V sum(int i,int j){f
         for(int x=i+1;x>0;x-=x&-x) {
             for(int y=j+1;y>0;y-=y&-y){
                 s += bit[x][y];

@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename V> class segtree{
 private:
     int n,sz; vector<V> node, lazy; vector<bool> lazyFlag;

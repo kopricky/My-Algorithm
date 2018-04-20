@@ -1,67 +1,54 @@
 //領域木(フラクショナルカスケーディングは実装していません)
 //2次元長方形領域の更新およびクエリに答えるデータ構造(例は長方形更新,長方形min)
+//点数がn個の場合
 //時間計算量:構築O(nlog(n)),クエリO(log^2(n))
 //空間計算量:O(nlog(n))
-#include "../header.hpp"
+#include "RUQandRMQ.hpp"
 #define all(v) (v).begin(),(v).end()
-template<typename V> class segtree {
-private:
-    int n,sz; vector<V> node, lazy; vector<bool> lazyFlag;
-public:
-    segtree(){}
-    void init(vector<V>& v){
-        sz = (int)v.size(); n = 1;
-        while(n < sz) n *= 2;
-        node.resize(2*n-1); lazy.resize(2*n-1, 0); lazyFlag.resize(2*n-1,false);
-        rep(i,sz) node[i+n-1] = v[i];
-        for(int i=n-2; i>=0; i--) node[i] = min(node[i*2+1],node[i*2+2]);
-    }
-    void eval(int k, int l, int r) {
-        if(lazyFlag[k]){
-            node[k] = lazy[k];
-            if(r - l > 1) {
-                lazy[k*2+1] = lazy[k*2+2] = lazy[k]; lazyFlag[k*2+1] = lazyFlag[k*2+2] = true;
-            }
-            lazyFlag[k] = false;
-        }
-    }
-    void range(int a, int b, V x, int k=0, int l=0, int r=-1) {
-        if(r < 0) r = n;
-        eval(k, l, r);
-        if(b <= l || r <= a) return;
-        if(a <= l && r <= b){
-            lazy[k] = x; lazyFlag[k] = true; eval(k, l, r);
-        }else{
-            range(a, b, x, 2*k+1, l, (l+r)/2); range(a, b, x, 2*k+2, (l+r)/2, r);
-            node[k] = min(node[2*k+1],node[2*k+2]);
-        }
-    }
-    V query(int a, int b, int k=0, int l=0, int r=-1) {
-        if(r < 0) r = n;
-        eval(k, l, r);
-        if(b <= l || r <= a) return INT_MAX;
-        if(a <= l && r <= b) return node[k];
-        V vl = query(a, b, 2*k+1, l, (l+r)/2), vr = query(a, b, 2*k+2, (l+r)/2, r);
-        return min(vl,vr);
-    }
-    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
-};
 
-template<typename CardType, typename ValueType> class RangeTree
+//座標の型, 値の型
+template<typename CandType, typename ValueType> class RangeTree
 {
-    using CT = CardType;
+private:
+    using CT = CandType;
     using VT = ValueType;
     using pcc = pair<CT, CT>;
     using pci = pair<CT, int>;
-    //
     vector<segtree<VT> > seg;
     //座標, インデックス
     vector<pair<pcc, int> > sorted;
     //x座標
     vector<CT> xs;
     //y座標, インデックス
-    vector<pair<CT, int> > ys;
+    vector<vector<pci> > ys;
     int n, sz;
+    void range(int lxid, int rxid, CT ly, CT ry, const VT x, int k, int l, int r){
+        if(r <= lxid || rxid <= l){
+            return;
+        }
+        if(lxid <= l && r <= rxid){
+            int lyid = lower_bound(all(ys[k]),pci(ly,-1)) - ys[k].begin();
+            int ryid = upper_bound(all(ys[k]),pci(ry,-1)) - ys[k].begin();
+            if(lyid >= ryid) return;
+            seg[k].range(lyid,ryid,x);
+        }else{
+            range(lxid,rxid,ly,ry,x,2*k+1,l,(l+r)/2), range(lxid,rxid,ly,ry,x,2*k+2,(l+r)/2,r);
+        }
+    }
+    VT query(int lxid, int rxid, CT ly, CT ry, int k, int l, int r){
+        if(r <= lxid || rxid <= l){
+            return numeric_limits<VT>::max();
+        }
+        if(lxid <= l && r <= rxid){
+            int lyid = lower_bound(all(ys[k]),pci(ly,-1)) - ys[k].begin();
+            int ryid = upper_bound(all(ys[k]),pci(ry,-1)) - ys[k].begin();
+            if(lyid >= ryid) return numeric_limits<VT>::max();
+            return seg[k].query(lyid,ryid);
+        }else{
+            return min(query(lxid,rxid,ly,ry,2*k+1,l,(l+r)/2), query(lxid,rxid,ly,ry,2*k+2,(l+r)/2,r));
+        }
+    }
+public:
     RangeTree(vector<pcc>& cand, vector<VT>& val){
         sz = (int)cand.size();
         n = 1;
@@ -73,12 +60,12 @@ template<typename CardType, typename ValueType> class RangeTree
             sorted[i] = make_pair(cand[i], i);
         }
         sort(sorted.begin(), sorted.end());
-        xs.resize(sz), ys.resize(n), seg.resize(n);
+        xs.resize(sz), ys.resize(2*n-1), seg.resize(2*n-1);
         rep(i,sz){
             xs[i] = (sorted[i].first).first;
-            ys[i+sz-1] = make_pair((sorted[i].first).second, sorted[i].second);
-            vector<VT> arg = {sorted[i].second};
-            seg[i+sz-1].init(arg);
+            ys[i+n-1] = {pci((sorted[i].first).second, sorted[i].second)};
+            vector<VT> arg = {val[sorted[i].second]};
+            seg[i+n-1].init(arg);
         }
         for(int i=n-2; i>=0; i--){
             ys[i].resize((int)ys[2*i+1].size() + (int)ys[2*i+2].size());
@@ -92,40 +79,18 @@ template<typename CardType, typename ValueType> class RangeTree
             seg[i].init(arg);
         }
     }
-    void range(int lxid, int rxid, CT ly, CT ry, const VT x, int k=0, int l=0, int r=-1){
-        if(r < 0) r = n;
-        if(r <= lxid || rxid <= l){
-            return;
-        }
-        if(lxid <= l && r <= rxid){
-            int lid = lower_bound(all(ys[k]),ly) - ys[k].begin();
-            int rid = upper_bound(all(ys[k]),ry) - ys[k].begin();
-            seg[k].range(lid,rid,x);
-        }else{
-            range(lxid,rxid,ly,ry,2*k+1,l,(l+r)/2), range(lxid,rxid,ly,ry,2*k+2,(l+r)/2,r);
-        }
+    //[lx,rx)×[ly,ry)の長方形領域のクエリに答える
+    void range(CT lx, CT ly, CT rx, CT ry, const VT x){
+        int lxid = lower_bound(all(xs),lx) - xs.begin();
+        int rxid = upper_bound(all(xs),rx) - xs.begin();
+        if(lxid >= rxid) return;
+        return range(lxid,rxid,ly,ry,x,0,0,n);
     }
-    void range(pcc& l, pcc& r){
-        int lxid = lower_bound(all(xs),l.first) - xs.begin();
-        int rxid = upper_bound(all(xs),r.first) - xs.begin();
-        return range(lxid,rxid,l.second,r.second);
-    }
-    VT query(int lxid, int rxid, CT ly, CT ry, const VT x, int k=0, int l=0, int r=-1){
-        if(r < 0) r = n;
-        if(r <= lxid || rxid <= l){
-            return numeric_limits<VT>::max();
-        }
-        if(lxid <= l && r <= rxid){
-            int lid = lower_bound(all(ys[k]),ly) - ys[k].begin();
-            int rid = upper_bound(all(ys[k]),ry) - ys[k].begin();
-            return seg[k].query(lid,rid,x);
-        }else{
-            return min(query(lxid,rxid,ly,ry,2*k+1,l,(l+r)/2), query(lxid,rxid,ly,ry,2*k+2,(l+r)/2,r));
-        }
-    }
-    VT query(pcc& l, pcc& r){
-        int lxid = lower_bound(all(xs),l.first) - xs.begin();
-        int rxid = upper_bound(all(xs),r.first) - xs.begin();
-        return query(lxid,rxid,l.second,r.second);
+    //[lx,rx)×[ly,ry)の長方形領域のクエリに答える
+    VT query(CT lx, CT ly, CT rx, CT ry){
+        int lxid = lower_bound(all(xs),lx) - xs.begin();
+        int rxid = upper_bound(all(xs),rx) - xs.begin();
+        if(lxid >= rxid) return numeric_limits<VT>::max();
+        return query(lxid,rxid,ly,ry,0,0,n);
     }
 };
