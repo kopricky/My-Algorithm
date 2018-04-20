@@ -1,5 +1,7 @@
-// typedef pair<int,int> P;
-// #define all(v) (v).begin(),(v).end()
+//WaveletMatrixを実装するつもりなのでもはや意味なし
+
+#include "../header.hpp"
+#define all(v) (v).begin(),(v).end()
 //長方形領域に含まれる点の報告(更新なし)
 template<typename T> class segtree
 {
@@ -69,7 +71,7 @@ public:
         int lid = lower_bound(all(sorg),l) - sorg.begin();
         int rid = upper_bound(all(sorg),r) - sorg.begin();
         vector<int> ans = query(lid,rid,l.second,r.second);
-        rep(i,len(ans)){
+        rep(i,(int)ans.size()){
             cout << ans[i] << "\n";
         }
     }
