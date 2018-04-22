@@ -1,8 +1,9 @@
 #include "../header.hpp"
 
-//無向グラフ：全ての頂点の次数が偶数
-//有向グラフ：全ての頂点の相対次数が0
+//無向グラフ：奇次数の頂点が0or2個
+//有向グラフ：全ての頂点の相対次数が0or相対次数が1,-1の頂点が1つずつ
 //Hierholzer's Algorithm
+//アルゴリズムは線形だが実装にmapを用いているためlogが余計にかかっている
 
 class EulerPath
 {
@@ -33,8 +34,8 @@ public:
                 }
                 dfs(p);
             }else{
-				it = G[u].erase(it);
-			}
+		it = G[u].erase(it);
+	    }
         }
         path.push_back(u);
     }
