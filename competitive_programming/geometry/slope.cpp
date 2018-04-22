@@ -18,14 +18,17 @@ struct slope{
 struct slope{
     int x,y;
     slope(){}
-    slope(int a,int b) : x(a), y(b){}
+    slope(int a,int b){
+        if(a == 0 && b < 0) b = -b;
+        x = a, y = b;
+    }
     bool operator< (const slope& another) const {
         if((ll)x*another.x > 0){
             return (ll)y*another.x < (ll)x*another.y;
         }else if((ll)x*another.x < 0){
             return (ll)y*another.x > (ll)x*another.y;
         }else{
-            return (another.x != 0 && y < 0) || (x != 0 && another.y > 0);
+            return (x==0)?((y<0)&&(another.x||(another.y>0))):(another.y>0);
         }
     }
 };
