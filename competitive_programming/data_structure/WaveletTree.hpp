@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 //(注)ビットベクターを用いていないので正確にはWaveletTreeではない?
-//というかそもそもrankの実装しか(lcに対応)してない
+//というかそもそもrankの実装(lcに対応)しかしてない
 //[l,r)のk番目の値などを求める(一次元)
 //計算量は構築O(nlongn),クエリO(logn)
 template<typename T> class WaveletTree {
