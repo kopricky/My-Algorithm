@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename V> class segtree{
 private:
     int n,sz;
