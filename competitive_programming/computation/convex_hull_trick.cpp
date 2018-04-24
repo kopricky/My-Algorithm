@@ -7,16 +7,12 @@ public:
     //deqには直線のインデックスを格納
     //dpの初期値はINFづめしている
     vector<int> deq;
-    vector<T> a,b;
-    vector<T> S,dp;
+    vector<T> a,b,dp;
     int n,k;
-    CHT(vector<T> A,vector<T> B,int sz){
-        a = A,b = B;
+    CHT(vector<T>& A,vector<T>& B,int sz){
+        a = A, b = B;
         n = (int)a.size(), k = sz;
-        deq.resize(n),S.resize(n+1,0),dp.resize(n+1,INF);
-        rep(i,n){
-            S[i+1] = S[i] + a[i];
-        }
+        deq.resize(n),dp.resize(n+1,INF);
     }
     T func(int j,int x){
         return a[j]*x+b[j];
@@ -46,7 +42,7 @@ public:
             while(s+1 < t && func(deq[s],i) >= func(deq[s+1],i)){
                 s++;
             }
-            dp[i] = -S[i] + func(deq[s],i);
+            dp[i] = func(deq[s],i);
             //今回の場合はb[i]の値がdp[i]の値に依存するのでb[i]を更新する
             if(i < n){
                 b[i] += dp[i];
