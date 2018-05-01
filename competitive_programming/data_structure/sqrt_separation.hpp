@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename T> class sqrt_tree{
 public:
     vector<T> data, backet;

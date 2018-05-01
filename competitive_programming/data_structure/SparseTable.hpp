@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename T> class SparseTable {
 private:
     vector<int> LogTable;

@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //永続化遅延処理型平衡二分探索木
 //区間コピペ 区間add 区間sum
 const int max_size = 27000000;

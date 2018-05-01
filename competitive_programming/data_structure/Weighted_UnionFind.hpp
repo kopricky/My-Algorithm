@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename T> class Weighted_UnionFind
 {
 public:

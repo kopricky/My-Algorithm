@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //セグ木で持てないくらい大きい範囲の(0,1)の区間更新のクエリに答える
 template<typename T> class UpdateSet
 {

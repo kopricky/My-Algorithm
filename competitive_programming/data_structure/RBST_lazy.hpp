@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //RAQ,RMQの場合
 template <typename T> class RBST {
 public:
@@ -21,8 +23,8 @@ public:
     T opr2(T l, T r) {
     	return l + r;
     }
-    RBST() : root(nullptr), id1(INF), id2(0){}
-    RBST(vector<T>& vec) : root(nullptr), id1(INF), id2(0){
+    RBST() : root(nullptr), id1(numeric_limits<T>::max()), id2(0){}
+    RBST(vector<T>& vec) : root(nullptr), id1(numeric_limits<T>::max()), id2(0){
     	rep(i,len(vec)){
     		insert(i,vec[i]);
     	}

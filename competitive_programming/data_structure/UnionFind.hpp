@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //size無し
 class UF {
 private:

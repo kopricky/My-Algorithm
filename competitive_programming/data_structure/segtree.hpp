@@ -1,15 +1,17 @@
-template<typename V> class segtree{
+#include "../header.hpp"
+
+template<typename T> class segtree{
 private:
     int n,sz;
-    vector<V> node;
+    vector<T> node;
 public:
-    segtree(vector<V>& v){
+    segtree(vector<T>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1);
+        node.resize(2*n-1, numeric_limits<T>::max());
         rep(i,sz){
             node[i+n-1] = v[i];
         }
@@ -17,7 +19,7 @@ public:
             node[i] = min(node[i*2+1],node[i*2+2]);
         }
     }
-    void update(int k,V a){
+    void update(int k,T a){
     	k += n-1;
     	node[k] = a;
     	while(k>0){
@@ -25,16 +27,16 @@ public:
     		node[k] = min(node[2*k+1],node[2*k+2]);
     	}
     }
-    V query(int a,int b,int k=0,int l=0,int r=-1){
+    T query(int a,int b,int k=0,int l=0,int r=-1){
         if(r < 0) r = n;
     	if(r <= a || b <= l){
-    		return numeric_limits<V>::max();
+    		return numeric_limits<T>::max();
     	}
     	if(a <= l && r <= b){
     		return node[k];
     	}else{
-    		V vl = query(a,b,2*k+1,l,(l+r)/2);
-    		V vr = query(a,b,2*k+2,(l+r)/2,r);
+    		T vl = query(a,b,2*k+1,l,(l+r)/2);
+    		T vr = query(a,b,2*k+2,(l+r)/2,r);
     		return min(vl,vr);
     	}
     }

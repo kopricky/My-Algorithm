@@ -1,11 +1,13 @@
-template<class V> class segtree{
+#include "../header.hpp"
+
+template<typename T> class segtree{
 private:
     int n,sz;
-    vector<V> node, lazy;
+    vector<T> node, lazy;
     vector<bool> lazyFlag;
 
 public:
-    segtree(vector<V>& v){
+    segtree(vector<T>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
@@ -31,7 +33,7 @@ public:
             lazyFlag[k] = false;
         }
     }
-    void range(int a, int b, V x, int k=0, int l=0, int r=-1){
+    void range(int a, int b, T x, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
@@ -47,7 +49,7 @@ public:
             node[k] = node[2*k+1] + node[2*k+2];
         }
     }
-    V query(int a, int b, int k=0, int l=0, int r=-1){
+    T query(int a, int b, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
@@ -56,8 +58,8 @@ public:
         if(a <= l && r <= b){
             return node[k];
         }
-        V vl = query(a, b, 2*k+1, l, (l+r)/2);
-        V vr = query(a, b, 2*k+2, (l+r)/2, r);
+        T vl = query(a, b, 2*k+1, l, (l+r)/2);
+        T vr = query(a, b, 2*k+2, (l+r)/2, r);
         return vl + vr;
     }
     void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}

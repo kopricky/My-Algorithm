@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //merge可能なheap(大きい方がTop(meldの不等号で変更可))
 template<typename T> class Heap {
 public:

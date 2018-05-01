@@ -1,16 +1,18 @@
-template<typename V> class segtree{
+#include "../header.hpp"
+
+template<typename T> class segtree{
 private:
     int n,sz;
-    vector<V> node;
+    vector<T> node;
     vector<int> node_id;
 public:
-    segtree(vector<V>& v){
+    segtree(vector<T>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1,numeric_limits<V>::max()),node_id.resize(2*n-1);
+        node.resize(2*n-1,numeric_limits<T>::max()),node_id.resize(2*n-1);
         rep(i,sz){
             node[i+n-1] = v[i];
             node_id[i+n-1] = i;
@@ -25,7 +27,7 @@ public:
             }
         }
     }
-    void update(int k,V a){
+    void update(int k,T a){
     	k += n-1;
     	node[k] = a,node_id[k] = k-(n-1);
     	while(k>0){
@@ -37,22 +39,22 @@ public:
             }
     	}
     }
-    pair<V,int> query(int a,int b,int k=0,int l=0,int r=-1){
+    pair<T, int> query(int a,int b,int k=0,int l=0,int r=-1){
         if(r < 0) r = n;
     	if(r <= a || b <= l){
-    		return pair<V,int>(numeric_limits<V>::max(),-1);
+    		return pair<T, int>(numeric_limits<T>::max(),-1);
     	}
     	if(a <= l && r <= b){
-    		return pair<V,int>(node[k],node_id[k]);
+    		return pair<T, int>(node[k],node_id[k]);
     	}else{
-    		pair<V,int> vl = query(a,b,2*k+1,l,(l+r)/2);
-    		pair<V,int> vr = query(a,b,2*k+2,(l+r)/2,r);
+    		pair<T, int> vl = query(a,b,2*k+1,l,(l+r)/2);
+    		pair<T, int> vr = query(a,b,2*k+2,(l+r)/2,r);
     		return min(vl,vr);
     	}
     }
     void print(){
         rep(i,sz){
-            pair<V,int> p;
+            pair<T, int> p;
             p = query(i,i+1);
             cout << "st[" << i << "]: " << p.fi << " " << p.se << endl;
         }

@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template<typename T> class segtree {
 public:
 	segtree(int n, T e) : E(e), N(1 << (int)log2(n * 2 - 1)) {}
