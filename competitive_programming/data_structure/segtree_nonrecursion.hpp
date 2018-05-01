@@ -32,12 +32,18 @@ public:
         T res2 = numeric_limits<T>::max();
         a += n, b += n;
         while(a != b){
+<<<<<<< HEAD
             if(a % 2) cmn(res1,node[a++]);
             if(b % 2) cmn(res2,node[--b]);
+=======
+            if(a % 2) res1 = min(res1, node[a++]);
+            if(b % 2) res2 = min(res2, node[--b]);
+>>>>>>> 8cfa2946c34828b2e1fbaf48b23124bf9666ea20
             a >>= 1, b>>= 1;
         }
         return min(res1, res2);
     }
+<<<<<<< HEAD
     void print()
     {
         rep(i,sz){
@@ -45,4 +51,7 @@ public:
         }
         cout << endl;
     }
+=======
+    void print(){ rep(i,sz) cout << query(i,i+1) << " "; cout << endl; }
+>>>>>>> 8cfa2946c34828b2e1fbaf48b23124bf9666ea20
 };

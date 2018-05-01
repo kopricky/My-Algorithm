@@ -5,6 +5,7 @@
 #include <map>
 #include <numeric>
 #include <queue>
+#include <deque>
 #include <stack>
 #include <deque>
 #include <cmath>

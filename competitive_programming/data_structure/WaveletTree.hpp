@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 //(注)ビットベクターを用いていないので正確にはWaveletTreeではない?
-//というかそもそもrankの実装しか(lcに対応)してない
+//というかそもそもrankの実装(lcに対応)しかしてない
 //[l,r)のk番目の値などを求める(一次元)
 //計算量は構築O(nlongn),クエリO(logn)
 template<typename T> class WaveletTree {
@@ -77,12 +77,12 @@ public:
     T get(int l, int r, int ord) {
         return x[get(l, r, ord, 0, 0)].first;
     }
-    //[l,r)でcriが小さい方から何番目か(正確にはlower_bound)(返り値は0番目スタート)
-    int find(int l, int r, T cri){
-        return find(l, r, lower_bound(x.begin(), x.end(), P(cri, -1)) - x.begin(), 0, 0);
+    //[l,r)でvalが小さい方から何番目か(正確にはlower_bound)(返り値は0番目スタート)
+    int find(int l, int r, T val){
+        return find(l, r, lower_bound(x.begin(), x.end(), P(val, -1)) - x.begin(), 0, 0);
     }
-    //[l,r)でcriがいくつ含まれるか
-    int count(int l, int r, T cri){
-        return find(l, r, cri+1) - find(l, r, cri);
+    //[l,r)でvalがいくつ含まれるか
+    int count(int l, int r, T val){
+        return find(l, r, val+1) - find(l, r, val);
     }
 };
