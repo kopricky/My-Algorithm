@@ -1,3 +1,5 @@
+#include "header.hpp"
+
 //最小全域有向木(O(mlogn))
 //joisinoさんのブログを参照
 //http://joisino.hatenablog.com/entry/2017/01/11/230141

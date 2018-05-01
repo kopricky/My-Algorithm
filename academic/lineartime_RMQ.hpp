@@ -1,14 +1,17 @@
+#include "header.hpp"
+
 //Harel and Tarjan 1984 Bender and Farach-Colton 2000 を参照
-class RMQ
+template<typename T> class RMQ
 {
 private:
     struct RMQNode
     {
-        int id, val;    //インデックス, 値
+        int id;
+        T val;    //インデックス, 値
         int par, left, right;   //親,　左の子, 右の子
     };
     std::vector<RMQNode> tree;
-    std::vector<int> arr;
+    std::vector<T> arr;
     std::vector<int> euler_tour, depth, diff, visit_id;
     int node_size, root, arr_len, kind;
     std::vector<int> Block_arr, diff_bit;   //各ブロックで深さが最小になるようなインデックス　各ブロックのdiffの情報をビットに詰めたもの
@@ -22,13 +25,14 @@ private:
     void make_Sparse_Table();
     void make_diff_bit();
     void make_Table_Lookup();
-    std::pair<int, int> PM_RMQ(int st, int ed);
+    std::pair<int, T> PM_RMQ(int st, int ed);
 public:
-    void build(std::vector<int>& arg1, int arg2);    //arg2=1のときrange_max_queryを表す
-    int query(int st, int ed);
+    void build(std::vector<T>& arg1, int arg2=0);    //arg2=1のときrange_max_queryを表す
+    T query(int st, int ed);
 };
 
-void RMQ::build(std::vector<int>& arg1, int arg2=0){
+template<typename T>
+void RMQ<T>::build(std::vector<T>& arg1, int arg2){
     node_size = (int)arg1.size();
     //配列の長さが2以上を仮定
     assert(node_size >= 2);
@@ -59,13 +63,14 @@ void RMQ::build(std::vector<int>& arg1, int arg2=0){
     make_Table_Lookup();
 }
 
-void RMQ::make_cartesian_tree()
+template<typename T>
+void RMQ<T>::make_cartesian_tree()
 {
     tree.resize(node_size);
     for(int i = 0; i < node_size; i++){
         tree[i] = (RMQNode){i, arr[i], -1, -1, -1};
     }
-    std::stack<std::pair<int, int> > st;    //インデックス,値
+    std::stack<std::pair<int, T> > st;    //インデックス,値
     st.push(std::make_pair(0,arr[0]));
     root = 0;
     for(int i = 1; i < node_size ; i++){
@@ -79,7 +84,7 @@ void RMQ::make_cartesian_tree()
                 root = i;
                 break;
             }
-            std::pair<int, int> top = st.top();
+            std::pair<int, T> top = st.top();
             if(top.second <= arr[i]){
                 tree[i].par = top.first; //iの親を変更
                 int nd = tree[top.first].right;  //iの親の右下のノード
@@ -98,7 +103,8 @@ void RMQ::make_cartesian_tree()
     }
 }
 
-void RMQ::make_euler_tour(int cur_node, int& id, int cur_depth)
+template<typename T>
+void RMQ<T>::make_euler_tour(int cur_node, int& id, int cur_depth)
 {
     visit_id[cur_node] = id;
     euler_tour[id] = cur_node;
@@ -115,7 +121,8 @@ void RMQ::make_euler_tour(int cur_node, int& id, int cur_depth)
     }
 }
 
-void RMQ::make_Block_arr()
+template<typename T>
+void RMQ<T>::make_Block_arr()
 {
     block_size = ceil(log2(arr_len)/2);
     block_cnt = (arr_len - 1) / block_size + 1;
@@ -123,7 +130,7 @@ void RMQ::make_Block_arr()
     log_block_cnt = ceil(log2(block_cnt)) + 1;
     Block_arr.resize(block_cnt);
     for(int i = 0; i < block_cnt; i++){
-        int mn = INT_MAX;
+        int mn = numeric_limits<int>::max();
         int mn_id = -1;
         for(int j = 0; j < block_size; j++){
             int now_id = i * block_size + j;
@@ -139,7 +146,8 @@ void RMQ::make_Block_arr()
     }
 }
 
-void RMQ::make_Sparse_Table()
+template<typename T>
+void RMQ<T>::make_Sparse_Table()
 {
     Sparse_Table.resize(block_cnt, std::vector<int>(log_block_cnt, -1));
     for(int i = 0; i < block_cnt; i++){
@@ -160,7 +168,8 @@ void RMQ::make_Sparse_Table()
     }
 }
 
-void RMQ::make_diff_bit()
+template<typename T>
+void RMQ<T>::make_diff_bit()
 {
     diff_bit.resize(block_cnt, -1);
     for(int i = 0; i < block_cnt; i++){
@@ -178,7 +187,8 @@ void RMQ::make_diff_bit()
     }
 }
 
-void RMQ::make_Table_Lookup()
+template<typename T>
+void RMQ<T>::make_Table_Lookup()
 {
     Table_Lookup.resize((1 << block_size), std::vector<std::vector<int> >(block_size + 1, std::vector<int>(block_size + 1, 0)));
     //0は減少,1は増加
@@ -205,7 +215,8 @@ void RMQ::make_Table_Lookup()
 }
 
 //インデックスと値のpair
-std::pair<int, int> RMQ::PM_RMQ(int st, int ed)
+template<typename T>
+std::pair<int, T> RMQ<T>::PM_RMQ(int st, int ed)
 {
     int st_block_id = (st == 0)?0:((st - 1) / block_size + 1);  //ブロック区間の開始
     int ed_block_id = ed / block_size - 1;    //ブロック区間の終了
@@ -251,10 +262,11 @@ std::pair<int, int> RMQ::PM_RMQ(int st, int ed)
     }
 }
 
-int RMQ::query(int st, int ed)
+template<typename T>
+T RMQ<T>::query(int st, int ed)
 {
     assert(st < ed);
-    std::pair<int, int> res = PM_RMQ(std::min(visit_id[st], visit_id[ed-1]), std::max(visit_id[st], visit_id[ed-1]));
+    std::pair<int, T> res = PM_RMQ(std::min(visit_id[st], visit_id[ed-1]), std::max(visit_id[st], visit_id[ed-1]));
     if(kind){
         return -res.second;
     }else{

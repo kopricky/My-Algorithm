@@ -1,3 +1,5 @@
+#include "header.hpp"
+
 // sigmaさんのブログを参照
 // http://sigma425.hatenablog.com/entry/2015/12/25/224053
 // グラフGが連結であることを仮定
@@ -85,7 +87,7 @@ public:
 		for(int i=0;i<V;i++){
 			if(i != root){
 				if(i != root){
-					tree[idom[i]].pb(i);
+					tree[idom[i]].push_back(i);
 				}
 			}
 		}

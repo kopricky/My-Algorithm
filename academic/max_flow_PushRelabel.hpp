@@ -1,3 +1,5 @@
+#include "header.hpp"
+
 //実測は速くない
 //ヒューリスティックにより高速化可能
 //O(n^3) Goldberg and Tarjan 1988 を参照(動的木により計算量は改善可能)

@@ -1,4 +1,4 @@
-#define ll long long
+#include "header.hpp"
 
 ll mod_pow(ll a, ll b, ll m)
 {

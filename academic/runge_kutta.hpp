@@ -1,6 +1,4 @@
-#include <iostream>
-#include <array>
-#include <cmath>
+#include "header.hpp"
 
 using namespace std;
 
@@ -61,7 +59,6 @@ int main()
     for(int i = 0; i < sz; i++){
         cin >> input[i];
     }
-    int cnt = 0;
     for(int i = 0; i <= cnt_limit; i++){
         array<double, sz> output;
         cout << input[0] << " " << input[1] << "\n";
