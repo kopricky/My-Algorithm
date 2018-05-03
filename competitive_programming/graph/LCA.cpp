@@ -1,62 +1,51 @@
-template<typename V> class segtree{
+#include "../header.hpp"
+
+template<typename T> class SparseTable {
 private:
-    int n,sz; vector<V> node; vector<int> node_id;
+    vector<T> Arr;
+    vector<int> LogTable;
+    vector<vector<int> > Table; //最小値のインデックスを保持
+    int sz;
 public:
-    void resize(vector<V> v){
-        sz = (int)v.size(); n = 1;
-        while(n < sz) n *= 2;
-        node.resize(2*n-1),node_id.resize(2*n-1);
-        rep(i,sz){
-            node[i+n-1] = v[i];
-            node_id[i+n-1] = i;
+    void resize(vector<T>& v){
+        sz = (int)v.size();
+        Arr = v;
+        LogTable.resize(sz+1);
+        for(int i = 2; i < sz + 1; i++){
+            LogTable[i] = LogTable[i >> 1] + 1;
         }
-        for(int i=n-2; i>=0; i--){
-            if(node[2*i+1] > node[2*i+2]){
-                node[i] = node[2*i+2];
-                node_id[i] = node_id[2*i+2];
-            }else{
-                node[i] = node[2*i+1];
-                node_id[i] = node_id[2*i+1];
+        Table.resize(sz,vector<T>(LogTable[sz]+1));
+        rep(i,sz){
+            Table[i][0] = i;
+        }
+        for(int k = 1; (1 << k) <= sz; k++){
+            for(int i = 0; i + (1 << k) <= sz; i++){
+                int s = Table[i][k-1];
+                int t = Table[i + (1 << (k-1))][k-1];
+                if(Arr[s] < Arr[t]){
+                    Table[i][k] = s;
+                }else{
+                    Table[i][k] = t;
+                }
             }
         }
     }
-    void update(int k,int a){
-    	k += n-1;
-    	node[k] = a,node_id[k] = k-(n-1);
-    	while(k>0){
-    		k = (k-1)/2;
-    		if(node[2*k+1] < node[2*k+2]){
-                node[k] = node[2*k+1],node_id[k] = node_id[2*k+1];
-            }else{
-                node[k] = node[2*k+2],node_id[k] = node_id[2*k+2];
-            }
-    	}
-    }
-    pair<V,int> query(int a,int b,int k=0,int l=0,int r=-1){
-        if(r < 0) r = n;
-    	if(r <= a || b <= l) return pair<V,int>(INT_MAX,-1);
-    	if(a <= l && r <= b){
-    		return pair<V,int>(node[k],node_id[k]);
-    	}else{
-    		pair<V,int> vl = query(a,b,2*k+1,l,(l+r)/2);
-    		pair<V,int> vr = query(a,b,2*k+2,(l+r)/2,r);
-    		return min(vl,vr);
-    	}
-    }
-    void print(){
-        rep(i,sz){
-            pair<V,int> p;
-            p = query(i,i+1);
-            cout << "st[" << i << "]: " << p.fi << " " << p.se << endl;
+    pair<T,int> query(int l,int r){
+        int k = LogTable[r-l];
+        if(Arr[Table[l][k]] < Arr[Table[r-(1<<k)][k]]){
+            return make_pair(Arr[Table[l][k]],Table[l][k]);
+        }else{
+            return make_pair(Arr[Table[r-(1<<k)][k]],Table[r-(1<<k)][k]);
         }
     }
 };
+
 
 class LCA{
 public:
     vector<int> ord,depth,id;
     vector<vector<int> > G;
-    segtree<int> st;
+    SparseTable<int> st;
     int V;
     LCA(int node_size){
         V = node_size;
