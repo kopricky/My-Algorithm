@@ -1,37 +1,39 @@
 #include "../header.hpp"
 
-template<typename T> class sqrt_tree{
+template<typename T> class QuadraticDecomposition{
 public:
     vector<T> data, backet;
-    int sq;
-    sqrt_tree(vector<T> const& v) : data(v){
-        sq = (int)sqrt((int)data.size());
-        backet.resize(((int)data.size() + sq - 1) / sq);
-        rep(i,data.size()){
-            backet[i / sq] += data[i];   //例えば和を持たせる処理
+    int sz,backet_size,backet_cnt;
+    QuadraticDecomposition(vector<T>& v) : data(v){
+        sz = (int)data.size();
+        backet_size = (int)sqrt(sz);
+        backet_cnt = (sz + backet_size - 1) / backet_size;
+        backet.resize(backet_cnt);
+        rep(i,sz){
+            backet[i / backet_size] += data[i];   //例えば和を持たせる処理
         }
     }
-    T sum(int l, int r){    //[l.r)
+    T query(int l, int r){    //[l.r)
         T res = 0;
         // 同じバケット内にある
-        if(l / sq == (r-1) / sq){
+        if(l / backet_size == (r-1) / backet_size){
             for(int i = l; i < r; i++){
                 res += data[i];
             }
         }else{
             // 完全に被っているバケット
-            for(int i = (l + sq - 1) / sq; i < r / sq; i++){
+            for(int i = (l + backet_size - 1) / backet_size; i < r / backet_size; i++){
                 res += backet[i];
             }
             // 中途半端な左側のバケット
-            if(l%sq){
-                for(int i = l; i < sq*(l / sq + 1); i++){
+            if(l % backet_size){
+                for(int i = l; i < backet_size*(l / backet_size + 1); i++){
                     res += data[i];
                 }
             }
             // 中途半端な右側のバケット
-            if(r%sq){
-                for(int i = r - r % sq; i < r; i++){
+            if(r % backet_size){
+                for(int i = r - r % backet_size; i < r; i++){
                     res += data[i];
                 }
             }
