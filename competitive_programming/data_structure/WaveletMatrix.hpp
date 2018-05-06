@@ -1,7 +1,10 @@
 #include "../header.hpp"
 
 // 一部のみverify済み
-// select はガチ実装がやばそうなので実装していない(O(log(n))とかの実装ならmerge_segtreeの方が使い勝手が良い)
+// selectはガチ実装がやばそうなので実装していない(O(log(n))とかの実装ならmerge_segtreeの方が使い勝手が良い)
+// https://code.google.com/p/shellinford/
+// https://www.dropbox.com/sh/9lknvq4xay709cn/AAAX61z5W1m20MPkJ8V53l5ma/%23WaveletMatrix.cpp?dl=0
+// などを参照
 
 #define MAX_BIT 32
 
