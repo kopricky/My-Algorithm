@@ -1,5 +1,4 @@
 #include "../header.hpp"
-#include "segtree.hpp"
 
 //領域木(フラクショナルカスケーディングは実装していません)
 //2次元上の一点更新および長方形領域のクエリに答えるデータ構造
@@ -8,6 +7,49 @@
 //時間計算量:構築O(nlog(n)),クエリO(log^2(n))
 //空間計算量:O(nlog(n))
 //verifyはしていません(verify問題を知らない)
+
+template<typename V> class segtree{
+private:
+    int n,sz;
+    vector<V> node;
+public:
+    void init(vector<V>& v){
+        sz = (int)v.size();
+        n = 1;
+        while(n < sz){
+            n *= 2;
+        }
+        node.resize(2*n-1);
+        rep(i,sz){
+            node[i+n-1] = v[i];
+        }
+        for(int i=n-2; i>=0; i--){
+            node[i] = min(node[i*2+1],node[i*2+2]);
+        }
+    }
+    void update(int k,V a){
+    	k += n-1;
+    	node[k] = a;
+    	while(k>0){
+    		k = (k-1)/2;
+    		node[k] = min(node[2*k+1],node[2*k+2]);
+    	}
+    }
+    V query(int a,int b,int k=0,int l=0,int r=-1){
+        if(r < 0) r = n;
+    	if(r <= a || b <= l){
+    		return numeric_limits<V>::max();
+    	}
+    	if(a <= l && r <= b){
+    		return node[k];
+    	}else{
+    		V vl = query(a,b,2*k+1,l,(l+r)/2);
+    		V vr = query(a,b,2*k+2,(l+r)/2,r);
+    		return min(vl,vr);
+    	}
+    }
+    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
+};
 
 //座標の型, 値の型
 template<typename CandidateType, typename ValueType> class RangeTree
@@ -25,7 +67,7 @@ private:
     //y座標, インデックス
     vector<vector<pci> > ys;
     int n, sz;
-    void update(int xid, CT y, const VT x) {
+    void update_(int xid, CT y, const VT x) {
         xid += n-1;
         int yid = lower_bound(all(y[xid]),pci(y,-1)) - y[xid].begin();
         seg[xid].update(yid,x);
@@ -79,14 +121,14 @@ public:
         }
     }
     //[lx,rx)×[ly,ry)の長方形領域の更新を行う
-    void update(CT x, CT y, const VT val){
+    void update_(CT x, CT y, const VT val){
         int xid = lower_bound(all(xs),x) - xs.begin();
-        return update(xid,y,val,0,0,n);
+        return update(xid,y,val);
     }
     //[lx,rx)×[ly,ry)の長方形領域のクエリに答える
     VT query(CT lx, CT ly, CT rx, CT ry){
         int lxid = lower_bound(all(xs),lx) - xs.begin();
-        int rxid = upper_bound(all(xs),rx) - xs.begin();
+        int rxid = upper_bound(all(xs),rx-1) - xs.begin();
         if(lxid >= rxid) return numeric_limits<VT>::max();
         return query(lxid,rxid,ly,ry,0,0,n);
     }
