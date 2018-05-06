@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+// __int128の入出力
+
 using LL = __int128;
 istream& operator>>(istream& is, LL& v)
 {

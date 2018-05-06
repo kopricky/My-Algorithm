@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+// なもりグラフ(n頂点n辺からなる連結な無向グラフ)を閉路とその他に分ける(前処理)
+
 class Namori{
 public:
     vector<vector<int> > G, graph;

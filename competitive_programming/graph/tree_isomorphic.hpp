@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //非順序木の同型性判定(ハッシュ値を比較)
 class tree_hashing
 {
@@ -26,8 +28,8 @@ public:
         for(auto v : G[u]){
             if(v != p){
                 auto val = hash_dfs(v,u,d+1);
-                res[0] = (res[0] * val.fi) % mod[0];
-                res[1] = (res[1] * val.se) % mod[1];
+                res[0] = (res[0] * val.first) % mod[0];
+                res[1] = (res[1] * val.second) % mod[1];
             }
         }
         rep(i,2){

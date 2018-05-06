@@ -1,9 +1,9 @@
+#include "../header.hpp"
+
 //頂点数がn
 //tsort ts(n);
 //適宜add_edge
 //ts.solve()で可能かを判定し結果がresに入る
-
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
 
 class tsort {
 public:

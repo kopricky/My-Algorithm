@@ -1,3 +1,7 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
 // <expr>   ::= <term> [ ('+'|'-') <term> ]*
 // <term>   ::= <factor> [ ('*'|'/') <factor> ]*
 // <factor> ::= <number> | '(' <expr> ')'
@@ -45,7 +49,7 @@ int factor(int& pos){
 int number(int& pos){
     string res;
     while(isdigit(s[pos])){
-        res.pb(s[pos++]);
+        res.push_back(s[pos++]);
     }
     return stoi(res);
 }

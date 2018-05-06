@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+// 有向グラフを強連結成分分解する(O(n))
+
 class SCC{
 public:
 	vector<vector<int> > G,rG,graph;

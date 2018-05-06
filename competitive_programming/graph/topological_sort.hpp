@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+#define MAX_N 100005
+
 //バグはないけどtopological_sort_queueの方を使った方がいいかも
 vector<int> G[MAX_N];
 int color[MAX_N];
@@ -14,7 +18,7 @@ void visit(int u)
 		return;
 	}
 	color[u] = 0;
-	for(int i=0;i<G[u].size();i++){
+	for(int i=0;i<(int)G[u].size();i++){
 		visit(G[u][i]);
 	}
 	color[u] = 1;

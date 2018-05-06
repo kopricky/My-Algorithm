@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+//接尾辞配列および最長共通接頭辞の配列(lcp)を求める(O(nlog^2(n)))
+//SA_ISの方が速い
 //lcp(高さ配列)も計算するときはコメントアウトをはずす
 class suffixarray{
 public:

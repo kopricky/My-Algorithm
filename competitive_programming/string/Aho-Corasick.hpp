@@ -1,6 +1,8 @@
+#include "../header.hpp"
+
 //kmjpさんの実装を参照
 //文字列がすべて小文字の場合に対応
-const int MAX_N = 100005;
+#define MAX_N 100005
 const int NUMC = 26;
 
 class Trie {
@@ -33,8 +35,8 @@ public:
 	vector<int> acc;
 	int ma;
 	void create(vector<string> S){
-        rep(i,len(S)){
-            rep(j,len(S[i])){
+        rep(i,(int)S.size()){
+            rep(j,(int)S[i].size()){
                 S[i][j] -= 'a';
             }
         }
@@ -57,12 +59,12 @@ public:
 		}
 	}
 	int match(string S){
-        rep(i,len(S)){
+        rep(i,(int)S.size()){
             S[i] -= 'a';
         }
 		int R=0;
 		int cur=0;
-		rep(i,S.size()){
+		rep(i,(int)S.size()){
 			while(cur && t.V[cur][S[i]+1]==0) cur=t.V[cur][0];
 			cur=t.V[cur][S[i]+1];
 			R += acc[cur];

@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //resに文字列Sの中にある検索文字列sのすべての一致箇所の開始位置が入る(0_indexed)
 //table は次にどこから見るか(1_indexed)
 class KMP

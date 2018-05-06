@@ -1,4 +1,6 @@
-//各iについてS と S[i:|S|-1] の最長共通接頭辞の長さをA[i]に記録する
+#include "../header.hpp"
+
+//各iについてS と S[i:|S|-1] の最長共通接頭辞の長さをA[i]に記録する(O(n))
 void z_algorithm(string& S,vector<int>& res)
 {
     int sz = (int)S.size();

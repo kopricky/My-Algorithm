@@ -1,3 +1,8 @@
+#include "../header.hpp"
+
+// "データ構造をマージする一般的なテク"と呼ばれるもの
+// 大きい方に小さい方をmergeすれば全体でO(nlog(n))という話
+
 class UF {
 private:
     int sz;

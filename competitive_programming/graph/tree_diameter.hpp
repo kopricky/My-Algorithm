@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+// 木の直径を求める
+
 class TreeDiameter
 {
 public:

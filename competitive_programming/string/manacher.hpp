@@ -1,5 +1,10 @@
-//iを中心とする最長の回文の半径をR[i]に格納
-int rad[MAX_N];
+#include "../header.hpp"
+
+#define MAX_N 100005
+
+//iを中心とする最長の回文の半径をR[i]に格納(O(n))
+// abaab を $a$b$a$a$b$ みたいにすると偶数長のもの求めることが可能
+int R[MAX_N];
 
 void manacher(string& S)
 {

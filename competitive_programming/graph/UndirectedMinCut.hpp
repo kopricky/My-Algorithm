@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //無向グラフの最小カット(n回max_flowを回すより高速)
 //Nagamochi and Ibaraki 1992 Stoer and Wagner 1997 を参照
 //フィボナッチヒープによる実装を行っていないので計算量はO(n^3)
