@@ -1,10 +1,13 @@
 #include "../header.hpp"
 
-// 一部のみverify済み
-// selectはガチ実装がやばそうなので実装していない(O(log(n))とかの実装ならmerge_segtreeの方が使い勝手が良い)
+// selectは実装をやりたくないので実装していない(愚直なにぶたんだとO(log(n))かかってしまうのでうまくブロック分けすることで高速化)
+// というわけでselectがないので"矩形内の点を報告する"などの操作をフォローしてません
 // https://code.google.com/p/shellinford/
 // https://www.dropbox.com/sh/9lknvq4xay709cn/AAAX61z5W1m20MPkJ8V53l5ma/%23WaveletMatrix.cpp?dl=0
 // などを参照
+// WaveletMatrix は基数ソートのようなことをするのでWaveletTreeとは違い深さがlog(σ)と文字の種類数依存
+// のせるデータがアルファベットなどならWaveletTreeに比べて深さは浅いが, 数字(特にnより大きい数字)をのせると深さが深くなる
+// そのため直交領域内の点の数を返す OrthogonalRegionCount は前もって座圧をおこなっている
 
 #define MAX_BIT 32
 
@@ -57,11 +60,17 @@ private:
     vector<BitRank> B;
     vector<int> pos;
 public:
+    WaveletMatrix(){}
     WaveletMatrix(vector<int>& vec) :
         WaveletMatrix(vec, *max_element(vec.begin(), vec.end()) + 1) {}
     // sigma:文字の種類数
-    WaveletMatrix(vector<int>& vec, int sigma) :
-        height(MAX_BIT - __builtin_clz(sigma-1)), B(height), pos(height) {
+    WaveletMatrix(vector<int>& vec, int sigma){
+        init(vec, sigma);
+    }
+    void init(vector<int>& vec, int sigma){
+        height = MAX_BIT - __builtin_clz(sigma-1);
+        if(sigma == 1) height = 1;
+        B.resize(height), pos.resize(height);
         for(uint i = 0; i < height; i++){
             B[i].resize((int)vec.size());
             for(int j = 0; j < (int)vec.size(); j++) {
@@ -95,7 +104,7 @@ public:
         }
         return i - p;
     }
-    // [l,r]のk(1,2,3...)番目に大きい値を返す
+    // [l,r]のk(1,2,3...)番目に小さい値を返す
     int quantile(int k, int l, int r) {
         int res = 0;
         for(uint i = 0; i < height; i++){
@@ -126,5 +135,41 @@ public:
             int right = rangefreq(pos[x]+B[x].rank1(i-1),pos[x]+B[x].rank1(j)-1,a,b,mid+1,r,x+1);
             return left + right;
         }
+    }
+};
+
+// 2次元領域の数を数えたい場合
+template<typename T> class OrthogonalRegionCount
+{
+private:
+    using ptt = pair<T, T>;
+    vector<T> X, Y;
+    WaveletMatrix wm;
+    int n;
+public:
+    // 座標を引数に渡す
+    OrthogonalRegionCount(vector<ptt> candidate) {
+        int n = (int)candidate.size();
+        sort(candidate.begin(), candidate.end());
+        X.resize(n), Y.resize(n);
+        vector<T> vec(n);
+        rep(i,n){
+            X[i] = candidate[i].first, Y[i] = candidate[i].second;
+        }
+        sort(Y.begin(), Y.end());
+        Y.erase(unique(Y.begin(), Y.end()), Y.end());
+        rep(i,n){
+            vec[i] = lower_bound(Y.begin(), Y.end(), candidate[i].second) - Y.begin();
+        }
+        wm.init(vec, (int)Y.size());
+    }
+    //[lx,rx)×[ly,ry)の長方形領域に含まれる点の数を答える
+    int query(T lx, T ly, T rx, T ry) {
+        int lxid = lower_bound(X.begin(), X.end(), lx) - X.begin();
+        int rxid = upper_bound(X.begin(), X.end(), rx-1) - X.begin();
+        int lyid = lower_bound(Y.begin(), Y.end(), ly) - Y.begin();
+        int ryid = upper_bound(Y.begin(), Y.end(), ry-1) - Y.begin();
+        if(lxid >= rxid || lyid >= ryid) return 0;
+        return wm.rangefreq(lxid, rxid-1, lyid, ryid-1);
     }
 };

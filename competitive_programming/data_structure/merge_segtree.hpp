@@ -4,6 +4,8 @@
 //時間計算量:構築O(nlog(n)),クエリO(log^2(n))
 //空間計算量:O(nlog(n))
 
+#define all(v) (v).begin(),(v).end()
+
 template<typename CandidateType, typename ValueType> class segtree
 {
 private:

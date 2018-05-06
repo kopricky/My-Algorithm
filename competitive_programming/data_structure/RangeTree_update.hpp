@@ -8,6 +8,8 @@
 //空間計算量:O(nlog(n))
 //verifyはしていません(verify問題を知らない)
 
+#define all(v) (v).begin(),(v).end()
+
 template<typename V> class segtree{
 private:
     int n,sz;
@@ -120,7 +122,7 @@ public:
             seg[i].init(arg);
         }
     }
-    //[lx,rx)×[ly,ry)の長方形領域の更新を行う
+    //点(x,y)の更新を行う
     void update_(CT x, CT y, const VT val){
         int xid = lower_bound(all(xs),x) - xs.begin();
         return update(xid,y,val);
