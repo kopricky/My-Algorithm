@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+#define MAX_N 2000
+
 // bit行列の掛け算(推移行列を用いた到達可能性判定などに使える)
 struct mat
 {

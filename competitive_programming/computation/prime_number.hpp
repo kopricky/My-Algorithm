@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+#define MAX_N 100005
+
 vector<int> prime;
 bool is_prime[MAX_N];
 

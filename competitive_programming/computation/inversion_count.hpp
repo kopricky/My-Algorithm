@@ -1,4 +1,4 @@
-#define ll long long
+#include "../header.hpp"
 
 template<typename V> class BIT {
 private:
@@ -17,11 +17,11 @@ pair<vector<int>,vector<int> > zaatu(vector<int>& u,vector<int>& v)
 {
     int n = (int)u.size();
     vector<int> sa = u;
-    sort(all(sa));
+    sort(sa.begin(), sa.end());
     vector<int> nu(n),nv(n);
     rep(i,n){
-        nu[i] = lower_bound(all(sa),u[i]) - sa.begin();
-        nv[i] = lower_bound(all(sa),v[i]) - sa.begin();
+        nu[i] = lower_bound(sa.begin(), sa.end(), u[i]) - sa.begin();
+        nv[i] = lower_bound(sa.begin(), sa.end(), v[i]) - sa.begin();
     }
     return make_pair(nu,nv);
 }
@@ -29,7 +29,7 @@ pair<vector<int>,vector<int> > zaatu(vector<int>& u,vector<int>& v)
 //uをvに変換するのに必要な交換回数(転倒数)
 ll inv_count(vector<int>& u,vector<int>& v)
 {
-    int n = len(u);
+    int n = (int)u.size();
     vector<int> p(n);
     BIT<int> bt(n);
     ll ans = 0;

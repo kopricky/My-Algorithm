@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 vector<ll> dev;
 vector<int> id;
 
@@ -9,13 +11,13 @@ void prime_factor(ll N){
 			N /= i;
 		}
 		if(cnt){
-			dev.pb(i);
-			id.pb(cnt);
+			dev.push_back(i);
+			id.push_back(cnt);
 		}
 	}
 	if(N != 1){
-		dev.pb(N);
-		id.pb(1);
+		dev.push_back(N);
+		id.push_back(1);
 	}
 	return;
 }

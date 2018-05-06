@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 template <typename T>
 void extgcd(T a, T b, T& x, T& y)
 {
@@ -29,6 +31,8 @@ pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
 }
 
 //modどうしが互いに素でないとき
+//modがllの大きい値を扱うときはm1*xを__int128にキャストする
+//(value, mod)
 template <typename T>
 pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
 {

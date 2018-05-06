@@ -1,6 +1,8 @@
+#include "../header.hpp"
+
 //最長共通部分列の長さを求める(O(nlogn))
 
-const int INF = 1000000005;
+#define INF 1000000005
 const int MAX_SIZE = 26;
 
 int LCS(const string& a, const string& b){

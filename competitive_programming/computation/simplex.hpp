@@ -1,3 +1,7 @@
+#include "../header.hpp"
+
+#define EPS 1e-10
+
 // max c * x s.t. A*x <= b, x >= 0
 class Simplex {
 private:

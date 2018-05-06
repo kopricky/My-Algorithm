@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 const double PI = 4.0*atan(1.0);
 
 vector<complex<double> > fft(vector<complex<double> > a,bool rev = false)

@@ -1,3 +1,8 @@
+#include "../header.hpp"
+
+#define MAX_N 100005
+#define MOD 1000000007
+
 //どこかでmake()することを忘れずに
 ll inv[MAX_N],fac[MAX_N],finv[MAX_N];
 
@@ -19,19 +24,4 @@ ll comb(int a,int b)
 		return 0;
 	}
 	return fac[a] * (finv[b] * finv[a-b] % MOD) % MOD;
-}
-
-ll add(ll x,ll y)
-{
-    return (x + y)%MOD;
-}
-
-ll sub(ll x,ll y)
-{
-    return (x+MOD-y)%MOD;
-}
-
-ll mul(ll x,ll y)
-{
-    return x*y%MOD;
 }

@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //長さnのArrayから連続k個の最小値の配列をresに格納
 template <typename T> class SlideMin
 {

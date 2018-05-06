@@ -1,4 +1,7 @@
-ll gcd(ll a,ll b)
+#include "../header.hpp"
+
+template<typename T>
+T gcd(T a,T b)
 {
     if(a % b == 0){
         return b;
@@ -7,7 +10,8 @@ ll gcd(ll a,ll b)
     }
 }
 
-ll lcm(ll a,ll b)
+template<typename T>
+T lcm(T a,T b)
 {
     return  a / gcd(a,b) * b;
 }

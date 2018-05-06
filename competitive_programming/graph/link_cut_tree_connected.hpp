@@ -1,3 +1,5 @@
+#include "../header.hpp"
+//なんかおかしいので修正の必要あり
 //veryfyしていません(veryfy問題を知らない)
 struct node {
     node* left; node* right; node* par;

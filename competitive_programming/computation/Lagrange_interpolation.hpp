@@ -1,3 +1,8 @@
+#include "../header.hpp"
+
+#define MAX_N 100005
+#define MOD 1000000007
+
 ll inv[MAX_N],fac[MAX_N],finv[MAX_N];
 
 void make()
@@ -54,25 +59,26 @@ ll sub(ll x,ll y)
     return (x+MOD-y)%MOD;
 }
 
-ll mult(ll x,ll y)
+ll mul(ll x,ll y)
 {
     return x*y%MOD;
 }
+
 //degは多項式の次数、argは関数の引数(長さdeg+1),retは関数の返り値(長さdeg+1),numは求めたい返り値に対する引数
 ll comp(int deg,ll num,vector<int>& arg,vector<ll>& ret){
 
     ll ue = 1;
     rep(i,deg+1){
-        ue = mult(ue,num-arg[i]);
+        ue = mul(ue,num-arg[i]);
     }
     ll ans = 0;
     rep(i,deg+1){
-        ll r1 = mult(ue,mult(mod_inverse(num-arg[i],MOD),ret[i]));
-        ll r2 = mult(finv[deg-arg[i]],finv[arg[i]]);
+        ll r1 = mul(ue,mul(mod_inverse(num-arg[i],MOD),ret[i]));
+        ll r2 = mul(finv[deg-arg[i]],finv[arg[i]]);
         if((deg-arg[i])%2){
             r2 = MOD-r2;
         }
-        ans = add(ans,mult(r1,r2));
+        ans = add(ans,mul(r1,r2));
     }
     return ans;
 }

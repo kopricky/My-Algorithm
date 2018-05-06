@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //素数かどうかを判定する
 bool is_prime(ll n)
 {

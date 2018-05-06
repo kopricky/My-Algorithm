@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //1~valまでの全xor
 ll allxor(ll val) {
 	int i;

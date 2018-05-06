@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 vector<bool> v(n.false);
 fill(v.end() - r, v.end(), true);
 do {
