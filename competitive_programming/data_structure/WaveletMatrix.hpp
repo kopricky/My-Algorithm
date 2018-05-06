@@ -8,6 +8,7 @@
 // WaveletMatrix は基数ソートのようなことをするのでWaveletTreeとは違い深さがlog(σ)と文字の種類数依存
 // のせるデータがアルファベットなどならWaveletTreeに比べて深さは浅いが, 数字(特にnより大きい数字)をのせると深さが深くなる
 // そのため直交領域内の点の数を返す OrthogonalRegionCount は前もって座圧をおこなっている
+// 直交領域内の点の数は WaveletTree の方が良いかもしれない
 
 #define MAX_BIT 32
 
@@ -139,7 +140,7 @@ public:
 };
 
 // 2次元領域の数を数えたい場合
-template<typename T> class OrthogonalRegionCount
+template<typename T> class OrthogonalRangeCount
 {
 private:
     using ptt = pair<T, T>;
@@ -148,7 +149,7 @@ private:
     int n;
 public:
     // 座標を引数に渡す
-    OrthogonalRegionCount(vector<ptt> candidate) {
+    OrthogonalRangeCount(vector<ptt> candidate) {
         int n = (int)candidate.size();
         sort(candidate.begin(), candidate.end());
         X.resize(n), Y.resize(n);

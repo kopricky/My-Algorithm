@@ -6,6 +6,7 @@
 #include <numeric>
 #include <queue>
 #include <deque>
+#include <list>
 #include <stack>
 #include <deque>
 #include <cmath>
