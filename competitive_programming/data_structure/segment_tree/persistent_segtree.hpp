@@ -1,4 +1,4 @@
-#include "../header.hpp"
+#include "../../header.hpp"
 
 template<typename T> class segtree {
 public:

@@ -1,4 +1,4 @@
-#include "../header.hpp"
+#include "../../header.hpp"
 
 //長方形領域内のクエリに答える(更新なし)(この実装では長方形領域内の和を答える)
 //時間計算量:構築O(nlog(n)),クエリO(log^2(n))

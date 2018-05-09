@@ -1,10 +1,9 @@
-#include "../header.hpp"
+#include "../../header.hpp"
 
 template<typename T> class segtree{
 private:
     int n,sz;
-    vector<T> node, lazy;
-    vector<int> node_id;
+    vector<T> node,node_id,lazy;
     vector<bool> lazyFlag;
 
 public:
@@ -23,19 +22,19 @@ public:
             node_id[i+n-1] = i;
         }
         for(int i=n-2; i>=0; i--){
-            if(node[i*2+1] < node[i*2+2]){
-                node[i] = node[i*2+1];
-                node_id[i] = node_id[i*2+1];
+            if(node[2*i+1] > node[2*i+2]){
+                node[i] = node[2*i+2];
+                node_id[i] = node_id[2*i+2];
             }else{
-                node[i] = node[i*2+2];
-                node_id[i] = node_id[i*2+2];
+                node[i] = node[2*i+1];
+                node_id[i] = node_id[2*i+1];
             }
         }
     }
     void eval(int k, int l, int r){
         if(lazyFlag[k]){
             node[k] = lazy[k];
-            if(r - l > 1) {
+            if(r - l > 1){
                 lazy[k*2+1] = lazy[k*2+2] = lazy[k];
                 lazyFlag[k*2+1] = lazyFlag[k*2+2] = true;
             }
@@ -64,7 +63,7 @@ public:
             }
         }
     }
-    pair<T, int> query(int a, int b, int k=0, int l=0, int r=-1){
+    pair<T, int> query(int a, int b, int k=0, int l=0, int r=-1) {
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
@@ -79,7 +78,7 @@ public:
     }
     void print(){
         rep(i,sz){
-            pair<T,int> p;
+            pair<T, int> p;
             p = query(i,i+1);
             cout << "st[" << i << "]: " << p.fi << " " << p.se << endl;
         }

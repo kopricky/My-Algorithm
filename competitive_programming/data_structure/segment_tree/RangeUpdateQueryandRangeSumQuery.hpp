@@ -1,20 +1,21 @@
-#include "../header.hpp"
+#include "../../header.hpp"
 
-// 各ノードが10で表現されていてrangeで10を逆転,queryで和を取れる
-template<typename T> class segtree {
+template<typename T> class segtree{
 private:
     int n,sz;
+    vector<T> node, lazy;
+    vector<bool> lazyFlag;
 
 public:
-    vector<T> node, lazy;
-    segtree(vector<T>& v) {
+    segtree(vector<T>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1);
+        node.resize(2*n-1, 0);
         lazy.resize(2*n-1, 0);
+        lazyFlag.resize(2*n-1,false);
         rep(i,sz){
             node[i+n-1] = v[i];
         }
@@ -22,33 +23,33 @@ public:
             node[i] = node[i*2+1] + node[i*2+2];
         }
     }
-    void eval(int k, int l, int r) {
-        if(lazy[k] != 0) {
-            node[k] = (r-l) - node[k];
-            if(r - l > 1) {
-                lazy[2*k+1] ^= lazy[k];
-                lazy[2*k+2] ^= lazy[k];
+    void eval(int k, int l, int r){
+        if(lazyFlag[k]){
+            node[k] = lazy[k]*(r-l);
+            if(r - l > 1){
+                lazy[k*2+1] = lazy[k*2+2] = lazy[k];
+                lazyFlag[k*2+1] = lazyFlag[k*2+2] = true;
             }
-            lazy[k] = 0;
+            lazyFlag[k] = false;
         }
     }
-    void range(int a, int b, T x, int k=0, int l=0, int r=-1) {
+    void range(int a, int b, T x, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
             return;
         }
-        if(a <= l && r <= b) {
-            lazy[k] ^= x;
+        if(a <= l && r <= b){
+            lazy[k] = x;
+            lazyFlag[k] = true;
             eval(k, l, r);
-        }
-        else {
+        }else{
             range(a, b, x, 2*k+1, l, (l+r)/2);
             range(a, b, x, 2*k+2, (l+r)/2, r);
             node[k] = node[2*k+1] + node[2*k+2];
         }
     }
-    T query(int a, int b, int k=0, int l=0, int r=-1) {
+    T query(int a, int b, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
@@ -61,11 +62,5 @@ public:
         T vr = query(a, b, 2*k+2, (l+r)/2, r);
         return vl + vr;
     }
-    void print()
-    {
-        rep(i,sz){
-            cout << query(i,i+1) << " ";
-        }
-        cout << endl;
-    }
+    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
 };

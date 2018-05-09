@@ -1,10 +1,9 @@
-#include "../header.hpp"
+#include "../../header.hpp"
 
 template<typename T> class segtree{
 private:
     int n,sz;
     vector<T> node, lazy;
-    vector<bool> lazyFlag;
 
 public:
     segtree(vector<T>& v){
@@ -15,7 +14,6 @@ public:
         }
         node.resize(2*n-1, 0);
         lazy.resize(2*n-1, 0);
-        lazyFlag.resize(2*n-1,false);
         rep(i,sz){
             node[i+n-1] = v[i];
         }
@@ -24,13 +22,13 @@ public:
         }
     }
     void eval(int k, int l, int r){
-        if(lazyFlag[k]){
-            node[k] = lazy[k]*(r-l);
+        if(lazy[k] != 0){
+            node[k] += lazy[k]; //kを根とするsubtreeについての情報を更新
             if(r - l > 1){
-                lazy[k*2+1] = lazy[k*2+2] = lazy[k];
-                lazyFlag[k*2+1] = lazyFlag[k*2+2] = true;
+                lazy[2*k+1] += lazy[k] / 2;
+                lazy[2*k+2] += lazy[k] / 2;
             }
-            lazyFlag[k] = false;
+            lazy[k] = 0;
         }
     }
     void range(int a, int b, T x, int k=0, int l=0, int r=-1){
@@ -40,8 +38,7 @@ public:
             return;
         }
         if(a <= l && r <= b){
-            lazy[k] = x;
-            lazyFlag[k] = true;
+            lazy[k] += (r - l) * x;
             eval(k, l, r);
         }else{
             range(a, b, x, 2*k+1, l, (l+r)/2);
