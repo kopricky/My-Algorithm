@@ -7,7 +7,7 @@
 // などを参照
 // WaveletMatrix は基数ソートのようなことをするので深さがlog(σ)と文字の種類数依存
 // のせるデータがアルファベットなどなら深さは浅いが, 数字(特にnより大きい数字)をのせると深さが深くなる
-// そのため直交領域内の点の数を返す OrthogonalRegionCount は前もって座圧をおこなっている
+// そのため直交領域内の点の数を返す OrthogonalRangeCount は前もって座圧をおこなっている
 
 #define MAX_BIT 32
 
@@ -138,7 +138,7 @@ public:
     }
 };
 
-// 2次元領域の数を数えたい場合
+// 長方形領域内の点の数を数えたい場合
 template<typename T> class OrthogonalRangeCount
 {
 private:
