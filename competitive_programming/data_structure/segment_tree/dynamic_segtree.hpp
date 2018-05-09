@@ -1,5 +1,10 @@
 #include "../../header.hpp"
 
+//値の範囲が大きくかつクエリをオンラインで処理するときに用いる(動的にセグメント木のノードを追加する)
+//Binary Trieと同等の構造
+//POOL_SIZE および MAX_SIZE を問題に応じて変更
+//pointUpdateQuery and RangeMinQuery の実装(O(log(MAX_VAL)))
+
 template<typename T> class dynamic_segtree{
 private:
     struct node {

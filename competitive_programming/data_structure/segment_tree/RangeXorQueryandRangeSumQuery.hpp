@@ -1,6 +1,9 @@
 #include "../../header.hpp"
 
-// 各ノードが10で表現されていてrangeで10を逆転,queryで和を取れる
+// 配列の持つ値が01の場合
+// rangeで10を逆転(xor),queryで和を取る
+// ならしO(log(n))
+
 template<typename T> class segtree {
 private:
     int n,sz;

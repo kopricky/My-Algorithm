@@ -1,3 +1,9 @@
+#include "../../header.hpp"
+
+//更新 a_i → a_i % mod (l <= i < r)
+//クエリ sum ([l]...a[r-1])
+//計算量はならしO(log^2(n))
+
 template<typename T> class segtree {
 private:
     int n,sz;

@@ -1,3 +1,10 @@
+#include "../../header.hpp"
+
+//更新 a_i → max(a_i,x) (l <= i < r)
+//クエリ sum ([l]...a[r-1])
+//計算量はならしO(log(n))
+//verifyしていません(自作テストケースでは合っています)
+
 template<typename T> class segtree {
 private:
     int n,sz;

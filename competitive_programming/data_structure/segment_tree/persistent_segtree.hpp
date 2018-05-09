@@ -1,5 +1,7 @@
 #include "../../header.hpp"
 
+// segtreeの完全永続化(更新される部分に新しいノード(O(log(n))個)を構築)
+
 template<typename T> class segtree {
 public:
 	segtree(int n, T e) : E(e), N(1 << (int)log2(n * 2 - 1)) {}
