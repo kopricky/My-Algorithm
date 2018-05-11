@@ -3,7 +3,8 @@
 //最大独立集合のサイズは補グラフのクリーク数を考える
 //最小頂点被覆は(頂点数)-(最大独立集合のサイズ)
 //kazumaさんの実装を参照(自分の実装より速度がだいぶ速い)
-//なお電通大の富田さんのものがもっと速いです
+//なお電通大の富田さんのものがもっと速いです(http://www.etlab.ice.uec.ac.jp/~tomita/WALCOM2010.pdf)
+
 class CliqueNumber{
 private:
 	static const int MAX_V = 210;
