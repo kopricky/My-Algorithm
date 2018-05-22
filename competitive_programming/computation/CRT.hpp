@@ -1,5 +1,15 @@
 #include "../header.hpp"
 
+template<typename T>
+T gcd(T a,T b)
+{
+    if(a % b == 0){
+        return b;
+    }else{
+        return gcd(b,a%b);
+    }
+}
+
 template <typename T>
 void extgcd(T a, T b, T& x, T& y)
 {
@@ -12,7 +22,7 @@ void extgcd(T a, T b, T& x, T& y)
 	}
 }
 
-//modがllの大きい値を扱うときはm1*xを__int128にキャストする
+//modが10^6より大きい値を扱うときはm1*xを__int128にキャストする(10^12とかまで可能)
 //(value, mod)
 template <typename T>
 pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
@@ -31,7 +41,7 @@ pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
 }
 
 //modどうしが互いに素でないとき
-//modがllの大きい値を扱うときはm1*xを__int128にキャストする
+//modが10^6より大きい値を扱うときはm1*xを__int128にキャストする(10^12とかまで可能)
 //(value, mod)
 template <typename T>
 pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
