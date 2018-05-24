@@ -5,15 +5,22 @@ void z_algorithm(string& S,vector<int>& res)
 {
     int sz = (int)S.size();
     res.resize(sz);
-    int c = 0;
-    for(int i = 1; i < sz; i++){
-        if(i+res[i-c] < c+res[c]){
-            res[i] = res[i-c];
-        }else{
-            int j = max(0, c+res[c]-i);
-            while (i+j < sz && S[j] == S[i+j]) ++j;
-            res[i] = j;
-        }
-    }
     res[0] = sz;
+    int i = 1, j = 0;
+    while(i < sz){
+        while(i+j < sz && S[j] == S[i+j]){
+            j++;
+        }
+        res[i] = j;
+        if(j == 0){
+            i++;
+            continue;
+        }
+        int k = 1;
+        while(i+k < sz && k+res[k] < j){
+            res[i+k] = res[k];
+            k++;
+        }
+        i += k; j -= k;
+    }
 }
