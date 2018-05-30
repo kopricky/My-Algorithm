@@ -30,7 +30,15 @@ public:
 	}
     //何らかのクエリ
 	int query(Node *curr,int d) {
-		if (!curr) return 0;
-		return query(curr->next[0],d-1) + query(curr->next[1],d-1);
+		int res = 0;
+		rep(i,26){
+			if(curr->next[i]){
+				res += query(curr->next[i],d+1);
+			}
+		}
+		return res;
+	}
+	int query() {
+		return query(root, 0);
 	}
 };
