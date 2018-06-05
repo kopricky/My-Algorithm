@@ -1,7 +1,6 @@
 #include "../header.hpp"
 
 struct HLdecomposition{
-    using P = pair<int,int>;
     struct Centroid{
         int parid, pardepth, depth, sz;
         Centroid(int idx, int dep, int deep, int size) : parid(idx), pardepth(dep), depth(deep), sz(size){}
@@ -107,7 +106,6 @@ struct HLdecomposition{
                 tie(pathidB, pathdepthB) = centroids[pathidB].Up();
             }
         }
-        if(pathdepthA > pathdepthB) swap(pathdepthA, pathdepthB);
         func(index[pathidA] + pathdepthA, index[pathidA] + pathdepthB + 1);
     }
     HLdecomposition(int V) : G(V), stsize(V, -1), nxpath(V), pathorder(V), pathid(V){}

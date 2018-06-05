@@ -2,7 +2,6 @@
 
 struct HLdecomposition
 {
-    using P = pair<int,int>;
     struct Centroid
     {
         int parid, pardepth, depth;

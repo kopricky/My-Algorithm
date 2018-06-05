@@ -1,6 +1,7 @@
 #include "../../header.hpp"
 
-//更新 a_i → a_i % mod (l <= i < r)
+//更新 a_i → a_i (l <= i < r)
+//modulo更新 a_i → a_i % mod (l <= i < r)
 //クエリ sum ([l]...a[r-1])
 //計算量はならしO(log^2(n))
 
