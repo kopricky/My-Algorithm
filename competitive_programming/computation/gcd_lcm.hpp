@@ -3,7 +3,7 @@
 template<typename T>
 T gcd(T a, T b)
 {
-    if(a == 0 || b == 0) return max(a, b);
+    if(!b) return a;
     if(a % b == 0){
         return b;
     }else{
