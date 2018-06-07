@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //最大流量がint,頂点数がMAX_N
 //Dinic<int> dn(MAX_N);
 //適宜add_edge,max_flowを用いる
@@ -30,8 +32,7 @@ public:
     	while(!que.empty()){
     		int v = que.front();
     		que.pop();
-    		rep(i,G[v].size()){
-    			edge &e = G[v][i];
+    		for(auto& e : G[v]){
     			if(e.cap > 0 && level[e.to] < 0){
     				level[e.to] = level[v] + 1;
     				que.push(e.to);

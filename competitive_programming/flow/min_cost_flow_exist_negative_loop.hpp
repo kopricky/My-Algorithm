@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //負の有向閉路が存在する場合の最小費用流(ベルマンフォードを用いて計算)
 //最小費用がint,頂点数がn
 //min_cost_flow<int> mcf(n);
@@ -15,7 +17,7 @@ public:
 	T inf;
 	min_cost_flow(int node_size){
 		V = node_size, G.resize(node_size);
-		inf = numeric_limits<T>::max() / 100:
+		inf = numeric_limits<T>::max() / 100;
 	}
 	void add_edge(int from,int to,int cap,T cost){
 		G[from].push_back((edge){to,cap,cost,G[to].size()});

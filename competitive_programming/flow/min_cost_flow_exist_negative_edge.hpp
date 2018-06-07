@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //負の辺が存在する場合の最小費用流(ベルマンフォードでポテンシャルを計算可能)
 //最小費用がint,頂点数がn
 //min_cost_flow<int> mcf(n);

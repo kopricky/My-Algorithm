@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //DAGになっている場合の最小費用流(ポテンシャルをトポソDPを用いて計算)
 //最小費用がint,頂点数がn
 //min_cost_flow<int> mcf(n);
@@ -49,16 +51,16 @@ public:
 	            order.clear();
 	        }
 	    }
-	}
+	};
 	using pti = pair<T,int>;
     vector<vector<edge> > G;
 	vector<T> h,dist;
 	vector<int> prevv,preve;
+    tsort ts;
 	T inf;
     int V;
     min_cost_flow(int node_size){
         V = node_size;
-        ts.init();
 		inf = numeric_limits<T>::max() / 100;
         G.resize(V), h.resize(V), dist.resize(V), prevv.resize(V), preve.resize(V);
 	}
@@ -77,8 +79,8 @@ public:
         h[s] = 0;
         for(int i : ts.order){
             if(h[i] != inf){
-                rep(j,g[i]){
-                    h[g[i][j]] = min(h[g[i][j]],h[i]+g_cost[i][j]);
+                rep(j,G[i]){
+                    h[G[i][j].to] = min(h[G[i][j].to],h[i]+G[i][j].cost);
                 }
             }
         }

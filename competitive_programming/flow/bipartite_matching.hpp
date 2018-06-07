@@ -1,3 +1,5 @@
+#include "../header.hpp"
+
 //二部グラフの頂点数がそれぞれn,m
 //BM bm(n,m);
 //適宜add_edge(２つの集合間のedgeのみaddする)
@@ -43,8 +45,7 @@ public:
     	while(!que.empty()){
     		int v = que.front();
     		que.pop();
-    		rep(i,(int)G[v].size()){
-    			edge &e = G[v][i];
+    		for(auto& e : G[v]){
     			if(e.cap > 0 && level[e.to] < 0){
     				level[e.to] = level[v] + 1;
     				que.push(e.to);
