@@ -2,6 +2,7 @@
 
 //高速Walsh–Hadamard変換(高速Fourier変換の一般化)
 //具体的には xor, or, and convolution の実装
+//xor, or, and については Walsh-Hadamard 行列が具体的に知られているので実装は容易
 //問題にするならMODで出そうなのでMODをとった実装になっています
 
 #define MOD 1000000007
