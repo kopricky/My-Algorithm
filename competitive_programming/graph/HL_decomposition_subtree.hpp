@@ -1,20 +1,22 @@
 #include "../header.hpp"
 
-// 木のパスについてのクエリについて答えるデータ構造
-// 計算量:O(log^2(n))
+// 部分木についてのクエリとパスについてのクエリが一つのセグ木で対応可能
+// 部分木:O(log(n)), パス:O(log^2(n))
 
 class HLdecomposition{
 public:
     int V;
     vector<vector<int> > G;
-    vector<int> stsize, parent, pathtop, in;
+    vector<int> stsize, parent, pathtop, in, out;
     void BuildStsize(int u, int p){
         stsize[u] = 1, parent[u] = p;
         for(int& v : G[u]){
             if(v == p) continue;
             BuildStsize(v, u);
             stsize[u] += stsize[v];
-            if(stsize[v] > stsize[G[u][0]]) swap(v, G[u][0]);
+            if(stsize[v] > stsize[G[u][0]]){
+                swap(v, G[u][0]);
+            }
         }
     }
     void BuildPath(int u, int p, int& tm){
@@ -24,6 +26,7 @@ public:
             pathtop[v] = (v == G[u][0] ? pathtop[u] : v);
             BuildPath(v, u, tm);
         }
+        out[u] = tm;
     }
 
 public:
@@ -34,10 +37,14 @@ public:
         int tm = 0;
         BuildStsize(0, -1), BuildPath(0, -1, tm);
     }
+    //元の頂点のインデックスの配列上でのidを返す
     inline int get(int a){
         return in[a];
     }
-    void query(int a, int b, const function< void(int, int) > &func){
+    void subtree_query(int a, const function< void(int, int) > &func){
+        func(in[a], out[a]);
+    }
+    void path_query(int a, int b, const function< void(int, int) > &func){
         int pa = pathtop[a], pb = pathtop[b];
         while(pathtop[a] != pathtop[b]){
             if(in[pa] > in[pb]){
@@ -51,6 +58,6 @@ public:
         if(in[a] > in[b]) swap(a, b);
         func(in[a], in[b] + 1);
     }
-    HLdecomposition(int node_size) : V(node_size), G(V), stsize(V, 0),
-        parent(V, -1), pathtop(V, -1), in(V, -1){}
+    HLdecomposition(int node_size) : V(node_size), G(V), stsize(V, 0), parent(V, -1),
+        pathtop(V, -1), in(V, -1), out(V, -1){}
 };
