@@ -1,56 +1,42 @@
 #include "../header.hpp"
 
-template<typename V> class segtree{
+template<typename T> class segtree {
 private:
-    int n,sz; vector<V> node; vector<int> node_id;
+    int n,sz;
+    vector<pair<T, int> > node;
 public:
-    void resize(vector<V> v){
-        sz = (int)v.size(); n = 1;
-        while(n < sz) n *= 2;
-        node.resize(2*n-1),node_id.resize(2*n-1);
-        rep(i,sz){
-            node[i+n-1] = v[i];
-            node_id[i+n-1] = i;
+    void resize(vector<T>& v){
+        sz = (int)v.size();
+        n = 1;
+        while(n < sz){
+            n *= 2;
         }
-        for(int i=n-2; i>=0; i--){
-            if(node[2*i+1] > node[2*i+2]){
-                node[i] = node[2*i+2];
-                node_id[i] = node_id[2*i+2];
-            }else{
-                node[i] = node[2*i+1];
-                node_id[i] = node_id[2*i+1];
-            }
+        node.resize(2*n);
+        rep(i,sz){
+            node[i+n] = make_pair(v[i], i);
+        }
+        for(int i=n-1; i>=1; i--){
+            node[i] = min(node[2*i], node[2*i+1]);
         }
     }
-    void update(int k,int a){
-    	k += n-1;
-    	node[k] = a,node_id[k] = k-(n-1);
-    	while(k>0){
-    		k = (k-1)/2;
-    		if(node[2*k+1] < node[2*k+2]){
-                node[k] = node[2*k+1],node_id[k] = node_id[2*k+1];
-            }else{
-                node[k] = node[2*k+2],node_id[k] = node_id[2*k+2];
-            }
+    void update(int k, T a)
+    {
+    	node[k+=n] = make_pair(a, k);
+    	while(k>>=1){
+            node[k] = min(node[2*k], node[2*k+1]);
     	}
     }
-    pair<V,int> query(int a,int b,int k=0,int l=0,int r=-1){
-        if(r < 0) r = n;
-    	if(r <= a || b <= l) return pair<V,int>(numeric_limits<V>::max(),-1);
-    	if(a <= l && r <= b){
-    		return pair<V,int>(node[k],node_id[k]);
-    	}else{
-    		pair<V,int> vl = query(a,b,2*k+1,l,(l+r)/2);
-    		pair<V,int> vr = query(a,b,2*k+2,(l+r)/2,r);
-    		return min(vl,vr);
-    	}
-    }
-    void print(){
-        rep(i,sz){
-            pair<V,int> p;
-            p = query(i,i+1);
-            cout << "st[" << i << "]: " << p.fi << " " << p.se << endl;
+    pair<T, int> query(int a,int b,int k=0,int l=0,int r=-1)
+    {
+        pair<T, int> res1 = make_pair(numeric_limits<T>::max(), -1);
+        pair<T, int> res2 = make_pair(numeric_limits<T>::max(), -1);
+        a += n, b += n;
+        while(a != b){
+            if(a % 2) cmn(res1, node[a++]);
+            if(b % 2) cmn(res2, node[--b]);
+            a >>= 1, b>>= 1;
         }
+        return min(res1, res2);
     }
 };
 

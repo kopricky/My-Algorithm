@@ -1,112 +1,76 @@
 #include "../header.hpp"
 
-struct HLdecomposition{
+class HLdecomposition{
+private:
     struct Centroid{
         int parid, pardepth, depth, sz;
         Centroid(int idx, int dep, int deep, int size) : parid(idx), pardepth(dep), depth(deep), sz(size){}
-        P Up(){
-            return P(parid, pardepth);
-        }
     };
+    int V;
     vector<vector<int> > G;
-    vector<int> stsize, nxpath;
-    vector<int> pathorder, pathid;
+    vector<int> stsize, nxpath, pathorder, pathid, index;
     vector<Centroid> centroids;
-    vector<int> index;
-    void Buildstsize(){
-        stack<P> s;
-        s.push(P(0, -1));
-        while(!s.empty()) {
-            P p = s.top();
-            s.pop();
-            if(stsize[p.first] != -1){
-                nxpath[p.first] = -1;
-                for(int to : G[p.first]){
-                    if(p.second == to){
-                        continue;
-                    }
-                    stsize[p.first] += stsize[to];
-                    if(nxpath[p.first] == -1 || stsize[nxpath[p.first]] < stsize[to]) {
-                        nxpath[p.first] = to;
-                    }
-                }
+    void BuildStsize(int u, int p){
+        stsize[u] = 1;
+        for(int v : G[u]){
+            if(v == p) continue;
+            BuildStsize(v, u);
+            stsize[u] += stsize[v];
+            if(nxpath[u] == -1 || stsize[v] > stsize[nxpath[u]]){
+                nxpath[u] = v;
+            }
+        }
+    }
+    void BuildPath(int u, int p){
+        pathid[u] = centroids[pathorder[u]].sz - 1;
+        for(int v : G[u]){
+            if(v == p) continue;
+            if(v == nxpath[u]){
+                pathorder[v] = pathorder[u];
+                centroids[pathorder[u]].sz++;
             }else{
-                s.push(p);
-                stsize[p.first] = 1;
-                for(int to : G[p.first]){
-                    if(p.second != to){
-                        s.push(P(to, p.first));
-                    }
-                }
+                pathorder[v] = (int)centroids.size();
+                centroids.emplace_back(pathorder[u], pathid[u], centroids[pathorder[u]].depth + 1, 1);
             }
+            BuildPath(v, u);
         }
     }
-    void BuildPath()
-    {
-        stack<P> s;
-        centroids.emplace_back(-1, -1, 0, 0);
-        s.push(P(0, -1));
-        pathorder[0] = 0;
-        while(!s.empty()) {
-            P p = s.top();
-            s.pop();
-            pathid[p.first] = centroids[pathorder[p.first]].sz;
-            for(int to : G[p.first]){
-                if(p.second == to) continue;
-                if(to == nxpath[p.first]){
-                    pathorder[to] = pathorder[p.first];
-                }else{
-                    pathorder[to] = (int)centroids.size();
-                    centroids.emplace_back(pathorder[p.first], pathid[p.first], centroids[pathorder[p.first]].depth + 1,0);
-                }
-                s.emplace(to, p.first);
-            }
-            centroids[pathorder[p.first]].sz++;
-        }
-    }
-    void Build_index(){
+    void BuildIndex(){
         int ptr = 0;
         for(auto& centroid : centroids){
             index.push_back(ptr);
             ptr += centroid.sz;
         }
     }
-    void add_edge(int x, int y)
-    {
-        G[x].push_back(y), G[y].push_back(x);
+
+public:
+    void add_edge(int u, int v){
+        G[u].push_back(v), G[v].push_back(u);
     }
-    void Build()
-    {
-        Buildstsize(); BuildPath(), Build_index();
+    void build(){
+        BuildStsize(0, -1), BuildPath(0, -1), BuildIndex();
     }
-    P info(int idx)
-    {
-        return P(pathorder[idx], pathid[idx]);
-    }
-    int get(int a)
-    {
-        P p = info(a);
-        return (index[p.first] + p.second);
-    }
-    Centroid &operator[](int k)
-    {
-        return (centroids[k]);
+    int get(int a){
+        return index[pathorder[a]] + pathid[a];
     }
     void query(int a, int b, const function< void(int, int) > &func)
     {
-        int pathidA, pathdepthA, pathidB, pathdepthB;
-        tie(pathidA, pathdepthA) = info(a);
-        tie(pathidB, pathdepthB) = info(b);
+        int pathidA = pathorder[a], pathdepthA = pathid[a];
+        int pathidB = pathorder[b], pathdepthB = pathid[b];
         while(pathidA != pathidB) {
-            func(index[pathidA], index[pathidA] + pathdepthA + 1);
             if(centroids[pathidA].depth > centroids[pathidB].depth) {
-                tie(pathidA, pathdepthA) = centroids[pathidA].Up();
+                func(index[pathidA], index[pathidA] + pathdepthA + 1);
+                pathdepthA = centroids[pathidA].pardepth, pathidA = centroids[pathidA].parid;
             }else{
                 func(index[pathidB], index[pathidB] + pathdepthB + 1);
-                tie(pathidB, pathdepthB) = centroids[pathidB].Up();
+                pathdepthB = centroids[pathidB].pardepth, pathidB = centroids[pathidB].parid;
             }
         }
+        if(pathdepthA > pathdepthB) swap(pathdepthA, pathdepthB);
         func(index[pathidA] + pathdepthA, index[pathidA] + pathdepthB + 1);
     }
-    HLdecomposition(int V) : G(V), stsize(V, -1), nxpath(V), pathorder(V), pathid(V){}
+    HLdecomposition(int node_size) : V(node_size), G(V), stsize(V, -1), nxpath(V, -1),
+        pathorder(V, -1), pathid(V, -1){
+        pathorder[0] = 0, centroids.emplace_back(-1, -1, 0, 1);
+    }
 };
