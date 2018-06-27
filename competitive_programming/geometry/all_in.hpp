@@ -16,6 +16,9 @@ namespace std
     bool operator < (const C a, const C b) {
         return a.real() != b.real() ? a.real() < b.real() : a.imag() < b.imag();
     }
+    bool operator > (const C a, const C b) {
+        return a.real() != b.real() ? a.real() > b.real() : a.imag() > b.imag();
+    }
     //点をsetとかmapにつめたいとき(誤差を1e-10とか厳しくし過ぎるとバグる)
     // bool operator<(const C a, const C b){
     //     return abs(a.real()-b.real())>EPS ? a.real()<b.real()-EPS : a.imag()<b.imag()-EPS;
@@ -25,6 +28,9 @@ namespace std
     }
     bool operator!=(const C a, const C b){
         return !(a == b);
+    }
+    C operator* (const C a, const C b){
+        return C(a.real()*b.real()-a.imag()*b.imag(),a.real()*b.imag()+a.imag()*b.real());
     }
 }
 
