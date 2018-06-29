@@ -2,6 +2,10 @@
 
 const double PI = 4.0*atan(1.0);
 
+complex<double> operator* (const complex<double> a, const complex<double> b){
+    return complex<double>(a.real()*b.real()-a.imag()*b.imag(),a.real()*b.imag()+a.imag()*b.real());
+}
+
 vector<complex<double> > fft(vector<complex<double> > a,bool rev = false)
 {
     const double PI = std::acos(-1);
