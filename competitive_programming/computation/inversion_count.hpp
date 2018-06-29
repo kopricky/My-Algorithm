@@ -12,7 +12,7 @@ public:
     void print_sum(){ rep(i,n)cout<<sum(i-1)<<" ";cout<<endl;}	//-1スタート
 };
 
-//nu,nvにu,vを[0,n)に座圧した結果をいれる
+//nu,nvにu,vを[0,n)に座圧した結果をいれる(必要な場合のみ)
 pair<vector<int>,vector<int> > zaatu(vector<int>& u,vector<int>& v)
 {
     int n = (int)u.size();
