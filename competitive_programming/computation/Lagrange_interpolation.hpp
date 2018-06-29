@@ -3,6 +3,8 @@
 #define MAX_N 100005
 #define MOD 1000000007
 
+//ラグランジュ補間
+
 ll inv[MAX_N],fac[MAX_N],finv[MAX_N];
 
 void make()

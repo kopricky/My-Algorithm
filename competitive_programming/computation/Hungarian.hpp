@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+//ハンガリアン法
+
 template<typename T>
 vector<int> Hungarian(const vector<vector<T> > cost){
     int n = (int)cost.size(), m = (int)cost[0].size();

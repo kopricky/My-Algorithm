@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-// 単調でない傾きについてのCHT
+// 単調でない傾きについての convex hull trick
 // Li Chao Segment Tree を用いて O(nlog(MAX_A))
 template<typename T> class CHT {
 private:

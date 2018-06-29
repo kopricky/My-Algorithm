@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+//中国剰余定理
+
 template<typename T>
 T gcd(T a,T b)
 {
