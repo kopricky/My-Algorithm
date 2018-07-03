@@ -332,6 +332,68 @@ vector<C> convex_intersection(const vector<C>& ps,const vector<C>& qs)
     }
 	return convex_hull(rs);
 }
+
+inline int cmp(double x){
+    if(abs(x)<EPS) return 0;
+    return x>0?1:-1;
+}
+
+inline double seg(C a, C b, C c) {
+    if (cmp(c.real()-b.real())==0) return (a.imag()-b.imag())/(c.imag()-b.imag());
+    return (a.real()-b.real())/(c.real()-b.real());
+}
+
+//(凸とは限らない)多角形の合併の面積を求める
+double PolygonUnion(vector<vector<C> >& poly)
+{
+    int n = (int)poly.size(), mxsize = 0;
+    double res = 0;
+    rep(i,n){
+        mxsize = max(mxsize, (int)poly[i].size());
+        poly[i].push_back(poly[i][0]);
+    }
+    vector<pair<double, int> > s(n*mxsize*2);
+    rep(i,n){
+        rep(ii,(int)poly[i].size()-1){
+            int sz = 0;
+            s[sz++] = make_pair(0.0,0), s[sz++] = make_pair(1.0,0);
+            rep(j,n){
+                if(i != j){
+                    rep(jj,(int)poly[j].size()-1){
+                        int c1 = cmp(cross(poly[i][ii+1]-poly[i][ii],poly[j][jj]-poly[i][ii]));
+                        int c2 = cmp(cross(poly[i][ii+1]-poly[i][ii],poly[j][jj+1]-poly[i][ii]));
+                        if(c1 == 0 && c2 == 0){
+                            if(dot(poly[i][ii+1]-poly[i][ii],poly[j][jj+1]-poly[j][jj])>0 && i>j){
+                                s[sz++] = make_pair(seg(poly[j][jj],poly[i][ii],poly[i][ii+1]),1);
+                                s[sz++] = make_pair(seg(poly[j][jj+1],poly[i][ii],poly[i][ii+1]),-1);
+                            }
+                        }else{
+                            double s1 = cross(poly[j][jj+1]-poly[j][jj],poly[i][ii]-poly[j][jj]);
+                            double s2 = cross(poly[j][jj+1]-poly[j][jj],poly[i][ii+1]-poly[j][jj]);
+                            if(c1 >= 0 && c2 < 0){
+                                s[sz++] = make_pair(s1/(s1-s2),1);
+                            }else if(c1 < 0 && c2 >= 0){
+                                s[sz++] = make_pair(s1/(s1-s2),-1);
+                            }
+                        }
+                    }
+                }
+            }
+            sort(s.begin(), s.begin()+sz);
+            double pre = min(max(s[0].first, 0.0), 1.0), sm = 0, now;
+            int cov = s[0].second;
+            for(int j = 1; j < sz; j++){
+                now = min(max(s[j].first, 0.0), 1.0);
+                if(!cov) sm += now - pre;
+                cov += s[j].second;
+                pre = now;
+            }
+            res += cross(poly[i][ii],poly[i][ii+1])*sm;
+        }
+    }
+    return res/2;
+}
+
 //凸多角形の直径を求める(キャリパー法)
 //maxi,maxjが最遠点対となる
 double convex_diameter(const vector<C>& ps)
