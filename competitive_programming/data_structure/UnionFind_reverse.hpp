@@ -21,7 +21,7 @@ public:
         return (par[x] == x)?(x):find(par[x]);
     }
     void pop(){
-        if((int)hist.size()){
+         if(!hist.empty()){
             auto& a = hist.back();
             par[a[0]] = a[0], nrank[a[0]] = a[1], par[a[2]] = a[2];
             hist.pop_back();
