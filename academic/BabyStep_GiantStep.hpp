@@ -1,5 +1,5 @@
 #include "header.hpp"
-
+//離散対数問題に対するアルゴリズム
 ll mod_pow(ll a, ll b, ll m)
 {
     a %= m;

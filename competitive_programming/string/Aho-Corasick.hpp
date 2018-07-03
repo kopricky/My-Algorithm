@@ -24,6 +24,7 @@ private:
     }
 public:
     AhoCorasick() : fail(nullptr), dnx(nullptr){}
+    //パターンを入力として木を構築
     static AC build(vector<string>& pattern){
         int sz = (int)pattern.size();
         AC t = new AhoCorasick();
@@ -46,7 +47,8 @@ public:
         }
         return t;
     }
-    void match(vector<int>& res, const string& s, int pos){
+    //sのインデックスpos(普通0)以降に含まれる各パターンの数をresで返す
+    void match(vector<int>& res, const string& s, int pos=0){
         if(pos == (int)s.size()) return;
         if(next[s[pos]]){
             next[s[pos]]->count(res);

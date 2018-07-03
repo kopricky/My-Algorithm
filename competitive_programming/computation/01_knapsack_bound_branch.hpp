@@ -1,9 +1,10 @@
+#include "../header.hpp"
+
 //01ナップザック問題に対する分枝限定法を用いたアルゴリズム
 void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll> >& vec)
 {
     if(index == (int)vec.size()){
         opt = max(opt, value);
-        cmx(opt, value);
         return;
     }
     //使う
@@ -15,7 +16,7 @@ void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll
             if(tweight + vec[i].second <= W){
                 tweight += vec[i].second;
                 tvalue += vec[i].first;
-            }elsecond{
+            }else{
                 tvalue += vec[i].first * (W - tweight) / vec[i].second;
                 break;
             }
@@ -31,7 +32,7 @@ void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll
         if(tweight + vec[i].second <= W){
             tweight += vec[i].second;
             tvalue += vec[i].first;
-        }elsecond{
+        }else{
             tvalue += vec[i].first * (W - tweight) / vec[i].second;
             break;
         }
@@ -43,11 +44,7 @@ void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll
 //vecには(価値, 重さ)の順で商品を詰める
 ll solve(int n, ll W, vector<pair<ll,ll> >& vec)
 {
-    vector<ll> vsum(n+1, 0), wsum(n+1, 0);
-    rep(i,n){
-        vsum[i+1] = vsum[i] + vec[i].first, wsum[i+1] = wsum[i] + vec[i].second;
-    }
     ll opt = 0;
-    dfs(n,W,0,0,opt,0,vsum,wsum,vec);
+    dfs(n,W,0,0,opt,0,vec);
     return opt;
 }

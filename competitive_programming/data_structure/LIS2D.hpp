@@ -6,6 +6,7 @@ private:
     using ptt = pair<T,T>;
     set<ptt> st;
 public:
+    //実際に追加されたかどうかを返す
     bool insert(pair<T,T> val){
         bool in = false;
         auto it = st.lower_bound(val);
