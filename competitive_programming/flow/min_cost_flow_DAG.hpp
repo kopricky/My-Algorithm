@@ -30,7 +30,7 @@ public:
                 }
             }
         }
-	    void solve() {
+        void solve(){
 	        queue<int> que;
 	        rep(i,V){
 	            if(deg[i] == 0){
