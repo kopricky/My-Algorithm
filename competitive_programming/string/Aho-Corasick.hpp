@@ -25,7 +25,7 @@ private:
 public:
     AhoCorasick() : fail(nullptr), dnx(nullptr){}
     //パターンを入力として木を構築
-    static AC build(vector<string>& pattern){
+    AC build(vector<string>& pattern){
         int sz = (int)pattern.size();
         AC t = new AhoCorasick();
         rep(i,sz) t->add(pattern[i],0,i);
