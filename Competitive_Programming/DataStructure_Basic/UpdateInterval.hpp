@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 //セグ木で持てないくらい大きい範囲の(0,1)の区間更新のクエリに答える
-template<typename T> class UpdateSet
+template<typename T> class UpdateInterval
 {
 private:
     using ptt = pair<T,T>;
@@ -9,7 +9,7 @@ private:
 public:
     //1の区間をsetで保持
     set<ptt> st;
-    UpdateSet() : inf(numeric_limits<T>::max()){};
+    UpdateInterval() : inf(numeric_limits<T>::max()){};
     //[l,r)をk(0,1)に更新
     void update(T l,T r,int k){
         T lb = l, rb = r;
