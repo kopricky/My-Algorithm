@@ -1,5 +1,5 @@
 #include "../header.hpp"
-#include "matrix.hpp"
+#include "../Matrix/matrix.hpp"
 
 // 定数項の存在する線形漸化式
 // powかmod_powかはその都度変更する
