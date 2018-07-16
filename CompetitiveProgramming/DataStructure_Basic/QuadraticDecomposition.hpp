@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+//平方分割
+
 template<typename T> class QuadraticDecomposition{
 public:
     vector<T> data, backet;

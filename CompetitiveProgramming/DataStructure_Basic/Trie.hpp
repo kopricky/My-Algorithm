@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+//トライ木
+
 class Trie {
 public:
 	struct Node {

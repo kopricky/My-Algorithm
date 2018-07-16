@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+//2分トライ木
+
 class BinaryTrie {
 public:
 	struct Node {
