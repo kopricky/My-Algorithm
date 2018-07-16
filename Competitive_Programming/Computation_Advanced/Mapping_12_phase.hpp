@@ -1,5 +1,6 @@
 #include "../header.hpp"
 //写像12相のうち難しめのものたちのアルゴリズム
+//すべてはverifyしていません
 #define MOD 1000000007
 
 const int MAX_N = 1005;
