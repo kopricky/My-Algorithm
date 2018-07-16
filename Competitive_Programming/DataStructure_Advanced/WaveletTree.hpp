@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-//rankの実装(lcに対応)しかしてない
+//rankの実装(lcに対応)しかしていない
 //[l,r)のk番目の値などを求める(一次元)
 //計算量は構築O(nlogn),クエリO(logn)
 template<typename T> class WaveletTree {
