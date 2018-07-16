@@ -1,4 +1,4 @@
-#include "../../header.hpp"
+#include "../header.hpp"
 
 // segtreeの完全永続化(更新される部分に新しいノード(O(log(n))個)を構築)
 

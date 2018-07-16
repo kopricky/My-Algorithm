@@ -1,4 +1,4 @@
-#include "../../header.hpp"
+#include "../header.hpp"
 
 //値の範囲が大きくかつクエリをオンラインで処理するときに用いる(動的にセグメント木のノードを追加する)
 //Binary Trieと同等の構造
