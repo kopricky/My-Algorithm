@@ -2,7 +2,7 @@
 
 //rankの実装(lcに対応)しかしてない
 //[l,r)のk番目の値などを求める(一次元)
-//計算量は構築O(nlongn),クエリO(logn)
+//計算量は構築O(nlogn),クエリO(logn)
 template<typename T> class WaveletTree {
 public:
     using pti = pair<T, int>;
