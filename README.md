@@ -1,4 +1,4 @@
-# my_algorithmを使う上での注意
-academicは学問要素が強いと思われるものを入れています  
-competitive_programmingに入っているものは主に競技プログラミングの問題で使用しその多くはverifyされています  
+# My_Algorithmを使う上での注意
+Academicは学問要素が強いと思われるものを入れています  
+Competitive_Programmingに入っているものは主に競技プログラミングの問題で使用しその多くはverifyされています  
 すべて 0_indexed です
