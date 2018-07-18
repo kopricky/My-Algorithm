@@ -18,7 +18,12 @@ public:
             while(j >= 0 && pattern[i] != pattern[j]){
                 j = table[j];
             }
-            table[i+1] = ++j;
+            j++;
+            if(pattern[i+1] == pattern[j]){
+                table[i+1] = table[j];
+            }else{
+                table[i+1] = j;
+            }
         }
     }
     void search(const string& text){
