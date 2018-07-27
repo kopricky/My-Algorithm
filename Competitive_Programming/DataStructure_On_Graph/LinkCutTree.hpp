@@ -19,6 +19,7 @@ struct node {
         }
     }
 };
+
 class LinkCutTree{
 private:
     //chとpを親子関係にする(lch:左の子かどうか)
@@ -36,7 +37,11 @@ private:
         bool root = p->isRoot(), lch = (u == p->left);
         connect(lch ? (u->right) : (u->left),p,lch);
         connect(p,u,!lch);
-        connect(u,gp,!root && p == gp->left);
+        if(root){
+            if(u) u->par = gp;
+        }else{
+            connect(u,gp,!root && (p == gp->left));
+        }
     }
     //uをスプレー木の根にする
     void splay(node* u){
@@ -51,7 +56,6 @@ private:
         u->push();
     }
     node* expose(node* u){
-        // if(!u->par)  return u;
         node* last = nullptr;
         for(node* v = u; v; v=v->par){
             splay(v);
@@ -73,7 +77,7 @@ private:
     }
     void link(node* u,node* v){
         //already connected
-        if(connected(u,v)) return;
+        if(connected(u, v)) return;
         evert(u);
         u->par = v;
     }
