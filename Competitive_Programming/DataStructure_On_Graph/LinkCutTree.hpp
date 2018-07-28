@@ -3,9 +3,10 @@
 //根はそれぞれのパスの根と全体の木の根の２つの意味がある
 //親はsplay木の中の親とパスの親の２つの意味がある
 struct node {
+    int id;
     node *left, *right, *par;
     bool rev;
-    node() : left(nullptr), right(nullptr), par(nullptr), rev(false){}
+    node(int num) : id(num), left(nullptr), right(nullptr), par(nullptr), rev(false){}
     bool isRoot(){
         return (!par) || (par->left != this && par->right != this);
     }
@@ -70,34 +71,50 @@ private:
         expose(u);
         u->rev = !(u->rev);
     }
+    node* findRoot(node* u){
+        expose(u);
+        while(u->right){
+            u = u->right;
+        }
+        splay(u);
+        return u;
+    }
     bool connected(node* u,node* v){
         if(u == v) return true;
         expose(u), expose(v);
         return u->par;
     }
     void link(node* u,node* v){
-        //already connected
-        if(connected(u, v)) return;
+        // already connected
+        // assert(!connected(u, v));
         evert(u);
         u->par = v;
     }
     void cut(node* u,node* v){
         evert(u);
         expose(v);
-        //no edge
-        if(v->right != u || u->left || u->right) return;
+        // no edge
+        // assert(v->right == u && !(u->left));
         v->right->par = nullptr, v->right = nullptr;
     }
+    node* lca(node* u, node* v){
+        // u,v が同じ連結成分にないとき
+        // assert(findRoot(u) == findRoot(v));
+        expose(u);
+        return expose(v);
+    }
+
 public:
     node** arr;
     LinkCutTree(){}
     void build(int node_size){
         arr = new node* [node_size];
         for(int i = 0; i < node_size; i++){
-            arr[i] = new node();
+            arr[i] = new node(i);
         }
     }
     bool connected(int id1, int id2){ return connected(arr[id1],arr[id2]); }
     void link(int id1, int id2){ link(arr[id1],arr[id2]); }
     void cut(int id1,int id2){ cut(arr[id1],arr[id2]); }
+    int lca(int id1, int id2){ return lca(arr[id1],arr[id2])->id; }
 };
