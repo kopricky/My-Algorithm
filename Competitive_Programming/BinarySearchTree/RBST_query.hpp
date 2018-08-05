@@ -1,50 +1,27 @@
 #include "../header.hpp"
 
-// RAQ and RSQ の場合
-template <typename T> class RBST {
+// RUQ(一点) and RSQ の場合
+
+template<typename T> class RBST {
 private:
     struct node{
-        T val, lazy, al;
+        T val, al;
         node* left; node* right;
         int st_size;   // 部分木のサイズ
-        bool lazy_flag;
         node(){};
-        node(T v, T init) : val(v), lazy(init), al(v), left(nullptr), right(nullptr), st_size(1), lazy_flag(false){}
+        node(T v) : val(v), al(v), left(nullptr), right(nullptr), st_size(1){}
         ~node() { delete left; delete right; }
     };
     using pnn = pair<node*,node*>;
     node* root;
-    T id1,id2;  //opr1,opr2の単位元
+    T id1;  //opr1の単位元
     //クエリに答える演算(sumに対応)
     inline T opr1(T l, T r) {
     	return l + r;
     }
-    //遅延処理の演算(addに対応)
-    inline T opr2(T l, T r) {
-    	return l + r;
-    }
     int size(node* t) { return t ? t->st_size : 0; }
-    T que(node* t) { push(t); return t ? opr2(t->al,t->lazy*size(t)) : id1; }
-    //遅延伝播
-    void push(node* t){
-        if(!t) return t;
-        if(t->lazy_flag){
-            if(t->left){
-                t->left->lazy_flag = true;
-                t->left->lazy = opr2(t->left->lazy, t->lazy);
-            }
-            if(t->right){
-                t->right->lazy_flag = true;
-                t->right->lazy = opr2(t->right->lazy,t->lazy);
-            }
-            t->val = opr2(t->val, t->lazy);
-            t->al += t->lazy;
-            t->lazy = id2;
-            t->lazy_flag = false;
-        }
-    }
+    int que(node* t) { return t ? t->al : id1; }
     node* update(node *t){
-        push(t);
         node* l = t->left; node* r = t->right;
         t->st_size = size(l) + size(r) + 1;
         t->al = opr1(opr1(que(l),que(r)),t->val);
@@ -58,7 +35,6 @@ private:
     }
     node* merge(node* l, node* r){
         if (!l || !r) return (!l) ? r : l;
-        push(l),push(r);
         if(rnd() % (size(l) + size(r)) < (unsigned)size(l)){
             l->right = merge(l->right, r);
             return update(l);
@@ -69,7 +45,6 @@ private:
     }
     pnn split(node* t, int k){   //木のサイズが(k,n-k)となるように分割する
         if(!t) return pnn(nullptr, nullptr);
-        push(t);
         if(k <= size(t->left)){
             pnn s = split(t->left, k);
             t->left = s.second;
@@ -92,33 +67,32 @@ private:
     }
 
 public:
-    RBST() : root(nullptr), id1(0), id2(0){}
-    RBST(vector<T>& vec) : root(nullptr), id1(0), id2(0){
+    RBST() : root(nullptr), id1(0){}
+    RBST(vector<T>& vec) : root(nullptr), id1(0){
     	rep(i,len(vec)){
     		insert(i,vec[i]);
     	}
     }
-    //0_indexedでkにinsert
+    // 0_indexedでkにinsert
     void insert(int k, T val){
-        root = insert(root, k, new node(val, id2));
+        root = insert(root, k, new node(val));
     }
-    //0_indexedでkをerase
+    // 0_indexedでkをerase
     void erase(int k){
         root = erase(root, k);
     }
-    // k 番目の要素を参照
+    // k番目の要素を参照
     T get(int k){
         auto sr = split(root, k+1);
         auto sl = split(sr.first, k);
-        T res = que(sl.second);
+        T res = sl.second->val;
         root = merge(merge(sl.first, sl.second), sr.second);
         return res;
     }
-    void range(int l, int r, T val){
-        if(l >= r)  return;
-        auto sr = split(root, r);
-        auto sl = split(sr.first, l);
-        sl.second->lazy = opr2(sl.second->lazy, val), sl.second->lazy_flag = true;
+    void update(int k, T val){
+        auto sr = split(root, k+1);
+        auto sl = split(sr.first, k);
+        sl.second->val = val;
         root = merge(merge(sl.first,sl.second),sr.second);
     }
     T query(int l,int r){
