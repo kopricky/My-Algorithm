@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+// Hack で落とされないようにするために少し分かりにくい実装になっています
+// ICPC/ICPC_rollinghash を参照したほうが良さそう
 struct RollingHash {
 	static const ll mo0=1000000007,mo1=1000000009; static ll mul0,mul1;
 	static const ll add0=1000010007,add1=1003333331; static vector<ll> pmo[2];
