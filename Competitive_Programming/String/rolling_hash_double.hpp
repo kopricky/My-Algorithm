@@ -2,7 +2,7 @@
 
 // 2次元ローリングハッシュ
 // Hack で落とされないようにするために少し分かりにくい実装になっています
-// ICPC/ICPC_rolling_hash_double を参照したほうが良さそう
+// ICPC/ICPC_rolling_hash_double.hpp を参照したほうが良さそう
 struct RollingHash {
 	static const ll mo0=1000000007,mo1=1000000009;
 	static ll mul0,mul1,mul2,mul3; static vector<ll> pmo[4];
