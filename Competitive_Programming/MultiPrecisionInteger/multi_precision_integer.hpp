@@ -1,5 +1,13 @@
 #include "../header.hpp"
 
+// 多倍長整数の足し算, 引き算, 掛け算, 割り算(商と余り), 2で割る, 絶対値, 大小判定, 入出力などを行えます
+// n 桁(10進数)の数に対して 足し算, 引き算(O(n)), 掛け算(O(nlogn)), 割り算(O(n^2)), 2で割る(O(n)) の計算時間がかかります
+// 掛け算の演算を効率的に行うために本実装では base を 10 にとっています(足し算, 引き算, 割り算を定数倍高速化したいなら base を 10^9 とか 10^18 とかでとったほうがよい)
+// コンストラクタは MPI(数字 or string) string は 0 を除いて leading-zero がないことを仮定しています
+// 掛け算は NTT を用いています
+// 負の除算もフォローしています(定義はC++の除算と同じです)
+// 2で割るのは多倍長整数での2分探索に使う目的で実装しました
+
 class MPI : public vector<int> {
 private:
 
@@ -232,32 +240,31 @@ public:
         return true;
     }
 
-    bool operator<(const ll another) const {
-        return (*this) < MPI(another);
+    bool operator==(const MPI& another) const {
+        if(sign ^ another.sign) return false;
+        if(size() != another.size()) return false;
+        for(int index = (int)size() - 1; index >= 0; index--){
+            if((*this)[index] != another[index]) return false;
+        }
+        return true;
     }
 
-    bool operator>(const ll another) const {
-        return (*this) > MPI(another);
+    bool operator!=(const MPI& another) const {
+        return !((*this) == another);
     }
 
-    bool operator<=(const ll another) const {
-        return (*this) <= MPI(another);
+    inline MPI operator!() const {
+        return MPI(this->isZero());
     }
 
-    bool operator>=(const ll another) const {
-        return (*this) >= MPI(another);
-    }
-
-    bool operator==(const ll another) const {
-        return *this == MPI(another);
-    }
-
-    bool operator!=(const ll another) const {
-        return !(*this == MPI(another));
+    inline MPI operator-() const {
+        MPI res = *this;
+        res.sign = !sign;
+        return res;
     }
 
     inline MPI abs() const {
-        MPI res = (*this);
+        MPI res = *this;
         res.sign = false;
         return res;
     }
