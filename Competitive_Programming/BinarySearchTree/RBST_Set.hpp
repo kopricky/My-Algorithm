@@ -1,5 +1,5 @@
 #include "../header.hpp"
-//O(logn)でランダムアクセス可能なSet
+//O(logn)でランダムアクセス可能なSet(正確にはmultiset)
 //~番目は0_indexed
 template <typename T> class RBST {
 private:
