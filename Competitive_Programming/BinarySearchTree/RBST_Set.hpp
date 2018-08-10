@@ -2,42 +2,6 @@
 //O(logn)でランダムアクセス可能なSet
 //~番目は0_indexed
 template <typename T> class RBST {
-public:
-    RBST() : root(nullptr){}
-    //k以上の数の最小インデックス
-    int lower_bound(const T k){ return lower_bound(root,k); }
-    //k以上の最小の数
-    T lower_value(const T k){
-        T res = numeric_limits<T>::max();
-        lower_value(root,k,res);
-        return res;
-    }
-    //kを超える数の最小インデックス
-    int upper_bound(const T k){ return upper_bound(root,k); }
-    //kを超える最小の数
-    T upper_value(const T k){
-        T res = numeric_limits<T>::max();
-        upper_value(root, k, res);
-        return res;
-    }
-    //値valを挿入
-    void insert(T val){
-        root = insert(root, upper_bound(val), new node(val));
-    }
-    //値valを削除
-    void erase(T val){
-        node *p;
-        tie(root, p) = erase(root, lower_bound(val));
-        p->left = p->right = nullptr;
-        delete p;
-    }
-    //k番目の値を返す
-    T get(int k){ return get(root,k); }
-    void print(){
-        int sz = size(root);
-        rep(i,sz) cout << get(i) << " ";
-        cout << "\n";
-    }
 private:
     struct node{
         T val;
@@ -130,5 +94,41 @@ private:
         pnn sr = split(t, k+1);
         pnn sl = split(sr.first, k);
         return pnn(merge(sl.first, sr.second), sl.second);
+    }
+public:
+    RBST() : root(nullptr){}
+    //k以上の数の最小インデックス
+    int lower_bound(const T k){ return lower_bound(root,k); }
+    //k以上の最小の数
+    T lower_value(const T k){
+        T res = numeric_limits<T>::max();
+        lower_value(root,k,res);
+        return res;
+    }
+    //kを超える数の最小インデックス
+    int upper_bound(const T k){ return upper_bound(root,k); }
+    //kを超える最小の数
+    T upper_value(const T k){
+        T res = numeric_limits<T>::max();
+        upper_value(root, k, res);
+        return res;
+    }
+    //値valを挿入
+    void insert(T val){
+        root = insert(root, upper_bound(val), new node(val));
+    }
+    //値valを削除
+    void erase(T val){
+        node *p;
+        tie(root, p) = erase(root, lower_bound(val));
+        p->left = p->right = nullptr;
+        delete p;
+    }
+    //k番目の値を返す
+    T get(int k){ return get(root,k); }
+    void print(){
+        int sz = size(root);
+        rep(i,sz) cout << get(i) << " ";
+        cout << "\n";
     }
 };
