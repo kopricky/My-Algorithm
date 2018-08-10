@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-// シフト演算子を使ったり, ビット演算をしたりしていなければ #define int MPI で動くはず
+// シフト演算子を使ったり, ビット演算をしたりしていなければ int や long long と同じように動くはず
 
 // 宣言は MPI(数字 or string) もしくは MPI hoge = 数字; またデフォルトは0初期化されます
 // 引数の string は 0 を除いて leading-zero がないことを仮定しています
@@ -197,7 +197,7 @@ public:
         for(int i = (int)s.size() - 1; i >= sign; i--) this->push_back(s[i]-'0');
     }
 
-    ll to_ll(){
+    inline ll to_ll() const {
         ll res = 0, dig = 1;
         for(int i = 0; i < (int)size(); i++){
             res += dig * (*this)[i], dig *= 10;
@@ -206,7 +206,7 @@ public:
         return res;
     }
 
-    string to_string(){
+    inline string to_string() const {
         int n = (int)size() + sign;
         string s(n, ' ');
         if(sign) s[0] = '-';
@@ -316,6 +316,9 @@ public:
 
     explicit operator bool() const noexcept { return !isZero(); }
     bool operator!() const noexcept { return !static_cast<bool>(*this); }
+
+    explicit operator int() const noexcept { return (int)this->to_ll(); }
+    explicit operator long long() const noexcept { return this->to_ll(); }
 
     MPI operator+() const {
         return *this;
