@@ -1,12 +1,20 @@
 #include "../header.hpp"
 
-// 多倍長整数の足し算, 引き算, 掛け算, 割り算(商と余り), 2で割る, 絶対値, 大小判定, 入出力などを行えます
-// n 桁(10進数)の数に対して 足し算, 引き算(O(n)), 掛け算(O(nlogn)), 割り算(O(n^2)), 2で割る(O(n)) の計算時間がかかります
+// シフト演算子を使ったり, ビット演算をしたりしていなければ #define int MPI で動くはず
+
+// 宣言は MPI(数字 or string) もしくは MPI hoge = 数字; またデフォルトは0初期化です
+// 引数の string は 0 を除いて leading-zero がないことを仮定しています
+// シフト演算子, および ビット演算(&,|,^) はフォローしていません
+// 数字(intやlong long) との演算は暗黙的に MPI にキャストされます
+// 多倍長整数の足し算, 引き算, 掛け算, 割り算(商と余り), 2で割る(div2), sqrt, log10, pow, 絶対値, 大小判定, 入出力, 任意の桁へのランダムアクセス などを行えます
+// 2で割る, sqrt, log10 は lower_bound を返します(MPI型)
+// n 桁(10進数)の数に対して 足し算, 引き算(O(n)), 掛け算(O(nlogn)), 割り算(O(n^2)), 2で割る(O(n)), sqrt((10~20)*O(n^2)), log10(O(1)), pow(nlognlogm) の計算時間がかかります
 // 掛け算の演算を効率的に行うために本実装では base を 10 にとっています(足し算, 引き算, 割り算を定数倍高速化したいなら base を 10^9 とか 10^18 とかでとったほうがよい)
-// コンストラクタは MPI(数字 or string) string は 0 を除いて leading-zero がないことを仮定しています
 // 掛け算は NTT を用いています
 // 負の除算もフォローしています(定義はC++の除算と同じです)
-// 2で割るのは多倍長整数での2分探索に使う目的で実装しました
+// 2で割るのは多倍長整数での2分探索やsqrt計算に使う目的で実装しました
+// to_ll, to_string で long long, string に変換可能
+// 10倍や10で割るなどもO(1)で行うようにできる
 
 class MPI : public vector<int> {
 private:
@@ -14,6 +22,14 @@ private:
     static constexpr int root = 5;
     static constexpr int MOD_ = 924844033;
 
+    bool sign;
+
+    inline static void trim_sign(MPI& num){
+        if(num.isZero()) num.sign = false;
+    }
+    inline static void trim_digit(MPI& num){
+        while(num.back() == 0 && (int)num.size() >= 2) num.pop_back();
+    }
     inline bool abs_less(const MPI& a, const MPI& b) const {
         if(a.size() != b.size()) return a.size() < b.size();
         for(int index = (int)a.size() - 1; index >= 0; index--){
@@ -158,11 +174,9 @@ private:
     }
 
 public:
-    bool sign;
+    MPI() : sign(false){ this->push_back(0); }
 
-    MPI() : sign(false){}
-
-    MPI(ll val) : MPI(){
+    MPI(ll val) : sign(false){
         if(val == 0){
             this->push_back(0);
         }else{
@@ -174,17 +188,30 @@ public:
         }
     }
 
-    MPI(const string& s) : MPI(){
+    MPI(const string& s) : sign(false){
+        if(s.empty()){
+            this->push_back(0);
+            return;
+        }
         if(s[0] == '-') sign = true;
         for(int i = (int)s.size() - 1; i >= sign; i--) this->push_back(s[i]-'0');
     }
 
-    inline static void trim_sign(MPI& num){
-        if(num.isZero()) num.sign = false;
+    ll to_ll(){
+        ll res = 0, dig = 1;
+        for(int i = 0; i < (int)size(); i++){
+            res += dig * (*this)[i], dig *= 10;
+        }
+        if(sign) res = -res;
+        return res;
     }
 
-    inline static void trim_digit(MPI& num){
-        while(num.back() == 0 && (int)num.size() >= 2) num.pop_back();
+    string to_string(){
+        int n = (int)size() + sign;
+        string s(n, ' ');
+        if(sign) s[0] = '-';
+        for(int i = sign; i < n; i++) s[i] = (char)('0'+(*this)[n-1-i]);
+        return s;
     }
 
     friend istream& operator>>(istream& is, MPI& num) {
@@ -200,8 +227,9 @@ public:
         return os;
     }
 
-    void operator=(ll val) {
+    MPI& operator=(ll val) {
         *this = MPI(val);
+        return *this;
     }
 
     bool operator<(const MPI& another) const {
@@ -213,31 +241,48 @@ public:
         return false;
     }
 
+    bool operator<(const ll num) const {
+        return *this < MPI(num);
+    }
+
+    friend bool operator<(const ll num, const MPI& another){
+        return MPI(num) < another;
+    }
+
     bool operator>(const MPI& another) const {
-        if(sign ^ another.sign) return another.sign;
-        if(size() != another.size()) return (size() > another.size()) ^ sign;
-        for(int index = (int)size() - 1; index >= 0; index--){
-            if((*this)[index] != another[index]) return ((*this)[index] > another[index]) ^ sign;
-        }
-        return false;
+        return another < *this;
+    }
+
+    bool operator>(const ll num) const {
+        return *this > MPI(num);
+    }
+
+    friend bool operator>(const ll num, const MPI& another){
+        return MPI(num) > another;
     }
 
     bool operator<=(const MPI& another) const {
-        if(sign ^ another.sign) return sign;
-        if(size() != another.size()) return (size() < another.size()) ^ sign;
-        for(int index = (int)size() - 1; index >= 0; index--){
-            if((*this)[index] != another[index]) return ((*this)[index] < another[index]) ^ sign;
-        }
-        return true;
+        return !(*this > another);
+    }
+
+    bool operator<=(const ll num) const {
+        return *this <= MPI(num);
+    }
+
+    friend bool operator<=(const ll num, const MPI& another){
+        return MPI(num) <= another;
     }
 
     bool operator>=(const MPI& another) const {
-        if(sign ^ another.sign) return another.sign;
-        if(size() != another.size()) return (size() > another.size()) ^ sign;
-        for(int index = (int)size() - 1; index >= 0; index--){
-            if((*this)[index] != another[index]) return ((*this)[index] > another[index]) ^ sign;
-        }
-        return true;
+        return !(*this < another);
+    }
+
+    bool operator>=(const ll num) const {
+        return *this >= MPI(num);
+    }
+
+    friend bool operator>=(const ll num, const MPI& another){
+        return MPI(num) >= another;
     }
 
     bool operator==(const MPI& another) const {
@@ -249,22 +294,41 @@ public:
         return true;
     }
 
+    bool operator==(const ll num) const {
+        return *this == MPI(num);
+    }
+
+    friend bool operator==(const ll num, const MPI& another){
+        return MPI(num) == another;
+    }
+
     bool operator!=(const MPI& another) const {
-        return !((*this) == another);
+        return !(*this == another);
     }
 
-    inline MPI operator!() const {
-        return MPI(this->isZero());
+    bool operator!=(const ll num) const {
+        return *this != MPI(num);
     }
 
-    inline MPI operator-() const {
+    friend bool operator!=(const ll num, const MPI& another){
+        return MPI(num) != another;
+    }
+
+    explicit operator bool() const noexcept { return !isZero(); }
+    bool operator!() const noexcept { return !static_cast<bool>(*this); }
+
+    MPI operator+() const {
+        return *this;
+    }
+
+    MPI operator-() const {
         MPI res = *this;
         res.sign = !sign;
         return res;
     }
 
-    inline MPI abs() const {
-        MPI res = *this;
+    inline friend MPI abs(const MPI& num){
+        MPI res = num;
         res.sign = false;
         return res;
     }
@@ -286,15 +350,31 @@ public:
     }
 
     MPI operator+(ll num) const {
-        return (*this) + MPI(num);
+        return *this + MPI(num);
     }
 
-    void operator+=(const MPI& num){
-        *this = *this + num;
+    friend MPI operator+(ll a, const MPI& b){
+        return b + a;
     }
 
-    void operator+=(ll num){
+    MPI& operator+=(const MPI& num){
         *this = *this + num;
+        return *this;
+    }
+
+    MPI& operator+=(ll num){
+        *this = *this + num;
+        return *this;
+    }
+
+    MPI& operator++(){
+        return *this += 1;
+    }
+
+    MPI operator++(int){
+        MPI res = *this;
+        *this += 1;
+        return res;
     }
 
     MPI operator-(const MPI& num) const {
@@ -313,15 +393,31 @@ public:
     }
 
     MPI operator-(ll num) const {
-        return (*this) - MPI(num);
+        return *this - MPI(num);
     }
 
-    void operator-=(const MPI& num){
-        *this = *this - num;
+    friend MPI operator-(ll a, const MPI& b){
+        return b - a;
     }
 
-    void operator-=(ll num){
+    MPI& operator-=(const MPI& num){
         *this = *this - num;
+        return *this;
+    }
+
+    MPI& operator-=(ll num){
+        *this = *this - num;
+        return *this;
+    }
+
+    MPI& operator--(){
+        return *this -= 1;
+    }
+
+    MPI operator--(int){
+        MPI res = *this;
+        *this -= 1;
+        return res;
     }
 
     MPI operator*(MPI num) const {
@@ -331,19 +427,25 @@ public:
     }
 
     MPI operator*(ll num) const {
-        return (*this) * MPI(num);
+        return *this * MPI(num);
     }
 
-    void operator*=(const MPI& num){
-        *this = *this * num;
+    friend MPI operator*(ll a, const MPI& b){
+        return b * a;
     }
 
-    void operator*=(ll num){
+    MPI& operator*=(const MPI& num){
         *this = *this * num;
+        return *this;
+    }
+
+    MPI& operator*=(ll num){
+        *this = *this * num;
+        return *this;
     }
 
     MPI operator/(const MPI& num) const {
-        MPI num_ = num.abs();
+        MPI num_ = abs(num);
         MPI a, b;
         div_(*this, num_, a, b);
         a.sign = (sign^num.sign);
@@ -352,19 +454,25 @@ public:
     }
 
     MPI operator/(ll num) const {
-        return (*this) / MPI(num);
+        return *this / MPI(num);
     }
 
-    void operator/=(const MPI& num){
-        *this = *this / num;
+    friend MPI operator/(ll a, const MPI& b){
+        return b / a;
     }
 
-    void operator/=(ll num){
+    MPI& operator/=(const MPI& num){
         *this = *this / num;
+        return *this;
+    }
+
+    MPI& operator/=(ll num){
+        *this = *this / num;
+        return *this;
     }
 
     MPI operator%(const MPI& num) const {
-        MPI num_ = num.abs();
+        MPI num_ = abs(num);
         MPI a, b;
         div_(*this, num_, a, b);
         b.sign = sign;
@@ -373,15 +481,21 @@ public:
     }
 
     MPI operator%(ll num) const {
-        return (*this) % MPI(num);
+        return *this % MPI(num);
     }
 
-    void operator%=(const MPI& num){
-        *this = *this % num;
+    friend MPI operator%(ll a, const MPI& b){
+        return b % a;
     }
 
-    void operator%=(ll num){
+    MPI& operator%=(const MPI& num){
         *this = *this % num;
+        return *this;
+    }
+
+    MPI& operator%=(ll num){
+        *this = *this % num;
+        return *this;
     }
 
     inline MPI div2() const {
@@ -393,6 +507,36 @@ public:
             if(i != n-1 || val >= 2) res.push_back(val/2);
         }
         reverse(res.begin(), res.end());
+        trim_digit(res);
+        return res;
+    }
+
+    inline friend MPI sqrt(const MPI& x){
+        if(x <= MPI(0)) return MPI(0);
+        MPI s = 1, t = x;
+        while(s < t){
+            s = s + s, t = t.div2();
+        }
+        do{ t = s, s = (x / s + s).div2();
+        }while(s < t);
+        return t;
+    }
+
+    inline friend MPI log10(const MPI& x){
+        assert(x > MPI(0));
+        return MPI((int)x.size());
+    }
+
+    inline friend MPI pow(MPI a, MPI b){
+        assert(b >= 0);
+        MPI res(1);
+        while(b){
+            if(b[0] % 2){
+                res *= a;
+            }
+            a *= a;
+            b = b.div2();
+        }
         return res;
     }
 };
