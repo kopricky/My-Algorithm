@@ -2,6 +2,10 @@
 
 // 木のパスについてのクエリについて答えるデータ構造
 // 計算量:O(log^2(n))
+// query は例えば segtree<int> seg を用意して
+// 範囲更新なら hl.query(q, r, [&](int l, int r){ seg.range(l, r, val); });
+// 区間総和なら hl.query(q, r, [&](int l, int r){ ans += seg.query(l, r); });
+// のように呼び出す
 
 class HLdecomposition{
 public:
@@ -36,6 +40,18 @@ public:
     }
     inline int get(int a){
         return in[a];
+    }
+    int lca(int a, int b){
+        int pa = pathtop[a], pb = pathtop[b];
+        while(pathtop[a] != pathtop[b]){
+            if(in[pa] > in[pb]){
+                a = parent[pa], pa = pathtop[a];
+            }else{
+                b = parent[pb], pb = pathtop[b];
+            }
+        }
+        if(in[a] > in[b]) swap(a, b);
+        return a;
     }
     void query(int a, int b, const function< void(int, int) > &func){
         int pa = pathtop[a], pb = pathtop[b];

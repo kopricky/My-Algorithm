@@ -41,6 +41,18 @@ public:
     inline int get(int a){
         return in[a];
     }
+    int lca(int a, int b){
+        int pa = pathtop[a], pb = pathtop[b];
+        while(pathtop[a] != pathtop[b]){
+            if(in[pa] > in[pb]){
+                a = parent[pa], pa = pathtop[a];
+            }else{
+                b = parent[pb], pb = pathtop[b];
+            }
+        }
+        if(in[a] > in[b]) swap(a, b);
+        return a;
+    }
     void subtree_query(int a, const function< void(int, int) > &func){
         func(in[a], out[a]);
     }
