@@ -4,6 +4,7 @@
 //各2(点)連結成分を求めたいときはコメントアウトをはずす
 class Articulation {
 public:
+	int V;
 	vector<vector<int> > G;
 	vector<int> ord;	//訪問時間
 	vector<int> low; //low[u]はuから高々1個の後退辺を通ってたどりつけるノードのordの最小値
@@ -11,12 +12,7 @@ public:
 	vector<bool> art; //関節点かどうかの判定
 	// vector<vector<P> > edgeset;
 	// stack<P> st;
-	int V;
-	Articulation(int node_size){
-		V = node_size;
-		G.resize(node_size),art.resize(node_size,false);
-		ord.resize(node_size, -1),low.resize(node_size),visit.resize(node_size,false);
-	}
+	Articulation(int node_size) V(node_size), G(V), art(V, false), ord(V, -1), low(V), visit(V, false){}
 	void add_edge(int a,int b){
 		G[a].push_back(b),G[b].push_back(a);
 	}
