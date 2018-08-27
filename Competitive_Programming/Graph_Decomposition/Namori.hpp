@@ -4,14 +4,11 @@
 
 class Namori{
 public:
+    int V;
     vector<vector<int> > G, graph;
     vector<int> deg, loop;
     vector<bool> flag;
-    int V;
-    Namori(int node_size){
-        V = node_size;
-        G.resize(V),deg.resize(V,0),flag.resize(V,false);
-    }
+    Namori(int node_size) : V(node_size), G(V), deg(V, 0), flag(V, false){}
     void add_edge(int u,int v){
         G[u].push_back(v),G[v].push_back(u);
         deg[u]++, deg[v]++;
