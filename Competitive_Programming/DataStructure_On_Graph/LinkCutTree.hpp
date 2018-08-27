@@ -106,8 +106,7 @@ private:
 
 public:
     node** arr;
-    LinkCutTree(){}
-    void build(int node_size){
+    LinkCutTree(int node_size){
         arr = new node* [node_size];
         for(int i = 0; i < node_size; i++){
             arr[i] = new node(i);
