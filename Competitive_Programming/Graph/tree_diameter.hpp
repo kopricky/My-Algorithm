@@ -5,13 +5,10 @@
 class TreeDiameter
 {
 public:
+    int V;
     vector<vector<int> > G;
     vector<int> diameter;
-    int V;
-    TreeDiameter(int node_size){
-        V = node_size;
-        G.resize(V);
-    }
+    TreeDiameter(int node_size) : V(node_size), G(V){}
     void add_edge(int u,int v){
         G[u].push_back(v),G[v].push_back(u);
     }
