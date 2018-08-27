@@ -3,12 +3,10 @@
 template<typename T> class Weighted_UnionFind
 {
 public:
+    int V;
     vector<int> par,nrank;
     vector<T> wd;
-    int V;
-    Weighted_UnionFind(int node_size){
-        V = node_size;
-        par.resize(V),wd.resize(V,0),nrank.resize(V,0);
+    Weighted_UnionFind(int node_size) : V(node_size), par(V), nrank(V, 0), wd(V, 0){
         rep(i,V){
             par[i] = i;
         }
