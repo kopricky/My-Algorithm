@@ -9,9 +9,7 @@ private:
     int V;
     vector<vector<int> > G;
 public:
-    tree_hashing(int node_size){
-        V = node_size;
-        G.resize(V);
+    tree_hashing(int node_size) : V(node_size), G(V){
         random_device rnd;
         mt19937 mt(rnd());
         uniform_int_distribution<> rand1(0,mod[0]-1),rand2(0,mod[1]-1);
