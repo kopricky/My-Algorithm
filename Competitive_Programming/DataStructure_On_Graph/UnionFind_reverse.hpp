@@ -3,11 +3,9 @@
 //オフラインクエリのグラフの動的連結性判定などに使える
 class UF_pop {
 public:
-    vector<int> par,nrank; vector<vector<int> > hist;
     int sz;
-    UF_pop(int node_size){
-        sz = node_size;
-        par = nrank = vector<int>(sz,0);
+    vector<int> par,nrank; vector<vector<int> > hist;
+    UF_pop(int node_size) : sz(node_size), par(sz), nrank(sz, 0){
         rep(i,sz){
             par[i] = i;
         }
