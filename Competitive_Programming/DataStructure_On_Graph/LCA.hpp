@@ -42,14 +42,11 @@ public:
 
 class LCA{
 public:
-    vector<int> ord,depth,id;
-    vector<vector<int> > G;
-    segtree<int> st;
     int V;
-    LCA(int node_size){
-        V = node_size;
-        G.resize(V),depth.resize(V),id.resize(V,-1);
-    }
+    vector<vector<int> > G;
+    vector<int> ord,depth,id;
+    segtree<int> st;
+    LCA(int node_size) : V(node_size), G(V), depth(V), id(V, -1){}
     void add_edge(int from,int to){
         G[from].push_back(to),G[to].push_back(from);
     }
