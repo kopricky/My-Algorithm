@@ -6,7 +6,7 @@ private:
     int sz; vector<int> par,nrank;
 public:
     UF(){}
-    UF(int node_size) : sz(node_size), par(sz), nrank(sz){ rep(i,sz){ par[i] = i; nrank[i] = 0; } }
+    UF(int node_size) : sz(node_size), par(sz), nrank(sz, 0){ rep(i,sz){ par[i] = i; } }
     int find(int x){ if(par[x] == x){ return x; }else{ return par[x] = find(par[x]); } }
     void unite(int x,int y)
     { x = find(x),y = find(y); if(x == y) return;
@@ -20,7 +20,7 @@ private:
     int sz; vector<int> par,nrank,size;
 public:
     UF(){}
-    UF(int node_size) : sz(node_size), par(sz), nrank(sz), size(sz){ rep(i,sz){ par[i] = i; nrank[i] = 0; size[i] = 1;} }
+    UF(int node_size) : sz(node_size), par(sz), nrank(sz, 0), size(sz, 1){ rep(i,sz){ par[i] = i; } }
     int find(int x){ if(par[x] == x){ return x; }else{ return par[x] = find(par[x]); } }
     void unite(int x,int y)
     { x = find(x),y = find(y); if(x == y) return; if(nrank[x] < nrank[y]) swap(x,y);
