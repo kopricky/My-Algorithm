@@ -8,12 +8,10 @@
 template<typename T> class UndirectedMinCut
 {
 public:
+    int V;
     vector<vector<T> > G;
     vector<int> order;
-    int V;
-    UndirectedMinCut(int node_size){
-        V = node_size;
-        G.resize(V,vector<T>(V,0)), order.resize(V);
+    UndirectedMinCut(int node_size) : V(node_size), G(V, vector<T>(V,0)), order(V){
         iota(order.begin(),order.end(),0);
     }
     void add_edge(int u,int v,T cap){
