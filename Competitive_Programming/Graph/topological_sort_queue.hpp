@@ -7,13 +7,10 @@
 
 class tsort {
 public:
+	int V;
 	vector<vector<int> > G;
 	vector<int> deg,res;
-	int V;
-	tsort(int node_size){
-		V = node_size;
-		G.resize(node_size),deg.resize(node_size,0);
-	}
+	tsort(int node_size) : V(node_size), G(V), deg(V, 0){}
 	void add_edge(int from,int to){
 		G[from].push_back(to);
 		deg[to]++;
