@@ -4,15 +4,11 @@
 
 class SCC{
 public:
+	int V,cnt;
 	vector<vector<int> > G,rG,graph;
 	vector<int> vs,cmp;
 	vector<bool> used;
-	int V,cnt;
-	SCC(int node_size){
-		V = node_size;
-		G.resize(V),rG.resize(V);
-		used.resize(V),cmp.resize(V);
-	}
+	SCC(int node_size) : V(node_size), G(V), rG(V), cmp(V), used(V, false){}
 	void add_edge(int from,int to){
 		G[from].push_back(to);
 		rG[to].push_back(from);
@@ -36,7 +32,6 @@ public:
 		}
 	}
 	int solve(){ //強連結成分の数を返す
-		fill(used.begin(),used.end(),false);
 		rep(i,V){
 			if(!used[i]){
 				dfs(i);
