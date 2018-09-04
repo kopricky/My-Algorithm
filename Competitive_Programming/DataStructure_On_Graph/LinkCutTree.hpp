@@ -2,6 +2,7 @@
 
 //根はそれぞれのパスの根と全体の木の根の２つの意味がある
 //親はsplay木の中の親とパスの親の２つの意味がある
+
 struct node {
     int id;
     node *left, *right, *par;

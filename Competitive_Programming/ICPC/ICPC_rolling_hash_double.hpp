@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-struct RH{
+struct RH　{
     static ll mod[2], mul[4];
     static vector<ll> pm[4];
     vector<string> s; int rw, cl; vector<vector<ll> > hs[2];

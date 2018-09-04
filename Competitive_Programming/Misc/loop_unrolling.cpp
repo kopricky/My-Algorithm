@@ -1,6 +1,10 @@
 // loop-unrolling のコードを生成するコード
-// i,j,kループについて行うべき処理を一行実装しかつi,j,kの前に!をつける
-// 引数は処理(一行)+x,y,z(i,j,kのアンローリングの段数)
+// i,j,kループについて行うべき処理を一行実装しかつ各添字i,j,kの前に!をつける
+// 入力は
+// 処理 (一行)
+// x y z (i,j,kのアンローリングの段数)
+// の形
+
 #include <bits/stdc++.h>
 #define ll long long
 #define rep(i,n) for(int i=0;i<(int)(n);++i)
@@ -22,27 +26,18 @@ int main()
         if(s[i] == '!'){
             if(s[i+1] == 'i'){
                 rep(k,y){ rep(l,z){ rep(j,x){
-                    if(j){
-                        res[j][k][l].pb('i'), res[j][k][l].pb('+'), res[j][k][l] += to_string(j);
-                    }else{
-                        res[j][k][l].pb('i');
-                    }
+                    if(j) res[j][k][l].pb('i'), res[j][k][l].pb('+'), res[j][k][l] += to_string(j);
+                    else res[j][k][l].pb('i');
                 } } }
             }else if(s[i+1] == 'j'){
                 rep(j,x){ rep(l,z){ rep(k,y){
-                    if(k){
-                        res[j][k][l].pb('j'), res[j][k][l].pb('+'), res[j][k][l] += to_string(k);
-                    }else{
-                        res[j][k][l].pb('j');
-                    }
+                    if(k) res[j][k][l].pb('j'), res[j][k][l].pb('+'), res[j][k][l] += to_string(k);
+                    else res[j][k][l].pb('j');
                 } } }
             }else{
                 rep(j,x){ rep(k,y){ rep(l,z){
-                    if(l){
-                        res[j][k][l].pb('k'), res[j][k][l].pb('+'), res[j][k][l] += to_string(l);
-                    }else{
-                        res[j][k][l].pb('k');
-                    }
+                    if(l) res[j][k][l].pb('k'), res[j][k][l].pb('+'), res[j][k][l] += to_string(l);
+                    else res[j][k][l].pb('k');
                 } } }
             }
             i++;

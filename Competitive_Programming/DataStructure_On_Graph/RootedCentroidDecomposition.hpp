@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+// 下記論文の solver の途中で使うので実装した
+// A Simple, Combinatorial Algorithm for Solving SDD Systems in Nearly-Linear Time 2013 STOC
 //根付きの重心分解(こういう概念が実際に存在するかは知らない)
 //重心分解を根付きにすることでパスに対するクエリをHL分解よりも高速に処理できる
 //枝iの重みをA[i]*x+B[i] (A[i],B[i]は定数) としたとき
