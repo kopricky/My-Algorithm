@@ -1,4 +1,6 @@
-// 直線の管理, 座標の値は int型
+#include "../header.hpp"
+
+// 直線の管理, 座標の値は int 型を仮定
 
 int gcd(int a, int b)
 {
