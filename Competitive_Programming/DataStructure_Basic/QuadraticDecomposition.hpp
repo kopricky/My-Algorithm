@@ -6,12 +6,9 @@ template<typename T> class QuadraticDecomposition{
 public:
     vector<T> data, backet;
     int sz,backet_size,backet_cnt;
-    QuadraticDecomposition(vector<T>& v) : data(v){
-        sz = (int)data.size();
-        backet_size = (int)sqrt(sz);
-        backet_cnt = (sz + backet_size - 1) / backet_size;
-        backet.resize(backet_cnt);
-        rep(i,sz){
+    QuadraticDecomposition(vector<T>& v) : data(v), sz((int)data.size()),
+        backet_size((int)sqrt(sz)), backet_cnt((sz + backet_size - 1) / backet_size){
+        for(int i = 0; i < sz; i++){
             backet[i / backet_size] += data[i];   //例えば和を持たせる処理
         }
     }

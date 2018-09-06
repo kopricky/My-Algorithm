@@ -11,7 +11,7 @@ public:
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n);
+        node.resize(2*n, make_pair(numeric_limits<T>::max(), -1));
         rep(i,sz){
             node[i+n] = make_pair(v[i], i);
         }

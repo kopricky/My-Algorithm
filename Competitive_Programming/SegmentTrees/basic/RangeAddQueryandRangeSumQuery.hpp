@@ -6,15 +6,13 @@ private:
     vector<T> node, lazy;
 
 public:
-    segtree(vector<T>& v){
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1, 0);
-        lazy.resize(2*n-1, 0);
-        rep(i,sz){
+        node.resize(2*n-1, 0), lazy.resize(2*n-1, 0);
+        for(int i = 0; i < sz; i++){
             node[i+n-1] = v[i];
         }
         for(int i=n-2; i>=0; i--){
@@ -25,8 +23,7 @@ public:
         if(lazy[k] != 0){
             node[k] += lazy[k]; //kを根とするsubtreeについての情報を更新
             if(r - l > 1){
-                lazy[2*k+1] += lazy[k] / 2;
-                lazy[2*k+2] += lazy[k] / 2;
+                lazy[2*k+1] += lazy[k] / 2, lazy[2*k+2] += lazy[k] / 2;
             }
             lazy[k] = 0;
         }
@@ -41,8 +38,7 @@ public:
             lazy[k] += (r - l) * x;
             eval(k, l, r);
         }else{
-            range(a, b, x, 2*k+1, l, (l+r)/2);
-            range(a, b, x, 2*k+2, (l+r)/2, r);
+            range(a, b, x, 2*k+1, l, (l+r)/2), range(a, b, x, 2*k+2, (l+r)/2, r);
             node[k] = node[2*k+1] + node[2*k+2];
         }
     }
@@ -55,9 +51,13 @@ public:
         if(a <= l && r <= b){
             return node[k];
         }
-        T vl = query(a, b, 2*k+1, l, (l+r)/2);
-        T vr = query(a, b, 2*k+2, (l+r)/2, r);
+        T vl = query(a, b, 2*k+1, l, (l+r)/2), vr = query(a, b, 2*k+2, (l+r)/2, r);
         return vl + vr;
     }
-    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
+    void print(){
+        for(int i = 0; i < sz; i++){
+            cout<<query(i,i+1)<< " ";
+        }
+        cout<<endl;
+    }
 };
