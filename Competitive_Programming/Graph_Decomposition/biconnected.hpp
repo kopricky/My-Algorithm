@@ -13,30 +13,30 @@ public:
 									,cmp(V), visit(V, false){}
 	void build(){
 		int id = 0;
-		rep(i,V){
+		for(int i = 0; i < V; i++){
 			if(!visit[i]){
 				dfs(i,-1,id);
 			}
 		}
 	}
-	void dfs(int v,int p,int &k)
+	void dfs(int u,int p,int &k)
 	{
-		visit[v] = true;
-		ord[v] = k++;
-		low[v] = ord[v];
-		rep(i,(int)G[v].size()){
-			int w = G[v][i];
-			if(!visit[w]){
-				dfs(w,v,k);
-				low[v] = min(low[v],low[w]);
-				if(ord[v] < low[w]){
-				    bridge.push_back(P(v,w));
-	                check[v][i].second = 1;
-	                check[w][check[v][i].first].second = 1;
+		visit[u] = true;
+		ord[u] = k++;
+		low[u] = ord[u];
+		for(int i = 0; i < (int)G[u].size(); i++){
+			int v = G[u][i];
+			if(!visit[v]){
+				dfs(v,u,k);
+				low[u] = min(low[u],low[v]);
+				if(ord[u] < low[v]){
+				    bridge.push_back(P(u,v));
+	                check[u][i].second = 1;
+	                check[v][check[u][i].first].second = 1;
 				}
 			//(v,w)は後退辺
-			}else if(w != p){
-				low[v] = min(low[v],ord[w]);
+			}else if(v != p){
+				low[u] = min(low[u],ord[v]);
 			}
 		}
 	}
@@ -51,21 +51,21 @@ public:
 	{
 	    visit[u] = true;
 	    cmp[u] = kind;
-	    rep(i,(int)G[u].size()){
-			int w = G[u][i];
+	    for(int i = 0; i < (int)G[u].size(); i++){
+			int v = G[u][i];
 	        if(check[u][i].second){
-	            if(!visit[w]){
-	                que.push(w);
+	            if(!visit[v]){
+	                que.push(v);
 	            }
-	        }else if(!visit[w]){
-	            restrict_dfs(w,u,kind,que);
+	        }else if(!visit[v]){
+	            restrict_dfs(v,u,kind,que);
 	        }
 	    }
 	}
     void rebuild()
     {
 	    fill(visit.begin(),visit.end(),false);
-	    rep(i,V){
+	    for(int i = 0; i < V; i++){
 	        if(!visit[i]){
 	            queue<int> que;
 	            que.push(i);
@@ -78,14 +78,13 @@ public:
 	        }
 	    }
     }
-	// auxiliary graph を作る
+	// 2(辺)連結成分を頂点とする木を作る
 	void make_bctree()
 	{
 		tree.resize(V);
 		rebuild();
-	    rep(i,(int)bridge.size()){
-	        int a = cmp[bridge[i].first];
-	        int b = cmp[bridge[i].second];
+	    for(int i = 0; i < (int)bridge.size(); i++){
+	        int a = cmp[bridge[i].first], b = cmp[bridge[i].second];
 	        tree[a].push_back(b), tree[b].push_back(a);
 	    }
 	}

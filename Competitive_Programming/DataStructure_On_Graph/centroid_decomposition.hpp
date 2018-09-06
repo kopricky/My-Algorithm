@@ -8,7 +8,7 @@ private:
     vector<bool> used;
     //sz:重心分解後の最大部分木に含まれる頂点の数(自分を含める)
     //par:重心分解後の親の頂点
-    vector<int> sz,par;
+    vector<int> sz, par;
     //部分木のサイズを計算
     void calcSize(int u,int p){
         sz[u] = 1;
@@ -48,7 +48,7 @@ public:
     CentroidDecomposition(int node_size) : V(node_size), G(V), used(V, false)
                                                 , sz(V, 0), par(V, -1){}
     void add_edge(int u,int v){
-        G[u].push_back(v),G[v].push_back(u);
+        G[u].push_back(v), G[v].push_back(u);
     }
     void build(){
         cdBuild(0,-1);
