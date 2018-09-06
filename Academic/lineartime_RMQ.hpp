@@ -1,6 +1,6 @@
 #include "header.hpp"
 
-//Harel and Tarjan 1984 Bender and Farach-Colton 2000 を参照
+//Harel, Tarjan 1984 Bender, Colton 2000 を参照
 template<typename T> class RMQ
 {
 private:
@@ -13,31 +13,32 @@ private:
     std::vector<RMQNode> tree;
     std::vector<T> arr;
     std::vector<int> euler_tour, depth, diff, visit_id;
-    int node_size, root, arr_len, kind;
-    std::vector<int> Block_arr, diff_bit;   //各ブロックで深さが最小になるようなインデックス　各ブロックのdiffの情報をビットに詰めたもの
-    std::vector<std::vector<int> > Sparse_Table;  //i番目から長さ2^kの区間に含まれるdepthのうち最小のインデックス
-    std::vector<std::vector<std::vector<int> > > Table_Lookup;
+    int node_size, root, arr_len;
+    bool max_query;
+    std::vector<int> block_arr, diff_bit;   //各ブロックで深さが最小になるようなインデックス　各ブロックのdiffの情報をビットに詰めたもの
+    std::vector<std::vector<int> > sparse_table;  //i番目から長さ2^kの区間に含まれるdepthのうち最小のインデックス
+    std::vector<std::vector<std::vector<int> > > table_lookup;
     int block_size, block_rem, block_cnt, log_block_cnt;
 
     void make_cartesian_tree();
     void make_euler_tour(int cur_node, int& id, int cur_depth);
-    void make_Block_arr();
-    void make_Sparse_Table();
+    void make_block_arr();
+    void make_sparse_table();
     void make_diff_bit();
-    void make_Table_Lookup();
+    void make_table_lookup();
     std::pair<int, T> PM_RMQ(int st, int ed);
 public:
-    void build(std::vector<T>& arg1, int arg2=0);    //arg2=1のときrange_max_queryを表す
-    T query(int st, int ed);
+    void build(std::vector<T>& arg1, bool max_query_=false);    //trueのときrange_max_queryを表す
+    pair<int, T> query(int st, int ed); // (最小(大)値を達成するインデックス, 値)
 };
 
 template<typename T>
-void RMQ<T>::build(std::vector<T>& arg1, int arg2){
+void RMQ<T>::build(std::vector<T>& arg1, bool max_query_){
     node_size = (int)arg1.size();
-    //配列の長さが2以上を仮定
     assert(node_size >= 2);
     arr.resize(node_size, 0);
-    if(arg2){
+    max_query = max_query_;
+    if(max_query){
         for(int i = 0; i < node_size; i++){
             arr[i] = -arg1[i];
         }
@@ -46,7 +47,6 @@ void RMQ<T>::build(std::vector<T>& arg1, int arg2){
             arr[i] = arg1[i];
         }
     }
-    kind = arg2;
     make_cartesian_tree();
     euler_tour.resize(2 * node_size - 1, -1), depth.resize(2 * node_size - 1, -1);
     diff.resize(2 * node_size - 2, -1), visit_id.resize(node_size, -1);
@@ -57,10 +57,10 @@ void RMQ<T>::build(std::vector<T>& arg1, int arg2){
     }
     //±RMQの実装
     arr_len = 2 * node_size - 1;
-    make_Block_arr();
-    make_Sparse_Table();
+    make_block_arr();
+    make_sparse_table();
     make_diff_bit();
-    make_Table_Lookup();
+    make_table_lookup();
 }
 
 template<typename T>
@@ -122,13 +122,13 @@ void RMQ<T>::make_euler_tour(int cur_node, int& id, int cur_depth)
 }
 
 template<typename T>
-void RMQ<T>::make_Block_arr()
+void RMQ<T>::make_block_arr()
 {
     block_size = ceil(log2(arr_len)/2);
     block_cnt = (arr_len - 1) / block_size + 1;
     block_rem = arr_len % block_size;
     log_block_cnt = ceil(log2(block_cnt)) + 1;
-    Block_arr.resize(block_cnt);
+    block_arr.resize(block_cnt);
     for(int i = 0; i < block_cnt; i++){
         int mn = numeric_limits<int>::max();
         int mn_id = -1;
@@ -142,26 +142,26 @@ void RMQ<T>::make_Block_arr()
                 mn_id = now_id;
             }
         }
-        Block_arr[i] = mn_id;
+        block_arr[i] = mn_id;
     }
 }
 
 template<typename T>
-void RMQ<T>::make_Sparse_Table()
+void RMQ<T>::make_sparse_table()
 {
-    Sparse_Table.resize(block_cnt, std::vector<int>(log_block_cnt, -1));
+    sparse_table.resize(block_cnt, std::vector<int>(log_block_cnt, -1));
     for(int i = 0; i < block_cnt; i++){
-        Sparse_Table[i][0] = Block_arr[i];
+        sparse_table[i][0] = block_arr[i];
     }
     for(int j = 0; j < log_block_cnt - 1; j++){
         for(int i = 0; i < block_cnt; i++){
             if(i + (1 << j) >= block_cnt){
-                Sparse_Table[i][j + 1] = Sparse_Table[i][j];
+                sparse_table[i][j + 1] = sparse_table[i][j];
             }else{
-                if(depth[Sparse_Table[i][j]] <= depth[Sparse_Table[i + (1 << j)][j]]){
-                    Sparse_Table[i][j + 1] = Sparse_Table[i][j];
+                if(depth[sparse_table[i][j]] <= depth[sparse_table[i + (1 << j)][j]]){
+                    sparse_table[i][j + 1] = sparse_table[i][j];
                 }else{
-                    Sparse_Table[i][j + 1] = Sparse_Table[i + (1 << j)][j];
+                    sparse_table[i][j + 1] = sparse_table[i + (1 << j)][j];
                 }
             }
         }
@@ -188,9 +188,9 @@ void RMQ<T>::make_diff_bit()
 }
 
 template<typename T>
-void RMQ<T>::make_Table_Lookup()
+void RMQ<T>::make_table_lookup()
 {
-    Table_Lookup.resize((1 << block_size), std::vector<std::vector<int> >(block_size + 1, std::vector<int>(block_size + 1, 0)));
+    table_lookup.resize((1 << block_size), std::vector<std::vector<int> >(block_size + 1, std::vector<int>(block_size + 1, 0)));
     //0は減少,1は増加
     for(int i = 0; i < (1 << block_size); i++){
         std::vector<int> vec(block_size - 1, -1);
@@ -201,14 +201,14 @@ void RMQ<T>::make_Table_Lookup()
         }
         for(int j = 0; j < block_size; j++){
             int nw = 0, mn = 0, mn_id = j;
-            Table_Lookup[i][j][j+1] = j;
+            table_lookup[i][j][j+1] = j;
             for(int k = j + 2; k <= block_size; k++){
                 nw += vec[k-2];
                 if(nw < mn){
                     mn = nw;
                     mn_id = k-1;
                 }
-                Table_Lookup[i][j][k] = mn_id;
+                table_lookup[i][j][k] = mn_id;
             }
         }
     }
@@ -226,11 +226,11 @@ std::pair<int, T> RMQ<T>::PM_RMQ(int st, int ed)
     int ed_rem = ed % block_size;
     if(ed_block_id - st_block_id < 0){    //間にブロック区間がひとつもない場合
         if(st_id == ed_id){ //同じブロック区間に存在する場合
-            int id_kari = block_size * st_id + Table_Lookup[diff_bit[st_id]][st_rem][ed_rem + 1];
+            int id_kari = block_size * st_id + table_lookup[diff_bit[st_id]][st_rem][ed_rem + 1];
             return std::make_pair(euler_tour[id_kari], arr[euler_tour[id_kari]]);
         }else{
-            int cand1 = block_size * st_id + Table_Lookup[diff_bit[st_id]][st_rem][block_size];
-            int cand2 = block_size * ed_id + Table_Lookup[diff_bit[ed_id]][0][ed_rem + 1];
+            int cand1 = block_size * st_id + table_lookup[diff_bit[st_id]][st_rem][block_size];
+            int cand2 = block_size * ed_id + table_lookup[diff_bit[ed_id]][0][ed_rem + 1];
             if(depth[cand1] <= depth[cand2]){
                 return std::make_pair(euler_tour[cand1], arr[euler_tour[cand1]]);
             }else{
@@ -239,16 +239,16 @@ std::pair<int, T> RMQ<T>::PM_RMQ(int st, int ed)
         }
     }else{  //間にブロックっ区間が存在する場合
         int num = floor(log2(ed_block_id - st_block_id + 1));
-        int cand1 = Sparse_Table[st_block_id][num];
-        int cand2 = Sparse_Table[ed_block_id - (1 << num) + 1][num];
+        int cand1 = sparse_table[st_block_id][num];
+        int cand2 = sparse_table[ed_block_id - (1 << num) + 1][num];
         int c1,c2;
         if(depth[cand1] <= depth[cand2]){
             c1 = cand1;
         }else{
             c1 = cand2;
         }
-        int cand3 = block_size * st_id + Table_Lookup[diff_bit[st_id]][st_rem][block_size];
-        int cand4 = block_size * ed_id + Table_Lookup[diff_bit[ed_id]][0][ed_rem + 1];
+        int cand3 = block_size * st_id + table_lookup[diff_bit[st_id]][st_rem][block_size];
+        int cand4 = block_size * ed_id + table_lookup[diff_bit[ed_id]][0][ed_rem + 1];
         if(depth[cand3] <= depth[cand4]){
             c2 = cand3;
         }else{
@@ -263,13 +263,10 @@ std::pair<int, T> RMQ<T>::PM_RMQ(int st, int ed)
 }
 
 template<typename T>
-T RMQ<T>::query(int st, int ed)
+pair<int, T> RMQ<T>::query(int st, int ed)
 {
     assert(st < ed);
     std::pair<int, T> res = PM_RMQ(std::min(visit_id[st], visit_id[ed-1]), std::max(visit_id[st], visit_id[ed-1]));
-    if(kind){
-        return -res.second;
-    }else{
-        return res.second;
-    }
+    if(max_query) res.second = -res.second;
+    return res;
 }

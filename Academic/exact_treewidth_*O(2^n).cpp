@@ -43,7 +43,7 @@ std::pair<int, int> maximum_clique(int node_size)
 void solve_Q_size(const int v, int cur_vertex, const int subset, int& Q_size, int& visited)
 {
     visited |= (1 << cur_vertex);
-    for(int i = 0; i < graph[cur_vertex].size(); i++){
+    for(int i = 0; i < (int)graph[cur_vertex].size(); i++){
         int next_vertex = graph[cur_vertex][i];
         //一度訪れた点はたどらない
         if(visited & (1 << next_vertex)){
@@ -66,51 +66,51 @@ int solve_treewidth(int node_size)
     std::pair<int, int> res = maximum_clique(node_size);
     int max_clique_size = res.first, max_clique = res.second;
     int upper_bound = node_size - 1;
-    std::set<std::pair<int, int> > TW[MAX_SIZE];
-    TW[0].insert(std::make_pair(0, -INF) );
+    std::set<std::pair<int, int> > tw[MAX_SIZE];
+    tw[0].insert(std::make_pair(0, -INF) );
     for(int i = 1; i <= node_size - max_clique_size; i++){
-        for(const std::pair<int, int> element: TW[i-1]){
+        for(const std::pair<int, int> element: tw[i-1]){
             int subset = element.first;
-            int TW_value = element.second;
+            int tw_value = element.second;
             for(int v = 0; v < node_size; v++){
                 if(!(subset & (1 << v))){
                     int next_subset = subset ^ (1 << v);
                     int Q_size = 0;
                     int visited = 0;
                     solve_Q_size(v, v, subset, Q_size, visited);
-                    int candidate = std::max(TW_value, Q_size);
+                    int candidate = std::max(tw_value, Q_size);
                     if(candidate < upper_bound){
                         upper_bound = std::min(upper_bound, node_size - i);
                         std::set<std::pair<int, int> >::iterator it =
-                            std::lower_bound(TW[i].begin(), TW[i].end(), std::make_pair(next_subset, -INF));
-                        if(it == TW[i].end()){
-                            TW[i].insert(std::make_pair(next_subset, candidate));
+                            std::lower_bound(tw[i].begin(), tw[i].end(), std::make_pair(next_subset, -INF));
+                        if(it == tw[i].end()){
+                            tw[i].insert(std::make_pair(next_subset, candidate));
                             continue;
                         }
                         std::pair<int, int> it_value = *it;
                         //存在していたら
                         if(it_value.first == next_subset){
                             if(candidate < it_value.second){
-                                TW[i].erase(it);
+                                tw[i].erase(it);
                                 it_value.second = candidate;
-                                TW[i].insert(it_value);
+                                tw[i].insert(it_value);
                             }
                         }else{
-                            TW[i].insert(std::make_pair(next_subset, candidate));
+                            tw[i].insert(std::make_pair(next_subset, candidate));
                         }
                     }
                 }
             }
         }
-        TW[i-1].clear();
+        tw[i-1].clear();
     }
     std::set<std::pair<int, int> >::iterator it =
-        std::lower_bound(TW[node_size - max_clique_size].begin(), TW[node_size - max_clique_size].end(), std::make_pair(V ^ max_clique, -INF));
-    if(it == TW[node_size - max_clique_size].end()){
+        std::lower_bound(tw[node_size - max_clique_size].begin(), tw[node_size - max_clique_size].end(), std::make_pair(V ^ max_clique, -INF));
+    if(it == tw[node_size - max_clique_size].end()){
         return upper_bound;
     }
     std::pair<int, int> it_value = *it;
-    if(it_value.first == V ^ max_clique && it_value.first != 0){
+    if(it_value.first == (V ^ max_clique) && it_value.first != 0){
         return it_value.second;
     }else{
         return upper_bound;

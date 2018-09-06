@@ -12,7 +12,7 @@ std::vector<int> graph[MAX_SIZE];
 void solve_Q_size(const int v, int cur_vertex, const int subset, int& Q_size, int& visited)
 {
     visited |= (1 << cur_vertex);
-    for(int i = 0; i < graph[cur_vertex].size(); i++){
+    for(int i = 0; i < (int)graph[cur_vertex].size(); i++){
         int next_vertex = graph[cur_vertex][i];
         //一度訪れた点はたどらない
         if(visited & (1 << next_vertex)){
