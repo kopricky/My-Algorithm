@@ -70,7 +70,7 @@ private:
         trim_digit(res), trim_sign(res);
     }
     static int add_(const int x, const int y) { return (x + y < MOD_) ? x + y : x + y - MOD_; }
-    static int mul_(const int x, const int y) { return (ll)x * y % MOD_; }
+    static int mul_(const int x, const int y) { return (long long)x * y % MOD_; }
     static int power(int x, int n){
         int res = 1;
         while(n > 0){
@@ -177,7 +177,7 @@ private:
 public:
     MPI() : sign(false){ this->push_back(0); }
 
-    MPI(ll val) : sign(false){
+    MPI(long long val) : sign(false){
         if(val == 0){
             this->push_back(0);
         }else{
@@ -198,8 +198,8 @@ public:
         for(int i = (int)s.size() - 1; i >= sign; i--) this->push_back(s[i]-'0');
     }
 
-    ll to_ll() const {
-        ll res = 0, dig = 1;
+    long long to_ll() const {
+        long long res = 0, dig = 1;
         for(int i = 0; i < (int)size(); i++){
             res += dig * (*this)[i], dig *= 10;
         }
@@ -228,7 +228,7 @@ public:
         return os;
     }
 
-    MPI& operator=(ll val) {
+    MPI& operator=(long long val) {
         *this = MPI(val);
         return *this;
     }
@@ -242,11 +242,11 @@ public:
         return false;
     }
 
-    bool operator<(const ll num) const {
+    bool operator<(const long long num) const {
         return *this < MPI(num);
     }
 
-    friend bool operator<(const ll num, const MPI& another){
+    friend bool operator<(const long long num, const MPI& another){
         return MPI(num) < another;
     }
 
@@ -254,11 +254,11 @@ public:
         return another < *this;
     }
 
-    bool operator>(const ll num) const {
+    bool operator>(const long long num) const {
         return *this > MPI(num);
     }
 
-    friend bool operator>(const ll num, const MPI& another){
+    friend bool operator>(const long long num, const MPI& another){
         return MPI(num) > another;
     }
 
@@ -266,11 +266,11 @@ public:
         return !(*this > another);
     }
 
-    bool operator<=(const ll num) const {
+    bool operator<=(const long long num) const {
         return *this <= MPI(num);
     }
 
-    friend bool operator<=(const ll num, const MPI& another){
+    friend bool operator<=(const long long num, const MPI& another){
         return MPI(num) <= another;
     }
 
@@ -278,11 +278,11 @@ public:
         return !(*this < another);
     }
 
-    bool operator>=(const ll num) const {
+    bool operator>=(const long long num) const {
         return *this >= MPI(num);
     }
 
-    friend bool operator>=(const ll num, const MPI& another){
+    friend bool operator>=(const long long num, const MPI& another){
         return MPI(num) >= another;
     }
 
@@ -295,11 +295,11 @@ public:
         return true;
     }
 
-    bool operator==(const ll num) const {
+    bool operator==(const long long num) const {
         return *this == MPI(num);
     }
 
-    friend bool operator==(const ll num, const MPI& another){
+    friend bool operator==(const long long num, const MPI& another){
         return MPI(num) == another;
     }
 
@@ -307,11 +307,11 @@ public:
         return !(*this == another);
     }
 
-    bool operator!=(const ll num) const {
+    bool operator!=(const long long num) const {
         return *this != MPI(num);
     }
 
-    friend bool operator!=(const ll num, const MPI& another){
+    friend bool operator!=(const long long num, const MPI& another){
         return MPI(num) != another;
     }
 
@@ -353,11 +353,11 @@ public:
         return res;
     }
 
-    MPI operator+(ll num) const {
+    MPI operator+(long long num) const {
         return *this + MPI(num);
     }
 
-    friend MPI operator+(ll a, const MPI& b){
+    friend MPI operator+(long long a, const MPI& b){
         return b + a;
     }
 
@@ -366,7 +366,7 @@ public:
         return *this;
     }
 
-    MPI& operator+=(ll num){
+    MPI& operator+=(long long num){
         *this = *this + num;
         return *this;
     }
@@ -396,11 +396,11 @@ public:
         return res;
     }
 
-    MPI operator-(ll num) const {
+    MPI operator-(long long num) const {
         return *this - MPI(num);
     }
 
-    friend MPI operator-(ll a, const MPI& b){
+    friend MPI operator-(long long a, const MPI& b){
         return b - a;
     }
 
@@ -409,7 +409,7 @@ public:
         return *this;
     }
 
-    MPI& operator-=(ll num){
+    MPI& operator-=(long long num){
         *this = *this - num;
         return *this;
     }
@@ -430,11 +430,11 @@ public:
         return res;
     }
 
-    MPI operator*(ll num) const {
+    MPI operator*(long long num) const {
         return *this * MPI(num);
     }
 
-    friend MPI operator*(ll a, const MPI& b){
+    friend MPI operator*(long long a, const MPI& b){
         return b * a;
     }
 
@@ -443,7 +443,7 @@ public:
         return *this;
     }
 
-    MPI& operator*=(ll num){
+    MPI& operator*=(long long num){
         *this = *this * num;
         return *this;
     }
@@ -457,11 +457,11 @@ public:
         return a;
     }
 
-    MPI operator/(ll num) const {
+    MPI operator/(long long num) const {
         return *this / MPI(num);
     }
 
-    friend MPI operator/(ll a, const MPI& b){
+    friend MPI operator/(long long a, const MPI& b){
         return b / a;
     }
 
@@ -470,7 +470,7 @@ public:
         return *this;
     }
 
-    MPI& operator/=(ll num){
+    MPI& operator/=(long long num){
         *this = *this / num;
         return *this;
     }
@@ -484,11 +484,11 @@ public:
         return b;
     }
 
-    MPI operator%(ll num) const {
+    MPI operator%(long long num) const {
         return *this % MPI(num);
     }
 
-    friend MPI operator%(ll a, const MPI& b){
+    friend MPI operator%(long long a, const MPI& b){
         return b % a;
     }
 
@@ -497,7 +497,7 @@ public:
         return *this;
     }
 
-    MPI& operator%=(ll num){
+    MPI& operator%=(long long num){
         *this = *this % num;
         return *this;
     }

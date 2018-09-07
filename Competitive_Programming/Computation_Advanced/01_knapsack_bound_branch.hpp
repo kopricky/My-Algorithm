@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 //01ナップザック問題に対する分枝限定法を用いたアルゴリズム
-void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll> >& vec)
+void dfs(int n, long long W, long long value, long long weight, long long& opt, int index, vector<pair<long long,long long> >& vec)
 {
     if(index == (int)vec.size()){
         opt = max(opt, value);
@@ -10,8 +10,8 @@ void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll
     //使う
     if(weight + vec[index].second <= W){
         opt = max(opt, value + vec[index].first);
-        ll tweight = weight + vec[index].second;;
-        ll tvalue = value + vec[index].first;
+        long long tweight = weight + vec[index].second;;
+        long long tvalue = value + vec[index].first;
         for(int i=index+1;i<(int)vec.size();i++){
             if(tweight + vec[i].second <= W){
                 tweight += vec[i].second;
@@ -26,8 +26,8 @@ void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll
         }
     }
     //使わない
-    ll tweight = weight;
-    ll tvalue = value;
+    long long tweight = weight;
+    long long tvalue = value;
     for(int i=index+1;i<(int)vec.size();i++){
         if(tweight + vec[i].second <= W){
             tweight += vec[i].second;
@@ -42,9 +42,9 @@ void dfs(int n, ll W, ll value, ll weight, ll& opt, int index, vector<pair<ll,ll
     }
 }
 //vecには(価値, 重さ)の順で商品を詰める
-ll solve(int n, ll W, vector<pair<ll,ll> >& vec)
+long long solve(int n, long long W, vector<pair<long long,long long> >& vec)
 {
-    ll opt = 0;
+    long long opt = 0;
     dfs(n,W,0,0,opt,0,vec);
     return opt;
 }

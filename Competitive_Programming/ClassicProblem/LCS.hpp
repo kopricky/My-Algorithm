@@ -8,10 +8,10 @@ const int MAX_SIZE = 26;
 int LCS(const string& a, const string& b){
     int n = (int)a.size(), m = (int)b.size();
     vector<int> x(n), y(m);
-    rep(i,n){
+    for(int i = 0; i < n; i++){
         x[i] = a[i]-'a';
     }
-    rep(i,m){
+    for(int i = 0; i < m; i++){
         y[i] = b[i]-'a';
     }
     vector<vector<int> > vec(MAX_SIZE);
@@ -19,9 +19,9 @@ int LCS(const string& a, const string& b){
         vec[y[j]].push_back(j);
     }
     vector<int> xs(n, INF);
-    rep(i,n){
-        rep(j,(int)vec[x[i]].size()){
-            *lower_bound(xs.begin(),xs.end(),vec[x[i]][j]) = vec[x[i]][j];
+    for(int i = 0; i < n; i++){
+        for(int val : vec[x[i]]){
+            *lower_bound(xs.begin(),xs.end(),val) = val;
         }
     }
     return lower_bound(xs.begin(),xs.end(),INF) - xs.begin();
