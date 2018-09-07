@@ -14,7 +14,7 @@ public:
         table.resize(plen+1);
         table[0] = -1;
         int j = -1;
-        rep(i,plen){
+        for(int i = 0; i < plen; i++){
             while(j >= 0 && pattern[i] != pattern[j]){
                 j = table[j];
             }

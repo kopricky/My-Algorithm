@@ -18,7 +18,7 @@ public:
     void make_sa(){
         index1 = sz;
         sa.resize(index1+1);
-        rep(i,index1+1){
+        for(int i = 0; i < index1+1; i++){
             sa[i] = i;
             rnk[i] = i<index1?recs[i]:-1;
         }
@@ -37,19 +37,19 @@ public:
             for(int i=1;i<=index1;i++){
                 tmp[sa[i]] = tmp[sa[i-1]]+(comp(sa[i-1],sa[i])?1:0);
             }
-            rep(i,index1+1){
+            for(int i = 0; i < index1+1; i++){
                 rnk[i] = tmp[i];
             }
         }
     }
     void make_lcp(){
         lcp.resize(sz+1);
-        rep(i,sz+1){
+        for(int i = 0; i < sz+1; i++){
             rnk[sa[i]] = i;
         }
         int h = 0;
         lcp[0] = 0;
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             int j = sa[rnk[i]-1];
             if(h > 0){
                 h--;
@@ -63,3 +63,57 @@ public:
         }
     }
 };
+
+//cri以上の値のスタートインデックス
+int stsearch(suffixarray& ag,string& cri)
+{
+    int n = ag.sz;
+    int l=0,r=n+1;
+    vector<int>& sa = ag.sa;
+    while(r-l>1){
+        int mid = (l+r)/2;
+        if(n-sa[mid] < (int)(cri.size())){
+            string t = ag.recs.substr(sa[mid],n-sa[mid]);
+            if(t <= cri){
+                l = mid;
+            }else{
+                r = mid;
+            }
+        }else{
+            string t = ag.recs.substr(sa[mid],(int)(cri.size()));
+            if(t < cri){
+                l = mid;
+            }else{
+                r = mid;
+            }
+        }
+    }
+    return r;
+}
+
+//cri以下の値のエンドインデックス+1(開区間的な)
+int edsearch(suffixarray& ag,string& cri)
+{
+    int n = ag.sz;
+    int l=0,r=n+1;
+    vector<int>& sa = ag.sa;
+    while(r-l>1){
+        int mid = (l+r)/2;
+        if(n-sa[mid] < (int)(cri.size())){
+            string t = ag.recs.substr(sa[mid],n-sa[mid]);
+            if(t < cri){
+                l = mid;
+            }else{
+                r = mid;
+            }
+        }else{
+            string t = ag.recs.substr(sa[mid],(int)(cri.size()));
+            if(t <= cri){
+                l = mid;
+            }else{
+                r = mid;
+            }
+        }
+    }
+    return r;
+}
