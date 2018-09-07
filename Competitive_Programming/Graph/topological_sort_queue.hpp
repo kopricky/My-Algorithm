@@ -17,7 +17,7 @@ public:
 	}
  	bool solve() {
 		queue<int> que;
-		rep(i,V){
+		for(int i = 0; i < V; i++){
 	        if(deg[i] == 0){
 	            que.push(i);
 	        }
@@ -26,9 +26,9 @@ public:
 			int p = que.front();
 	        que.pop();
 			res.push_back(p);
-			rep(i,G[p].size()){
-	            if(--deg[G[p][i]] == 0){
-	                que.push(G[p][i]);
+			for(int v : G[p]){
+	            if(--deg[v] == 0){
+	                que.push(v);
 	            }
 	        }
 		}

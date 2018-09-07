@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+//uを根とする部分木は[lb[u],rb[u])で表せる
+
 //行きがけ、通りがけ、帰りがけのすべてを記録
 vector<int> G[MAX_N];
 vector<int> ord;
@@ -10,9 +12,9 @@ void dfs(int u,int p)
     id[u] = ord.size();
     lb[u] = (int)ord.size();
     ord.push_back(u);
-    rep(i,G[u].size()){
-        if(G[u][i] != p){
-            dfs(G[u][i],u);
+    for(int v : G[u]){
+        if(v != p){
+            dfs(v,u);
             ord.push_back(u);
         }
     }
@@ -29,9 +31,9 @@ void dfs(int u,int p)
     id[u] = ord.size();
     lb[u] = (int)ord.size();
     ord.push_back(u);
-    rep(i,G[u].size()){
-        if(G[u][i] != p){
-            dfs(G[u][i],u);
+    for(int v : G[u]){
+        if(v != p){
+            dfs(v,u);
         }
     }
     ord.push_back(u);
@@ -42,16 +44,15 @@ void dfs(int u,int p)
 vector<int> G[MAX_N];
 vector<int> ord;
 int lb[MAX_N],rb[MAX_N],id[MAX_N];
-//uを根とする部分木は[lb[u],rb[u])で表せる
 
 void dfs(int u,int p)
 {
     id[u] = ord.size();
     lb[u] = (int)ord.size();
     ord.push_back(u);
-    rep(i,G[u].size()){
-        if(G[u][i] != p){
-            dfs(G[u][i],u);
+    for(int v : G[u]){
+        if(v != p){
+            dfs(v,u);
         }
     }
     rb[u] = (int)ord.size();

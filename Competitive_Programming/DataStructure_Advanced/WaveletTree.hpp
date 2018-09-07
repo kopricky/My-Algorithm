@@ -59,15 +59,15 @@ public:
         }
         x.resize(n);
         d.resize(logn+1, vector<int>(n, -1)), lc.resize(logn, vector<int>(n, -1));
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             x[i] = pti(vec[i], i);
         }
-        rep(i,n-sz){
+        for(int i = 0; i < n-sz; i++){
             x[i+sz].second = i+sz;
         }
         sort(x.begin(), x.end());
         //いわゆる座圧
-        rep(i,n){
+        for(int i = 0; i < n; i++){
             d[0][x[i].second] = i;
         }
         built(0, n, 0);

@@ -9,8 +9,8 @@ private:
     vector<int> sz;
 public:
     centroid(int node_size) : V(node_size), G(V), sz(V, 0){}
-    void add_edge(int u,int v){
-        G[u].push_back(v),G[v].push_back(u);
+    void add_edge(int u, int v){
+        G[u].push_back(v), G[v].push_back(u);
     }
     void dfs(int u,int p){
         sz[u] = 1;

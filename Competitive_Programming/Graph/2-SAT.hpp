@@ -16,21 +16,21 @@ private:
 		G[from].push_back(to);
 		rG[to].push_back(from);
 	}
-	void _dfs(int v){
-		used[v] = true;
-		rep(i,G[v].size()){
-			if(!used[G[v][i]]){
-				_dfs(G[v][i]);
+	void _dfs(int u){
+		used[u] = true;
+		for(int v : G[u]){
+			if(!used[v]){
+				_dfs(v);
 			}
 		}
-		post_order.push_back(v);
+		post_order.push_back(u);
 	}
-	void _rdfs(int v,int k){
-		used[v] = true;
-		cmp[v] = k;
-		rep(i,rG[v].size()){
-			if(!used[rG[v][i]]){
-				_rdfs(rG[v][i],k);
+	void _rdfs(int u,int k){
+		used[u] = true;
+		cmp[u] = k;
+		for(int v : rG[u]){
+			if(!used[v]){
+				_rdfs(v,k);
 			}
 		}
 	}
@@ -55,13 +55,13 @@ private:
 public:
 	SAT(int node_size) : V(node_size), G(2*V), rG(2*V), used(2*V), cmp(2*V){}
 	//充足可能性判定
-	bool ok(vector<P>& vec){
-	    rep(i,vec.size()){
-	        _add_edge((vec[i].first+V)%(2*V),vec[i].second);
-	        _add_edge((vec[i].second+V)%(2*V),vec[i].first);
+	bool ok(vector<pair<int, int> >& vec){
+	   	for(pair<int, int> p : vec){
+	        _add_edge((p.first+V)%(2*V),p.second);
+	        _add_edge((p.second+V)%(2*V),p.first);
 	    }
 	    _scc();
-	    rep(i,V){
+	    for(int i = 0; i < V; i++){
 	        if(cmp[i] == cmp[V+i]){
 	            return false;
 	        }
@@ -71,7 +71,7 @@ public:
 	//真のものは1,偽のものは0を返す(解の構成)
 	void restore(vector<int>& ans){
 		ans.resize(V);
-	    rep(i,V){
+	    for(int i = 0; i < V; i++){
 			ans[i] = (cmp[i] > cmp[V+i]);
 	    }
 	}

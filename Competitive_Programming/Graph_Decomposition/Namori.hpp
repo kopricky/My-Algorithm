@@ -24,7 +24,7 @@ public:
     void build(){
         graph.resize(V);
         queue<int> que;
-        rep(i,V){
+        for(int i = 0; i < V; i++){
             if(deg[i] == 1){
                 que.push(i);
                 flag[i] = true;
@@ -45,7 +45,7 @@ public:
                 flag[v] = true;
             }
         }
-        rep(i,V){
+        for(int i = 0; i < V; i++){
             if(flag[i]) continue;
             flag[i] = true;
             dfs(i);

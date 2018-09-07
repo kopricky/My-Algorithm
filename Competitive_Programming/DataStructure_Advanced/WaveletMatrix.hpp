@@ -153,7 +153,7 @@ public:
         sort(candidate.begin(), candidate.end());
         X.resize(n), Y.resize(n);
         vector<T> vec(n);
-        rep(i,n){
+        for(int i = 0; i < n; i++){
             X[i] = candidate[i].first, Y[i] = candidate[i].second;
         }
         sort(Y.begin(), Y.end());

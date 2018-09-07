@@ -34,7 +34,7 @@ public:
     }
     void solve(){
         int id = 1;
-        rep(i,V){
+        for(int i = 0; i < V; i++){
             if(visit[i] == 0){
                 vector<int> vec;
                 dfs(i,id++,vec);
@@ -48,13 +48,13 @@ public:
     void make_graph(){
         G.resize(V);
         vector<bool> flag(V,false);
-        rep(i,V){
+        for(int i = 0; i < V; i++){
             if(visit[i] >= 0){
                 G[nx[i]].push_back(i);
                 flag[nx[i]] = (visit[nx[i]] < 0);
             }
         }
-        rep(i,V){
+        for(int i = 0; i < V; i++){
             if(flag[i]){
                 st.push_back(i);
             }

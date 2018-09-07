@@ -2,26 +2,28 @@
 
 //彩色多項式の値を包除原理で計算
 //最小クリーク被覆は補グラフの彩色数を考える
-class ColorNumber {
+class ChromaticrNumber {
 public:
     int V;
     vector<int> adj,I;
     const static int MOD = 1000000007;
-    ColorNumber(int node_size) : V(node_size), adj(V), I((1 << V), 0){
-        rep(i,V) adj[i] = (1 << i);
+    ChromaticrNumber(int node_size) : V(node_size), adj(V), I((1 << V), 0){
+        for(int i = 0; i < V; i++){
+            adj[i] = (1 << i);
+        }
     }
     void add_edge(int u, int v){
         adj[u] |= (1 << v),adj[v] |= (1 << u);
     }
-    ll mod_pow(ll a,ll b)
+    int mod_pow(int a, int b)
     {
         a %= MOD;
-        ll res = 1;
+        int res = 1;
         while(b){
             if(b & 1){
-                res = res * a % MOD;
+                res = (long long)res * a % MOD;
             }
-            a = a * a %MOD;
+            a = (long long)a * a %MOD;
             b >>= 1;
         }
         return res;
@@ -31,11 +33,11 @@ public:
     //重複して数え上げないように包除原理で求める
     bool possible(int k) {
         int res = 0;
-        rep(S,(1 << V)){
+        for(int S = 0; S < (1 << V); S++){
             if(__builtin_popcount(S)%2){
-                res -= mod_pow(I[S],k);
+                res -= mod_pow(I[S], k);
             }else{
-                res += mod_pow(I[S],k);
+                res += mod_pow(I[S], k);
             }
         }
         return (res%MOD+MOD)%MOD;

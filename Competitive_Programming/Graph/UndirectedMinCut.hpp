@@ -22,11 +22,11 @@ public:
         for(int i = V; i > 1; i--){
             vector<T> val(i,0);
             vector<int> new_order(i-1);
-            rep(j,i-1){
+            for(int j = 0; j < i-1; j++){
                 int mx_id = max_element(val.begin(),val.end()) - val.begin();
                 new_order[j] = order[mx_id];
                 val[mx_id] = -1;
-                rep(k,i){
+                for(int k = 0; k < i; k++){
                     if(val[k] >= 0){
                         val[k] += G[order[mx_id]][order[k]];
                     }
@@ -35,7 +35,7 @@ public:
             int last = max_element(val.begin(),val.end()) - val.begin();
             int last_ver = order[last];
             int nx_last = new_order.back();
-            rep(j,(int)new_order.size()-1){
+            for(int j = 0; j < (int)new_order.size()-1; j++){
                 G[nx_last][new_order[j]] += G[last_ver][new_order[j]];
                 G[new_order[j]][nx_last] += G[new_order[j]][last_ver];
             }

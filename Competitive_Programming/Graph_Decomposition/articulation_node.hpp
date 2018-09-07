@@ -12,9 +12,9 @@ public:
 	vector<bool> art; //関節点かどうかの判定
 	// vector<vector<P> > edgeset;
 	// stack<P> st;
-	Articulation(int node_size) V(node_size), G(V), art(V, false), ord(V, -1), low(V), visit(V, false){}
+	Articulation(int node_size) : V(node_size), G(V), ord(V, -1), low(V), visit(V, false), art(V, false){}
 	void add_edge(int a,int b){
-		G[a].push_back(b),G[b].push_back(a);
+		G[a].push_back(b), G[b].push_back(a);
 	}
 	void dfs(int v,int p,int &k){
 		visit[v] = true;
@@ -47,7 +47,7 @@ public:
 		}
 	}
 	void solve(){
-		rep(i,V){
+		for(int i = 0; i < V; i++){
 			int k = 0;
 			if(!visit[i]){
 				dfs(i, -1, k);

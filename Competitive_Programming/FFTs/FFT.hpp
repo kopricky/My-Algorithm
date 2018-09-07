@@ -1,23 +1,23 @@
 #include "../header.hpp"
 
-const double PI = 4.0*atan(1.0);
-
 complex<double> operator* (const complex<double> a, const complex<double> b){
     return complex<double>(a.real()*b.real()-a.imag()*b.imag(),a.real()*b.imag()+a.imag()*b.real());
 }
 
 vector<complex<double> > fft(vector<complex<double> > a,bool rev = false)
 {
-    const double PI = std::acos(-1);
+    constexpr double PI = std::acos(-1);
     int n = a.size(),h = 0;
     for(int i = 0; 1 << i < n; i++) h++;
-    rep(i,n){
+    for(int i = 0; i < n; i++){
         int j = 0;
-        rep(k,h) j |= (i >> k & 1) << (h-1-k);
+        for(int k = 0; k < h; k++){
+            j |= (i >> k & 1) << (h-1-k);
+        }
         if (i < j) swap(a[i], a[j]);
     }
     for(int i = 1; i < n; i *= 2) {
-        rep(j,i){
+        for(int j = 0; j < i; j++){
             complex<double> w = polar(1.0,2*PI/(i*2)*(rev?-1:1)*j);
             for(int k = 0; k < n; k += i * 2) {
                 complex<double> s = a[j+k];
@@ -27,39 +27,34 @@ vector<complex<double> > fft(vector<complex<double> > a,bool rev = false)
             }
         }
     }
-    if (rev) rep(i,n) a[i] /= n;
+    if(rev){
+        for(int i = 0; i < n; i++){
+            a[i] /= n;
+        }
+    }
     return a;
 }
 
-vector<int> mul(vector<int> a,vector<int> b)
+vector<int> mul(vector<int> a, vector<int> b)
 {
     int s = (int)a.size() + (int)b.size() - 1,t = 1;
     while (t < s) t *= 2;
     vector<complex<double> > A(t), B(t);
-    rep(i,a.size()) A[i].real(a[i]);
-    rep(i,b.size()) B[i].real(b[i]);
-    A = fft(A),B = fft(B);
-    rep(i,t) A[i] *= B[i];
+    for(int i = 0; i < (int)a.size(); i++){
+        A[i].real(a[i]);
+    }
+    for(int i = 0; i < (int)b.size(); i++){
+        B[i].real(b[i]);
+    }
+    A = fft(A), B = fft(B);
+    for(int i = 0; i < t; i++){
+        A[i] *= B[i];
+    }
     A = fft(A, true);
     a.resize(s);
     //整数に直す
-    rep(i,s) a[i] = round(A[i].real());
+    for(int i = 0; i < s; i++){
+        a[i] = round(A[i].real());
+    }
     return a;
-}
-
-int main()
-{
-    // cin.tie(0);
-    // ios::sync_with_stdio(false);
-    int n;
-    scanf("%d",&n);
-    vector<int> a(n+1,0),b(n+1,0);
-    rep(i,n){
-        scanf("%d%d",&a[i+1],&b[i+1]);
-    }
-    a = mul(a,b);
-    rep(i,2*n){
-        cout << a[i+1] << "\n";
-    }
-    return 0;
 }

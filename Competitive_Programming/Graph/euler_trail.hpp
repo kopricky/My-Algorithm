@@ -34,15 +34,15 @@ public:
                 }
                 dfs(p);
             }else{
-		it = G[u].erase(it);
-	    }
+                it = G[u].erase(it);
+            }
         }
         path.push_back(u);
     }
     bool solve(){
-        int s=-1,t=-1;
+        int s = -1, t = -1;
         if(directed){
-            rep(i,V){
+            for(int i = 0; i < V; i++){
                 if(degree[i] != 0){
                     if(degree[i] == 1){
                         if(s >= 0) return false;
@@ -54,7 +54,7 @@ public:
                 }
             }
         }else{
-            rep(i,V){
+            for(int i = 0; i < V; i++){
                 if(degree[i] % 2){
                     if(s < 0) s = i;
                     else if(t < 0) t = i;

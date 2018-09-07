@@ -4,8 +4,8 @@
 class tree_hashing
 {
 private:
-    static vector<ll> rnum[2];
-    static const ll mod[2];
+    static vector<int> rnum[2];
+    static const int mod[2];
     int V;
     vector<vector<int> > G;
 public:
@@ -20,25 +20,25 @@ public:
     void add_edge(int a, int b){
         G[a].push_back(b),G[b].push_back(a);
     }
-    pair<ll,ll> hash_dfs(int u,int p,int d)
+    pair<int, int> hash_dfs(int u,int p,int d)
     {
-        ll res[] = {1LL,1LL};
+        int res[] = {1,1};
         for(auto v : G[u]){
             if(v != p){
                 auto val = hash_dfs(v,u,d+1);
-                res[0] = (res[0] * val.first) % mod[0];
-                res[1] = (res[1] * val.second) % mod[1];
+                res[0] = (long long)(res[0] * val.first) % mod[0];
+                res[1] = (long long)(res[1] * val.second) % mod[1];
             }
         }
-        rep(i,2){
+        for(int i = 0; i < 2; i++){
             res[i] = (res[i] + rnum[i][d]) % mod[i];
         }
         return make_pair(res[0],res[1]);
     }
-    pair<ll,ll> hash(int root=0)
+    pair<int, int> hash(int root=0)
     {
         return hash_dfs(root,-1,0);
     }
 };
-vector<ll> tree_hashing::rnum[2];
-const ll tree_hashing::mod[] = {1000000007LL, 1000000009LL};
+vector<int> tree_hashing::rnum[2];
+const int tree_hashing::mod[] = {1000000007, 1000000009};
