@@ -2,41 +2,63 @@
 
 //ハンガリアン法
 
-template<typename T>
-vector<int> Hungarian(const vector<vector<T> > cost){
-    int n = (int)cost.size(), m = (int)cost[0].size();
-    vector<int> r(n, -1), l(m, -1);
-    vector<T> lf(n, 0), rf(m, 0);
-    auto residue = [&](const int i,const int j){
-        return cost[i][j] + lf[i] + rf[j];
-    };
-    rep(i,n){
-        vector<bool> left(n, false), right(m, false);
-        vector<int> trace(m, -1), ptr(m, i);
-        left[i] = true;
-        while(true){
-            T d = numeric_limits<T>::max();
-            rep(j,m) if(!right[j]) d = min(d, residue(ptr[j], j));
-            rep(j,n) if(left[j]) lf[j] -= d;
-            rep(j,m) if(right[j]) rf[j] += d;
-            int b = -1;
-            rep(j,m) if(!right[j] && residue(ptr[j], j) == 0) b = j;
-            trace[b] = ptr[b];
-            int c = l[b];
-            if(c < 0){
-                while(b >= 0){
-                    const int a = trace[b], z = r[a];
-                    l[b] = a, r[a] = b, b = z;
-                }
-                break;
-            }
-            right[b] = left[c] = true;
-            rep(j,m){
-                if(residue(c, j) < residue(ptr[j], j)){
-                    ptr[j] = c;
-                }
+// U <= V を仮定する
+// u, v には割当が入る
+template<typename T> class Hungarian {
+public:
+    int U, V;
+    vector<vector<T> > cost;
+    vector<int> u, v;
+    vector<T> fu, fv;
+    Hungarian(int unum, int vnum) : U(unum), V(vnum), cost(U, vector<T>(V, 0)),
+        u(U, -1), v(V, -1), fu(U, numeric_limits<T>::max()/2), fv(V, 0){}
+    void add_edge(int u, int v, T val){
+        cost[u][v] = val;
+    }
+    T solve(){
+        int p, q;
+        for(int i = 0; i < U; i++){
+            for(int j = 0; j < V; j++){
+                fu[i] = max(fu[i], cost[i][j]);
             }
         }
+        for(int i = 0; i < U; ){
+            vector<int> s(U+1, i), t(V, -1);
+            for(p = q = 0; p <= q && u[i] < 0; p++){
+                for(int k = s[p], j = 0; j < V && u[i] < 0; j++){
+                    if(fu[k] + fv[j] == cost[k][j] && t[j] < 0){
+                        s[++q] = v[j], t[j] = k;
+                        if(s[q] < 0){
+                            for(p = j; p >= 0; j = p){
+                                v[j] = k = t[j], p = u[k], u[k] = j;
+                            }
+                        }
+                    }
+                }
+            }
+            if(u[i] < 0){
+                T d = numeric_limits<T>::max()/2;
+                for(int k = 0; k <= q; k++){
+                    for(int j = 0; j < V; j++){
+                        if(t[j] < 0){
+                            d = min(d, fu[s[k]] + fv[j] - cost[s[k]][j]);
+                        }
+                    }
+                }
+                for(int j = 0; j < V; j++){
+                    fv[j] += (t[j] < 0 ? 0 : d);
+                }
+                for(int k = 0; k <= q; k++){
+                    fu[s[k]] -= d;
+                }
+            }else{
+                i++;
+            }
+        }
+        T ret = 0;
+        for(int i = 0; i < U; i++){
+            ret += cost[i][u[i]];
+        }
+        return ret;
     }
-    return r;
-}
+};

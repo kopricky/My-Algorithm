@@ -6,7 +6,7 @@
 
 const int MAX_N = 1005;
 
-ll inv[MAX_N],fac[MAX_N],finv[MAX_N];
+long long inv[MAX_N],fac[MAX_N],finv[MAX_N];
 
 void make()
 {
@@ -15,12 +15,12 @@ void make()
 	inv[1] = 1;
 	for(int i=2;i<MAX_N;i++){
 		inv[i] = MOD - inv[MOD%i] * (MOD/i) % MOD;
-		fac[i] = fac[i-1] * (ll) i % MOD;
+		fac[i] = fac[i-1] * (long long) i % MOD;
 		finv[i] = finv[i-1] * inv[i] % MOD;
 	}
 }
 
-ll comb(int a,int b)
+long long comb(int a,int b)
 {
 	if(a<b){
 		return 0;
@@ -28,10 +28,10 @@ ll comb(int a,int b)
 	return fac[a] * (finv[b] * finv[a-b] % MOD) % MOD;
 }
 
-ll mod_pow(ll a,ll b)
+long long mod_pow(long long a,long long b)
 {
     a %= MOD;
-    ll res = 1;
+    long long res = 1;
     while(b){
         if(b & 1){
             res = res * a % MOD;
@@ -42,17 +42,17 @@ ll mod_pow(ll a,ll b)
     return res;
 }
 
-ll add(ll x,ll y)
+long long add(long long x,long long y)
 {
     return (x + y)%MOD;
 }
 
-ll sub(ll x,ll y)
+long long sub(long long x,long long y)
 {
     return (x+MOD-y)%MOD;
 }
 
-ll mul(ll x,ll y)
+long long mul(long long x,long long y)
 {
     return x*y%MOD;
 }
@@ -64,7 +64,7 @@ int count1(int n, int m)
 {
     if(n < m) return 0;
     make();
-    ll res = 0;
+    long long res = 0;
     for(int i = 1; i <= m; i++){
         // i個以下の箱にn個のボールを入れる場合の数
         int tmp = mul(comb(m,i), mod_pow(i,n));
@@ -81,8 +81,8 @@ int S[MAX_N][MAX_N];
 void Stirling(int n, int m)
 {
     S[0][0] = 1;
-    rep(i,n){
-        rep(j,min(m,i+1)){
+    for(int i = 0; i < n; i++){
+		for(int j = 0; j < min(m,i+1); j++){
             S[i+1][j+1] = add(S[i][j],mul(j+1,S[i][j+1]));
         }
     }
@@ -127,7 +127,7 @@ int count4(int n, int m)
 {
    dp[0][0] = 1;
    for(int i = 0; i <= n; i++){
-       rep(j,m){
+       for(int j = 0; j < m; j++){
            dp[i][j+1] = add(dp[i][j+1], dp[i][j]);
            if(i > j) dp[i][j+1] = add(dp[i][j+1], dp[i-j-1][j+1]);
        }

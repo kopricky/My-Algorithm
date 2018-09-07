@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 // グレゴリオ暦y年m月d日の曜日(mod7)を返す(Zellerの公式)
-// 土曜日始まりで土曜日が0
+// 日曜日始まりで日曜日が0
 int zeller(int y, int m, int d){
     if(m <= 2){
         y--;

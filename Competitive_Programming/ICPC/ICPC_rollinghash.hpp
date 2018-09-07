@@ -1,9 +1,9 @@
 #include "../header.hpp"
 
 struct RH {
-	static ll mod[2], mul[2];
-    static vector<ll> pm[2];
-	string s; int sz; vector<ll> hs[2];
+	static long long mod[2], mul[2];
+    static vector<long long> pm[2];
+	string s; int sz; vector<long long> hs[2];
 	void init(string& s){
 		this->s = s; sz = (int)s.size();
         for(int i = 0; i < 2; i++){
@@ -14,9 +14,9 @@ struct RH {
             }
         }
 	}
-	pair<ll,ll> hash(int l, int r){	//文字列sのインデックス[l,r)の部分文字列のハッシュ値
+	pair<long long,long long> hash(int l, int r){	//文字列sのインデックス[l,r)の部分文字列のハッシュ値
 		if(l>=r) return make_pair(0,0);
-        ll res[2];
+        long long res[2];
         for(int i = 0; i < 2; i++){
             while((int)pm[i].size() <= r){
                 pm[i].push_back(pm[i].back()*mul[i]%mod[i]);
@@ -26,8 +26,8 @@ struct RH {
 		return make_pair(res[0],res[1]);
 	}
 };
-vector<ll> RH::pm[2];
-ll RH::mod[2]={1000000007, 1000000009}, RH::mul[2]={10009, 10007};
+vector<long long> RH::pm[2];
+long long RH::mod[2]={1000000007, 1000000009}, RH::mul[2]={10009, 10007};
 
 int contain(RH& arg1, string& arg2)
 {

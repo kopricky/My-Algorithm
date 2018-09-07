@@ -26,7 +26,7 @@ public:
 		d[s] = 0;
 		while(cnt < V){
 			bool update = false;
-			rep(i,E){
+			for(int i = 0; i < E; i++){
 				edge e = es[i];
 				if(d[e.from] != numeric_limits<T>::max() && d[e.to] > d[e.from] + e.cost){
 					d[e.to] = d[e.from] + e.cost;
@@ -45,7 +45,7 @@ public:
 		int cnt = 0;
 		while(cnt < V){
  		   bool update = false;
- 		   rep(i,E){
+ 		   for(int i = 0; i < E; i++){
  			   edge e = es[i];
  			   if(d[e.to] > d[e.from] + e.cost){
  				   d[e.to] = d[e.from] + e.cost;
@@ -61,8 +61,8 @@ public:
 	bool find_negative_loop(int s,int t){
 		E = (int)es.size();
 		d[s] = 0;
-		rep(i,2*V){
-			rep(j,E){
+		for(int i = 0; i < 2*V; i++){
+			for(int j = 0; j < E; j++){
 				edge e = es[j];
 				if(d[e.from] != numeric_limits<T>::max() && d[e.to] > d[e.from] + e.cost){
 					d[e.to] = d[e.from] + e.cost;

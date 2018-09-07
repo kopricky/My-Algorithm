@@ -38,7 +38,9 @@ public:
     AhoCorasick(vector<string>& pattern): AhoCorasick(){
         int sz = (int)pattern.size();
         t = new AhoCorasick();
-        rep(i,sz) t->add(pattern[i],0,i);
+        for(int i = 0; i < sz; i++){
+            t->add(pattern[i],0,i);
+        }
         queue<AC> que;
         que.push(t);
         t->fail = nullptr;
