@@ -5,14 +5,13 @@ private:
     int n,sz;
     vector<T> node;
 public:
-    segtree(vector<T>& v){
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;
         }
         node.assign(2*n,numeric_limits<T>::max());
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n] = v[i];
         }
         for(int i=n-1; i>=1; i--){
@@ -38,5 +37,10 @@ public:
         }
         return min(res1, res2);
     }
-    void print(){ rep(i,sz) cout << query(i,i+1) << " "; cout << endl; }
+    void print(){
+        for(int i = 0; i < sz; i++){
+            cout << query(i,i+1) << " ";
+        }
+        cout << endl;
+    }
 };

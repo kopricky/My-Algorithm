@@ -16,8 +16,7 @@ private:
         max_val[id] = max(max_val[2*id+1],max_val[2*id+2]);
     }
 public:
-    segtree(vector<T>& v) {
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;
@@ -27,7 +26,7 @@ public:
         lazyFlag.resize(2*n-1,false);
         min_val.resize(2*n-1,numeric_limits<T>::max());
         max_val.resize(2*n-1,numeric_limits<T>::min());
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n-1] = min_val[i+n-1] = max_val[i+n-1] = v[i];
         }
         for(int i=n-2; i>=0; i--){
@@ -92,7 +91,7 @@ public:
     }
     void print()
     {
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             cout << query(i,i+1) << " ";
         }
         cout << endl;

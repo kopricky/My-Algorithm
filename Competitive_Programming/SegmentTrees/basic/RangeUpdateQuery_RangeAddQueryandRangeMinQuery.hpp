@@ -7,13 +7,15 @@ template<typename T> class segtree {
 private:
     int n,sz; vector<T> node, lazy_update, lazy_add; vector<bool> lazyFlag;
 public:
-    segtree(vector<T> v) {
-        sz = (int)v.size(); n = 1;
+    segtree(vector<T> v) : sz((int)v.size()){
+        n = 1;
         while(n < sz) n *= 2;
         node.resize(2*n-1,numeric_limits<T>::max());
         lazy_update.resize(2*n-1, 0); lazyFlag.resize(2*n-1,false);
         lazy_add.resize(2*n-1, 0);
-        rep(i,sz) node[i+n-1] = v[i];
+        for(int i = 0; i < sz; i++){
+            node[i+n-1] = v[i];
+        }
         for(int i=n-2; i>=0; i--) node[i] = min(node[2*i+1],node[2*i+2]);
     }
     void eval(int k, int l, int r) {
@@ -65,5 +67,10 @@ public:
         if(a <= l && r <= b) return node[k];
         return min(query(a, b, 2*k+1, l, (l+r)/2), query(a, b, 2*k+2, (l+r)/2, r));
     }
-    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
+    void print(){
+        for(int i = 0; i < sz; i++){
+            cout<<query(i,i+1)<< " ";
+        }
+        cout<<endl;
+    }
 };

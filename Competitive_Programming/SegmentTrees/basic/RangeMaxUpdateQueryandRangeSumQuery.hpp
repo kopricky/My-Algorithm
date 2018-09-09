@@ -28,8 +28,7 @@ private:
         }
     }
 public:
-    segtree(vector<T>& v) {
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;
@@ -40,7 +39,7 @@ public:
         min_val.resize(2*n-1,numeric_limits<T>::max());
         second_val.resize(2*n-1,numeric_limits<T>::max());
         count.resize(2*n-1,1);
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n-1] = min_val[i+n-1] = v[i];
         }
         for(int i=n-2; i>=0; i--){
@@ -91,7 +90,7 @@ public:
     }
     void print()
     {
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             cout << query(i,i+1) << " ";
         }
         cout << endl;

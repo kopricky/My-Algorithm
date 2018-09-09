@@ -5,18 +5,17 @@ private:
     int n,sz;
     vector<T> node;
 public:
-    segtree(vector<T>& v){
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;
         }
         node.resize(2*n-1, numeric_limits<T>::max());
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n-1] = v[i];
         }
         for(int i=n-2; i>=0; i--){
-            node[i] = min(node[i*2+1],node[i*2+2]);
+            node[i] = min(node[i*2+1], node[i*2+2]);
         }
     }
     void update(int k,T a){
@@ -40,5 +39,10 @@ public:
     		return min(vl,vr);
     	}
     }
-    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
+    void print(){
+        for(int i = 0; i < sz; i++){
+            cout<<query(i,i+1)<< " ";
+        }
+        cout<<endl;
+    }
 };
