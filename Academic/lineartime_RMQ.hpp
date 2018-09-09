@@ -29,7 +29,7 @@ private:
     std::pair<int, T> PM_RMQ(int st, int ed);
 public:
     void build(std::vector<T>& arg1, bool max_query_=false);    //trueのときrange_max_queryを表す
-    pair<int, T> query(int st, int ed); // (最小(大)値を達成するインデックス, 値)
+    std::pair<int, T> query(int st, int ed); // (最小(大)値を達成するインデックス, 値)
 };
 
 template<typename T>
@@ -263,7 +263,7 @@ std::pair<int, T> RMQ<T>::PM_RMQ(int st, int ed)
 }
 
 template<typename T>
-pair<int, T> RMQ<T>::query(int st, int ed)
+std::pair<int, T> RMQ<T>::query(int st, int ed)
 {
     assert(st < ed);
     std::pair<int, T> res = PM_RMQ(std::min(visit_id[st], visit_id[ed-1]), std::max(visit_id[st], visit_id[ed-1]));

@@ -11,7 +11,7 @@ public:
         int V; vector<int> par,label;
         void init(int node_size){
             V = node_size; par.resize(V),label.resize(V);
-            rep(i,V) par[i] = label[i] = i;
+            for(int i = 0; i < V; i++) par[i] = label[i] = i;
         }
         int find(int x,vector<int>& sdom){
             if(par[x] == x){

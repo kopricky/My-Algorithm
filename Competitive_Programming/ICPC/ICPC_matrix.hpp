@@ -42,7 +42,7 @@ public:
     }
 };
 
-template<typename T> mat<T> pow(mat<T> A,ll cnt)
+template<typename T> mat<T> pow(mat<T> A,long long cnt)
 {
     int n = A.r;
 	mat<T> B(n,n);
@@ -59,7 +59,7 @@ template<typename T> mat<T> pow(mat<T> A,ll cnt)
 	return B;
 }
 
-template<typename T> mat<T> mod_pow(mat<T> A,ll cnt)
+template<typename T> mat<T> mod_pow(mat<T> A,long long cnt)
 {
     int n = A.r;
 	mat<T> B(n,n);
