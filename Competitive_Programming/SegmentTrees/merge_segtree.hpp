@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-//長方形領域内のクエリに答える(更新なし)(この実装では長方形領域内に含まれる点の値の和を答える)
+//長方形領域内の(更新なしの)クエリに答える(この実装では長方形領域内に含まれる点の値の和を答える)
 //時間計算量:構築O(nlog(n)),クエリO(log^2(n))
 //空間計算量:O(nlog(n))
 
@@ -33,19 +33,17 @@ private:
         }
     }
 public:
-    segtree(vector<pcc>& cand, vector<VT>& val){
-        sz = (int)cand.size();
+    segtree(vector<pcc>& cand, vector<VT>& val) : sz((int)cand.size()), sorted(sz), xs(sz){
         n = 1;
         while(n < sz){
             n *= 2;
         }
-        sorted.resize(sz);
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             sorted[i] = make_pair(cand[i], i);
         }
         sort(sorted.begin(), sorted.end());
-        xs.resize(sz), ys.resize(2*n-1), sum.resize(2*n-1);
-        rep(i,sz){
+        ys.resize(2*n-1), sum.resize(2*n-1);
+        for(int i = 0; i < sz; i++){
             xs[i] = (sorted[i].first).first;
             ys[i+n-1] = {pci((sorted[i].first).second, sorted[i].second)};
             sum[i+n-1] = {0, val[sorted[i].second]};
@@ -56,7 +54,7 @@ public:
                 return a.first < b.first;
             });
             sum[i].resize((int)ys[i].size()+1,0);
-            rep(j,(int)ys[i].size()){
+            for(int j = 0; j < (int)ys[i].size(); j++){
                 sum[i][j+1] = sum[i][j] + val[ys[i][j].second];
             }
         }

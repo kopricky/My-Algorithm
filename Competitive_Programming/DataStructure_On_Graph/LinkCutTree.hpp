@@ -1,7 +1,6 @@
 #include "../header.hpp"
 
-//根はそれぞれのパスの根と全体の木の根の２つの意味がある
-//親はsplay木の中の親とパスの親の２つの意味がある
+//根はそれぞれのSplay木の根と全体の木の根の２つの意味がある
 
 struct node {
     int id;
@@ -13,12 +12,11 @@ struct node {
     }
     //スプレー木を反転させる
     void push(){
-        if(rev){
-            rev = false;
-            swap(left,right);
-            if(left) left->rev = !(left->rev);
-            if(right) right->rev = !(right->rev);
-        }
+        if(!rev) return;
+        rev = false;
+        swap(left,right);
+        if(left) left->rev = !(left->rev);
+        if(right) right->rev = !(right->rev);
     }
 };
 
@@ -72,35 +70,26 @@ private:
         expose(u);
         u->rev = !(u->rev);
     }
-    node* findRoot(node* u){
-        expose(u);
-        while(u->right){
-            u = u->right;
-        }
-        splay(u);
-        return u;
-    }
     bool connected(node* u,node* v){
-        if(u == v) return true;
         expose(u), expose(v);
         return u->par;
     }
     void link(node* u,node* v){
-        // already connected
+        // u, v が同じ連結成分にないか
         // assert(!connected(u, v));
         evert(u);
         u->par = v;
     }
-    void cut(node* u,node* v){
+    void cut(node* u, node* v){
         evert(u);
         expose(v);
-        // no edge
+        // u, v の間に辺があるか
         // assert(v->right == u && !(u->left));
         v->right->par = nullptr, v->right = nullptr;
     }
     node* lca(node* u, node* v){
-        // u,v が同じ連結成分にないとき
-        // assert(findRoot(u) == findRoot(v));
+        // u,v が同じ連結成分内にあるか
+        // assert(connected(u, v));
         expose(u);
         return expose(v);
     }
@@ -113,8 +102,12 @@ public:
             arr[i] = new node(i);
         }
     }
+    // id1 と id2 が同じ木(連結成分)に属するか
     bool connected(int id1, int id2){ return connected(arr[id1],arr[id2]); }
+    // 木(連結成分)の根 id1 の親を id2 にする
     void link(int id1, int id2){ link(arr[id1],arr[id2]); }
-    void cut(int id1,int id2){ cut(arr[id1],arr[id2]); }
+    // id1 と id2 の間の辺を削除する
+    void cut(int id1, int id2){ cut(arr[id1], arr[id2]); }
+    // id1 と id2 の LCA を求める
     int lca(int id1, int id2){ return lca(arr[id1],arr[id2])->id; }
 };

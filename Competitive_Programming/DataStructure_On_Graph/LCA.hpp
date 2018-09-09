@@ -12,7 +12,7 @@ public:
             n *= 2;
         }
         node.resize(2*n);
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n] = make_pair(v[i], i);
         }
         for(int i=n-1; i>=1; i--){
@@ -54,21 +54,22 @@ public:
         id[u] = (int)ord.size();
         ord.push_back(u);
         depth[u] = k;
-        rep(i,G[u].size()){
-            if(G[u][i] != p){
-                dfs(G[u][i],u,k+1);
+        for(int v : G[u]){
+            if(v != p){
+                dfs(v,u,k+1);
                 ord.push_back(u);
             }
         }
     }
     void build(){
-        rep(i,V){
+        ord.reserve(2*V-2);
+        for(int i = 0; i < V; i++){
             if(id[i] < 0){
                 dfs(i,-1,0);
             }
         }
-        vector<int> stvec((int)ord.size());
-    	rep(i,ord.size()){
+        vector<int> stvec(2*V-2);
+    	for(int i = 0; i < 2*V-2; i++){
     		stvec[i] = depth[ord[i]];
     	}
         st.resize(stvec);

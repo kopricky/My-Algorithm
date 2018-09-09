@@ -1,8 +1,8 @@
-#include "../../header.hpp"
+#include "../header.hpp"
 
 //領域木(フラクショナルカスケーディングは実装していません)
 //2次元上の一点更新および長方形領域のクエリに答えるデータ構造(この実装では一点更新および長方形領域の総和)
-//遅延処理は多次元だとうまく回らない(多次元領域の更新をO(polylog(n))でできるデータ構造は知られていない)
+//遅延処理は多次元だとうまく回らないので範囲クエリは扱えない(多次元領域の更新をO(polylog(n))でできるデータ構造は知られていない)
 //点数がn個の場合
 //時間計算量:構築O(nlog(n)),クエリO(log^2(n))
 //空間計算量:O(nlog(n))
@@ -22,7 +22,7 @@ public:
             n *= 2;
         }
         node.resize(2*n-1);
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n-1] = v[i];
         }
         for(int i=n-2; i>=0; i--){
@@ -50,7 +50,12 @@ public:
     		return min(vl,vr);
     	}
     }
-    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
+    void print(){
+        for(int i = 0; i < sz; i++){
+            cout<<query(i,i+1)<< " ";
+        }
+        cout<<endl;
+    }
 };
 
 //座標の型, 値の型
@@ -69,7 +74,7 @@ private:
     //y座標, インデックス
     vector<vector<pci> > ys;
     int n, sz;
-    void update_(int xid, CT y, const VT x) {
+    void update(int xid, CT y, const VT x) {
         xid += n-1;
         int yid = lower_bound(all(y[xid]),pci(y,-1)) - y[xid].begin();
         seg[xid].update(yid,x);
@@ -92,19 +97,17 @@ private:
     }
 public:
     // 座標, 点の値
-    RangeTree(vector<pcc>& cand, vector<VT>& val){
-        sz = (int)cand.size();
+    RangeTree(vector<pcc>& cand, vector<VT>& val) : sz((int)cand.size()), sorted(sz), xs(sz){
         n = 1;
         while(n < sz){
             n *= 2;
         }
-        sorted.resize(sz);
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             sorted[i] = make_pair(cand[i], i);
         }
         sort(sorted.begin(), sorted.end());
-        xs.resize(sz), ys.resize(2*n-1), seg.resize(2*n-1);
-        rep(i,sz){
+        ys.resize(2*n-1), seg.resize(2*n-1);
+        for(int i = 0; i < sz; i++){
             xs[i] = (sorted[i].first).first;
             ys[i+n-1] = {pci((sorted[i].first).second, sorted[i].second)};
             vector<VT> arg = {val[sorted[i].second]};
@@ -116,14 +119,14 @@ public:
                 return a.first < b.first;
             });
             vector<VT> arg((int)ys[i].size());
-            rep(j,(int)ys[i].size()){
+            for(int j = 0; j < (int)ys[i].size(); j++){
                 arg[j] = val[ys[i][j].second];
             }
             seg[i].init(arg);
         }
     }
     //点(x,y)の更新を行う
-    void update_(CT x, CT y, const VT val){
+    void update(CT x, CT y, const VT val){
         int xid = lower_bound(all(xs),x) - xs.begin();
         return update(xid,y,val);
     }

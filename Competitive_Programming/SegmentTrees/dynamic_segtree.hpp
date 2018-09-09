@@ -18,8 +18,8 @@ private:
     T opr2(T arg1,T arg2){
         return min(arg1,arg2);
     }
-    static const int POOL_SIZE = 4000000;
-    static const int MAX_SIZE = 100001;
+    static const int POOL_SIZE = 2000000;
+    static const int MAX_SIZE = 1000000001;
     static node *root;
     static node pool[POOL_SIZE];
     static const T identity = numeric_limits<T>::max();

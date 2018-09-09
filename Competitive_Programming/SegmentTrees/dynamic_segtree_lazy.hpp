@@ -20,14 +20,14 @@ private:
     T opr2(T arg1,T arg2){
         return arg1 + arg2;
     }
-    static const int POOL_SIZE = 4000000;
-    static const int MAX_SIZE = 100001;
+    static const int POOL_SIZE = 2000000;
+    static const int MAX_SIZE = 1000000001;
     static node *root;
     static node pool[POOL_SIZE];
     static const T id1 = (T)0;
     static const T id2 = (T)0;
     int nw_size;
-    node *alloc(){
+    node* alloc(){
         assert(nw_size < POOL_SIZE);
         return (&pool[nw_size++]);
     }
@@ -46,7 +46,7 @@ private:
         }
     }
 public:
-    dynamic_segtree(){ nw_size = 0; root = alloc(); }
+    dynamic_segtree() : nw_size(0){ root = alloc(); }
     //a番目にxを追加
     void insert(int a, T x, node *k = root, int l = 0, int r = MAX_SIZE){
         eval(k, l, r);

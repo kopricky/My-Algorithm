@@ -6,7 +6,7 @@
 vector<int> pr[MAX_N],id[MAX_N];
 bool is_prime[MAX_N];
 
-void allfac(int n)
+void all_fac(int n)
 {
     fill(is_prime,is_prime+n+1,true);
     for(int i=2;i<=n;i++){

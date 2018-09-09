@@ -9,34 +9,29 @@ private:
     struct edge {
         int to,cap,rev;
     };
+    int U,V;
     vector<vector<edge> > G;
     vector<int> level;
     vector<int> iter;
-    int U,V;
 
 public:
-    BM(int u,int v) {
-        U = u,V = v;
-        G.resize(U+V+2);
-        rep(i,u){
+    BM(int u,int v) : U(u), V(v), G(U+V+2){
+        for(int i = 0; i < U; i++){
             init_edge(0,i+1);
         }
-        rep(i,v){
+        for(int i = 0; i < V; i++){
             init_edge(U+i+1,U+V+1);
         }
     }
-
     void init_edge(int from,int to) {
         G[from].push_back((edge){to,1,(int)G[to].size()});
     	G[to].push_back((edge){from,0,(int)G[from].size()-1});
     }
-
     void add_edge(int from,int to) {
         from += 1,to += U+1;
     	G[from].push_back((edge){to,1,(int)G[to].size()});
     	G[to].push_back((edge){from,0,(int)G[from].size()-1});
     }
-
     void bfs(int s) {
         fill(level.begin(),level.end(),-1);
     	queue<int> que;
@@ -53,7 +48,6 @@ public:
     		}
     	}
     }
-
     int dfs(int v,int t,int f) {
     	if(v==t){
     		return f;
@@ -71,10 +65,8 @@ public:
     	}
     	return 0;
     }
-
     int solve() {
-        level.resize(U+V+2);
-        iter.resize(U+V+2);
+        level.resize(U+V+2), iter.resize(U+V+2);
     	int flow = 0;
         int s=0,t=U+V+1;
     	for(;;){
@@ -88,5 +80,17 @@ public:
     			flow += f;
     		}
     	}
+    }
+    vector<int> allocate() {
+        vector<int> res(U, -1);
+        for(int i = 0; i < U; i++){
+            for(auto& e : G[i+1]){
+                if(e.cap == 0 && e.to != 0){
+                    res[i] = e.to-U-1;
+                    break;
+                }
+            }
+        }
+        return res;
     }
 };
