@@ -5,16 +5,15 @@ template<typename T> class UpdateInterval
 {
 private:
     using ptt = pair<T,T>;
-    T inf;
 public:
     //1の区間をsetで保持
     set<ptt> st;
-    UpdateInterval() : inf(numeric_limits<T>::max()){};
+    UpdateInterval(){};
     //[l,r)をk(0,1)に更新
     void update(T l,T r,int k){
         T lb = l, rb = r;
         while(1){
-            auto it = st.lower_bound(ptt(l,-inf));
+            auto it = st.lower_bound(ptt(l, numeric_limits<T>::min()));
             if(it == st.end()){
                 break;
             }
@@ -29,7 +28,7 @@ public:
                 break;
             }
         }
-        auto it = st.lower_bound(ptt(l,-inf));
+        auto it = st.lower_bound(ptt(l, numeric_limits<T>::min()));
         if(it != st.begin()){
             --it;
             ptt p = *it;
