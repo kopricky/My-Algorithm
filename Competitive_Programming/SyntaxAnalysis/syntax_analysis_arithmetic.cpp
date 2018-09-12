@@ -1,66 +1,52 @@
+#include "../header.hpp"
+
 // 四則演算の構文解析
-#include <bits/stdc++.h>
-
-using namespace std;
-
-// <expr>   ::= <term> [ ('+'|'-') <term> ]*
-// <term>   ::= <factor> [ ('*'|'/') <factor> ]*
-// <factor> ::= <number> | '(' <expr> ')'
-// <number> :== 非負の数
-
-int expr(int& pos);
-int term(int& pos);
-int factor(int& pos);
-int number(int& pos);
-
-string s;
-
-int expr(int& pos){
-    int res = term(pos);
-    while(s[pos] == '+' || s[pos] == '-'){
-        if(s[pos] == '+'){
-            res += term(++pos);
-        }else{
-            res -= term(++pos);
-        }
-    }
-    return res;
-}
-
-int term(int& pos){
-    int res = factor(pos);
-    while(s[pos] == '*' || s[pos] == '/'){
-        if(s[pos] == '*'){
-            res *= factor(++pos);
-        }else{
-            res /= factor(++pos);
-        }
-    }
-    return res;
-}
-
-int factor(int& pos){
-    if(isdigit(s[pos])) return number(pos);
-    pos++;  //'('をとばす
-    int res = expr(pos);
-    pos++;  //')'をとばす
-    return res;
-}
-
-int number(int& pos){
-    string res;
-    while(isdigit(s[pos])){
-        res.push_back(s[pos++]);
-    }
-    return stoi(res);
-}
-
-int main()
+template<typename T> class Parser
 {
-    cin.tie(0);
-    ios::sync_with_stdio(false);
-    cin >> s;
-    int pos = 0;
-    cout << expr(pos) << "\n";
-    return 0;
-}
+private:
+    int pos;
+    T expr(string& eq){
+        T res = term();
+        while(eq[pos] == '+' || eq[pos] == '-'){
+            if(eq[pos++] == '+'){
+                res += term();
+            }else{
+                res -= term();
+            }
+        }
+        return res;
+    }
+    T term(string& eq){
+        T res = factor();
+        while(eq[pos] == '*' || eq[pos] == '/'){
+            if(eq[pos++] == '*'){
+                res *= term();
+            }else{
+                res /= term();
+            }
+        }
+        return res;
+    }
+    T factor(string& eq){
+        if(isdigit(eq[pos])) return number();
+        pos++; // '('をとばす
+        T res = expr();
+        pos++; // ')'をとばす
+        return res;
+    }
+    T number(string& eq){
+        T res = 0;
+        do{
+            res *= 10;
+            res += (eq[pos++] - '0');
+        }while(isdigit(eq[pos]));
+        return res;
+    }
+
+public:
+    Parser(){}
+    T solve(string& eq){
+        pos = 0;
+        return expr(eq);
+    }
+};
