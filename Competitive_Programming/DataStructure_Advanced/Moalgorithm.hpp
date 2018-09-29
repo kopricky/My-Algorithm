@@ -1,8 +1,8 @@
 #include "../header.hpp"
 
-// insert→build→solveでansに全クエリに対する結果が格納
+// insert→solveでansに全クエリに対する結果が格納
+// add,del を変更していろいろなクエリに対応する
 // 以下は区間内の数の種類数についてのクエリが飛んでくる場合
-// 別の場合はadd,del,solveをいじる
 
 
 //現在の状態および値
@@ -21,8 +21,8 @@ private:
 public:
     vector<int> ans;
 
-    Mo(int n) : w(600){}
-    //クエリ[l,r)
+    Mo(int n) : w((int)sqrt(n)){}
+    //クエリ[l, r)
     void insert(int l, int r){
         left.push_back(l), right.push_back(r);
     }
