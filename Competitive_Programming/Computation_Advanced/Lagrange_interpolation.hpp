@@ -3,9 +3,7 @@
 #define MAX_N 100005
 #define MOD 1000000007
 
-//ラグランジュ補間
-
-ll inv[MAX_N],fac[MAX_N],finv[MAX_N];
+int inv[MAX_N],fac[MAX_N],finv[MAX_N];
 
 void make()
 {
@@ -13,24 +11,38 @@ void make()
 	finv[0] = finv[1] = 1;
 	inv[1] = 1;
 	for(int i=2;i<MAX_N;i++){
-		inv[i] = MOD - inv[MOD%i] * (MOD/i) % MOD;
-		fac[i] = fac[i-1] * (ll) i % MOD;
-		finv[i] = finv[i-1] * inv[i] % MOD;
+		inv[i] = MOD - (long long)inv[MOD%i] * (MOD/i) % MOD;
+		fac[i] = (long long)fac[i-1] * i % MOD;
+		finv[i] = (long long)finv[i-1] * inv[i] % MOD;
 	}
 }
 
-ll mod_pow(ll a,ll b)
+inline int mod_pow(int a, int b)
 {
-    a %= MOD;
-    ll res = 1;
+    int res = 1;
     while(b){
         if(b & 1){
-            res = res * a % MOD;
+            res = (long long)res * a % MOD;
         }
-        a = a * a %MOD;
+        a = (long long)a * a % MOD;
         b >>= 1;
     }
     return res;
+}
+
+inline int add(int x,int y)
+{
+    return (x + y)%MOD;
+}
+
+inline int sub(int x,int y)
+{
+    return (x+MOD-y)%MOD;
+}
+
+inline int mul(int x,int y)
+{
+    return (long long)x*y%MOD;
 }
 
 void extgcd(int a,int b, int& x,int& y)
@@ -51,36 +63,22 @@ int mod_inverse(int a,int m)
 	return (m + x % m) % m;
 }
 
-ll add(ll x,ll y)
+// deg + 1 個の f(i) = val[i] (i = 0,..., deg) の情報から関数 f を復元し, f(num) を返す
+// すべて MOD を法として考えていることに注意
+int solve(int deg, long long num, vector<int>& val)
 {
-    return (x + y)%MOD;
-}
-
-ll sub(ll x,ll y)
-{
-    return (x+MOD-y)%MOD;
-}
-
-ll mul(ll x,ll y)
-{
-    return x*y%MOD;
-}
-
-//degは多項式の次数、argは関数の引数(長さdeg+1),retは関数の返り値(長さdeg+1),numは求めたい返り値に対する引数
-ll comp(int deg,ll num,vector<int>& arg,vector<ll>& ret){
-
-    ll ue = 1;
-    rep(i,deg+1){
-        ue = mul(ue,num-arg[i]);
+    int ue = 1;
+	for(int i = 0; i < deg + 1; i++){
+        ue = mul(ue, sub(num % MOD, i));
     }
-    ll ans = 0;
-    rep(i,deg+1){
-        ll r1 = mul(ue,mul(mod_inverse(num-arg[i],MOD),ret[i]));
-        ll r2 = mul(finv[deg-arg[i]],finv[arg[i]]);
-        if((deg-arg[i])%2){
-            r2 = MOD-r2;
+    int ans = 0;
+    for(int i = 0; i < deg + 1; i++){
+        int r1 = mul(ue, mul(mod_inverse(sub(num % MOD, i), MOD), val[i]));
+        int r2 = mul(finv[deg-i], finv[i]);
+        if((deg - i) % 2){
+            r2 = MOD - r2;
         }
-        ans = add(ans,mul(r1,r2));
+        ans = add(ans, mul(r1, r2));
     }
     return ans;
 }
