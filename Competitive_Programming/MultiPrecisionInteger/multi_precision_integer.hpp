@@ -25,25 +25,25 @@ private:
 
     bool sign;
 
-    static void trim_sign(MPI& num){
+    inline static void trim_sign(MPI& num){
         if(num.isZero()) num.sign = false;
     }
-    static void trim_digit(MPI& num){
+    inline static void trim_digit(MPI& num){
         while(num.back() == 0 && (int)num.size() >= 2) num.pop_back();
     }
-    bool abs_less(const MPI& a, const MPI& b) const {
+    inline bool abs_less(const MPI& a, const MPI& b) const {
         if(a.size() != b.size()) return a.size() < b.size();
         for(int index = (int)a.size() - 1; index >= 0; index--){
             if(a[index] != b[index]) return a[index] < b[index];
         }
         return false;
     }
-    static void num_sbst(MPI& a, const MPI& b){
+    inline static void num_sbst(MPI& a, const MPI& b){
         int n = (int)b.size();
         a.resize(n);
         for(int i = 0; i < n; i++) a[i] = b[i];
     }
-    void add(const MPI& a, const MPI& b, MPI& res) const {
+    inline void add(const MPI& a, const MPI& b, MPI& res) const {
         num_sbst(res, a);
         int mx = (int)max(a.size(), b.size());
         res.resize(mx, 0);
@@ -55,7 +55,7 @@ private:
         }
         if(carry) res.push_back(1);
     }
-    void sub(const MPI& a, const MPI& b, MPI& res) const {
+    inline void sub(const MPI& a, const MPI& b, MPI& res) const {
         num_sbst(res, a);
         int carry = 0;
         for(int i = 0; i < (int)res.size(); i++){
@@ -69,9 +69,9 @@ private:
         }
         trim_digit(res), trim_sign(res);
     }
-    static int add_(const int x, const int y) { return (x + y < MOD_) ? x + y : x + y - MOD_; }
-    static int mul_(const int x, const int y) { return (long long)x * y % MOD_; }
-    static int power(int x, int n){
+    inline static int add_(const int x, const int y) { return (x + y < MOD_) ? x + y : x + y - MOD_; }
+    inline static int mul_(const int x, const int y) { return (long long)x * y % MOD_; }
+    inline static int power(int x, int n){
         int res = 1;
         while(n > 0){
             if(n & 1) res = mul_(res, x);
@@ -80,8 +80,8 @@ private:
         }
         return res;
     }
-    static int inverse(const int x) { return power(x, MOD_ - 2); }
-    static void ntt(vector<int>& a, const bool rev = false){
+    inline static int inverse(const int x) { return power(x, MOD_ - 2); }
+    inline static void ntt(vector<int>& a, const bool rev = false){
         int i,j,k,s,t,v,w,wn;
         const int size = (int)a.size();
         const int height = (int)log2(2 * size - 1);
@@ -128,10 +128,10 @@ private:
         if(carry) res.push_back(carry);
         trim_digit(res), trim_sign(res);
     }
-    bool isZero() const {
+    inline bool isZero() const {
         return (int)size() == 1 && (*this)[0] == 0;
     }
-    static bool div_geq(const MPI& mod, const MPI& num){
+    inline static bool div_geq(const MPI& mod, const MPI& num){
         if((int)mod.size() != (int)num.size()) return (int)mod.size() > (int)num.size();
         int n = (int)mod.size();
         for(int i = 0; i < n; i++){
@@ -141,7 +141,7 @@ private:
         }
         return true;
     }
-    void div_(const MPI& a, const MPI& b, MPI& quo, MPI& mod) const {
+    inline void div_(const MPI& a, const MPI& b, MPI& quo, MPI& mod) const {
         vector<MPI> mult(9);
         mult[0] = b;
         for(int i = 0; i < 8; i++) mult[i+1] = mult[i] + b;
@@ -198,7 +198,7 @@ public:
         for(int i = (int)s.size() - 1; i >= sign; i--) this->push_back(s[i]-'0');
     }
 
-    long long to_ll() const {
+    inline long long to_ll() const {
         long long res = 0, dig = 1;
         for(int i = 0; i < (int)size(); i++){
             res += dig * (*this)[i], dig *= 10;
@@ -207,7 +207,7 @@ public:
         return res;
     }
 
-    string to_string() const {
+    inline string to_string() const {
         int n = (int)size() + sign;
         string s(n, ' ');
         if(sign) s[0] = '-';
@@ -233,11 +233,11 @@ public:
         return *this;
     }
 
-    bool operator<(const MPI& another) const {
-        if(sign ^ another.sign) return sign;
-        if(size() != another.size()) return (size() < another.size()) ^ sign;
+    bool operator<(const MPI& num) const {
+        if(sign ^ num.sign) return sign;
+        if(size() != num.size()) return (size() < num.size()) ^ sign;
         for(int index = (int)size() - 1; index >= 0; index--){
-            if((*this)[index] != another[index]) return ((*this)[index] < another[index]) ^ sign;
+            if((*this)[index] != num[index]) return ((*this)[index] < num[index]) ^ sign;
         }
         return false;
     }
@@ -250,8 +250,8 @@ public:
         return MPI(num) < another;
     }
 
-    bool operator>(const MPI& another) const {
-        return another < *this;
+    bool operator>(const MPI& num) const {
+        return num< *this;
     }
 
     bool operator>(const long long num) const {
@@ -262,8 +262,8 @@ public:
         return MPI(num) > another;
     }
 
-    bool operator<=(const MPI& another) const {
-        return !(*this > another);
+    bool operator<=(const MPI& num) const {
+        return !(*this > num);
     }
 
     bool operator<=(const long long num) const {
@@ -274,8 +274,8 @@ public:
         return MPI(num) <= another;
     }
 
-    bool operator>=(const MPI& another) const {
-        return !(*this < another);
+    bool operator>=(const MPI& num) const {
+        return !(*this < num);
     }
 
     bool operator>=(const long long num) const {
@@ -286,11 +286,11 @@ public:
         return MPI(num) >= another;
     }
 
-    bool operator==(const MPI& another) const {
-        if(sign ^ another.sign) return false;
-        if(size() != another.size()) return false;
+    bool operator==(const MPI& num) const {
+        if(sign ^ num.sign) return false;
+        if(size() != num.size()) return false;
         for(int index = (int)size() - 1; index >= 0; index--){
-            if((*this)[index] != another[index]) return false;
+            if((*this)[index] != num[index]) return false;
         }
         return true;
     }
@@ -303,8 +303,8 @@ public:
         return MPI(num) == another;
     }
 
-    bool operator!=(const MPI& another) const {
-        return !(*this == another);
+    bool operator!=(const MPI& num) const {
+        return !(*this == num);
     }
 
     bool operator!=(const long long num) const {
@@ -331,7 +331,7 @@ public:
         return res;
     }
 
-    friend MPI abs(const MPI& num){
+    inline friend MPI abs(const MPI& num){
         MPI res = num;
         res.sign = false;
         return res;
@@ -424,7 +424,7 @@ public:
         return res;
     }
 
-    MPI operator*(MPI num) const {
+    MPI operator*(const MPI& num) const {
         MPI res; res.sign = (sign^num.sign);
         mul(*this, num, res);
         return res;
@@ -502,7 +502,7 @@ public:
         return *this;
     }
 
-    MPI div2() const {
+    inline MPI div2() const {
         MPI res; res.sign = sign;
         int n = (int)this->size(), carry = 0;
         for(int i = n-1; i >= 0; i--){
@@ -515,7 +515,7 @@ public:
         return res;
     }
 
-    friend MPI sqrt(const MPI& x){
+    inline friend MPI sqrt(const MPI& x){
         if(x <= MPI(0)) return MPI(0);
         MPI s = 1, t = x;
         while(s < t){
@@ -526,12 +526,12 @@ public:
         return t;
     }
 
-    friend MPI log10(const MPI& x){
+    inline friend MPI log10(const MPI& x){
         assert(x > MPI(0));
         return MPI((int)x.size());
     }
 
-    friend MPI pow(MPI a, MPI b){
+    inline friend MPI pow(MPI a, MPI b){
         assert(b >= 0);
         MPI res(1);
         while(b){
