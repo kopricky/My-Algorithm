@@ -48,7 +48,7 @@ private:
             res *= 10;
             res += (s[pos++] - '0');
         }while(isdigit(s[pos]));
-        return new node(res);
+        return alloc(res);
     }
 
     node* root;
