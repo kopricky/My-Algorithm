@@ -4,25 +4,15 @@
 //Dinic<int> dn(MAX_N);
 //適宜add_edge,max_flowを用いる
 template<typename T> class Dinic {
-public:
+private:
     struct edge{
         int to;
         T cap;
         int rev;
     };
+    int V;
     vector<vector<edge> > G;
     vector<int> level,iter;
-    int n;
-    Dinic(int node_size){
-        n = node_size;
-        G.resize(node_size),level.resize(node_size),iter.resize(node_size);
-    }
-    //辺を張る
-    void add_edge(int from,int to,T cap)
-    {
-    	G[from].push_back((edge){to,cap,(int)G[to].size()});
-    	G[to].push_back((edge){from,(T)0,(int)G[from].size()-1});
-    }
     void bfs(int s)
     {
     	fill(level.begin(),level.end(),-1);
@@ -45,8 +35,7 @@ public:
     	if(v==t){
     		return f;
     	}
-    	for(int &i = iter[v];i<(int)G[v].size();i++){
-    		edge &e = G[v][i];
+        for(edge& e : G[v]){
     		if(e.cap > 0 && level[v] < level[e.to]){
     			T d = dfs(e.to,t,min(f,e.cap));
     			if(d>0){
@@ -57,6 +46,14 @@ public:
     		}
     	}
     	return 0;
+    }
+public:
+    Dinic(int node_size) : V(node_size), G(V), level(V), iter(V){}
+    //辺を張る
+    void add_edge(int from,int to,T cap)
+    {
+    	G[from].push_back((edge){to,cap,(int)G[to].size()});
+    	G[to].push_back((edge){from,(T)0,(int)G[from].size()-1});
     }
     //最大流を計算
     T solve(int s,int t)

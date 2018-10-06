@@ -3,12 +3,7 @@
 template<typename T>
 T gcd(T a, T b)
 {
-    if(!b) return a;
-    if(a % b == 0){
-        return b;
-    }else{
-        return gcd(b,a%b);
-    }
+    return b ? gcd(b, a % b) : a;
 }
 
 template<typename T>

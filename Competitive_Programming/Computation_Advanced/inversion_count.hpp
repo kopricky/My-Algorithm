@@ -44,31 +44,30 @@ public:
 	}
 };
 
-//nu,nvにu,vを[0,n)に座圧した結果をいれる(必要な場合のみ)
-pair<vector<int>,vector<int> > zaatu(vector<int>& u,vector<int>& v)
+//u を昇順にソートするのに必要な交換回数(転倒数) (u は (0~n-1の並び替え))
+long long inv_count(vector<int>& u)
 {
-    int n = (int)u.size();
-    vector<int> sa = u;
-    sort(sa.begin(), sa.end());
-    vector<int> nu(n),nv(n);
-    for(int i = 0; i < n; i++){
-        nu[i] = lower_bound(sa.begin(), sa.end(), u[i]) - sa.begin();
-        nv[i] = lower_bound(sa.begin(), sa.end(), v[i]) - sa.begin();
+    int n = (int)(u.size());
+    BIT<int> bt(n);
+    long long ans = 0;
+	for(int i = 0; i < n; i++){
+        ans += i-bt.sum(u[i]);
+        bt.add(u[i],1);
     }
-    return make_pair(nu,nv);
+    return ans;
 }
 
-//uをvに変換するのに必要な交換回数(転倒数)
+//u を v に変換するのに必要な交換回数 (u, v は (0~n-1の並び替え))
 long long inv_count(vector<int>& u,vector<int>& v)
 {
-    int n = (int)u.size();
+    int n = (int)(u.size());
     vector<int> p(n);
     BIT<int> bt(n);
     long long ans = 0;
     for(int i = 0; i < n; i++){
         p[v[i]] = i;
     }
-    for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++){
         ans += i-bt.sum(p[u[i]]);
         bt.add(p[u[i]],1);
     }
