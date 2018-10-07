@@ -67,11 +67,13 @@ public:
     C3_Find(int node_size) : V(node_size), high_num(0), G(V), deg(V, 0), unzip(V){
         iota(unzip.begin(), unzip.end(), -V);
     }
+
     void add_edge(int u, int v){
         G[u].push_back(v), G[v].push_back(u);
         deg[u]++, deg[v]++;
         es.insert(make_pair(min(u, v), max(u, v)));
     }
+
     bool solve(){
         for(int i = 0; i < V; i++){
             if(deg[i] > alpha){
