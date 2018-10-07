@@ -11,5 +11,6 @@
 #include <complex>
 #include <cassert>
 #include <list>
+#include <bitset>
 
 using namespace std;
