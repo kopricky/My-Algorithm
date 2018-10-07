@@ -3,7 +3,7 @@
 //最大流量がint,頂点数がMAX_N
 //Dinic<int> dn(MAX_N);
 //適宜add_edge,max_flowを用いる
-template&lt;typename T&gt; class Dinic {
+template<typename T> class Dinic {
 private:
     struct edge{
         int to;
@@ -11,18 +11,18 @@ private:
         int rev;
     };
     int V;
-    vector&lt;vector&lt;edge&gt; &gt; G;
-    vector&lt;int&gt; level,iter;
+    vector<vector<edge> > G;
+    vector<int> level,iter;
     void bfs(int s) {
     	fill(level.begin(),level.end(),-1);
-    	queue&lt;int&gt; que;
+    	queue<int> que;
     	level[s] = 0;
     	que.push(s);
     	while(!que.empty()){
     		int v = que.front();
     		que.pop();
-    		for(auto&amp; e : G[v]){
-    			if(e.cap &gt; 0 &amp;&amp; level[e.to] &lt; 0){
+    		for(auto& e : G[v]){
+    			if(e.cap > 0 && level[e.to] < 0){
     				level[e.to] = level[v] + 1;
     				que.push(e.to);
     			}
@@ -33,10 +33,10 @@ private:
     	if(v==t){
     		return f;
     	}
-        for(edge&amp; e : G[v]){
-    		if(e.cap &gt; 0 &amp;&amp; level[v] &lt; level[e.to]){
+        for(edge& e : G[v]){
+    		if(e.cap > 0 && level[v] < level[e.to]){
     			T d = dfs(e.to,t,min(f,e.cap));
-    			if(d&gt;0){
+    			if(d>0){
     				e.cap -= d;
     				G[e.to][e.rev].cap += d;
     				return d;
@@ -58,12 +58,12 @@ public:
     	T flow = 0;
     	for(;;){
     		bfs(s);
-    		if(level[t]&lt;0){
+    		if(level[t]<0){
     			return flow;
     		}
     		fill(iter.begin(),iter.end(),0);
     		T f;
-    		while((f=dfs(s,t,numeric_limits&lt;T&gt;::max())) &gt; 0){
+    		while((f=dfs(s,t,numeric_limits<T>::max())) > 0){
     			flow += f;
     		}
     	}
