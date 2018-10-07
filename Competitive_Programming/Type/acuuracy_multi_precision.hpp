@@ -1,19 +1,19 @@
 #include "../header.hpp"
 
-template<int acc> class AMPI : public deque<int> {
+template<int acc> class AMP : public deque<int> {
 private:
 
     static constexpr int root = 5;
     static constexpr int MOD_ = 924844033;
 
-    static void trim_digit(AMPI& num){
+    static void trim_digit(AMP& num){
         while((int)num.size() >= 1 && num.back() == 0) num.pop_back();
         if((int)num.size() == 1 && num[0] == 0){ num.zero = true; return; }
 		while((int)num.size() < acc) num.push_front(0), num.ex--;
 		while((int)num.size() > acc + 1) num.pop_front(), num.ex++;
 		rounding(num);
     }
-	static void rounding(AMPI& num){
+	static void rounding(AMP& num){
 		if((int)num.size() != acc + 1) return;
 		if(num[0] >= 5){
 			int pos = 1;
@@ -25,18 +25,18 @@ private:
 		}
 		num.pop_front(), num.ex++;
 	}
-    static bool abs_less(const AMPI& a, const AMPI& b){
+    static bool abs_less(const AMP& a, const AMP& b){
         if(a.ex != b.ex) return a.ex < b.ex;
         for(int index = acc - 1; index >= 0; index--){
             if(a[index] != b[index]) return a[index] < b[index];
         }
         return false;
     }
-    static void num_sbst(AMPI& a, const AMPI& b){
+    static void num_sbst(AMP& a, const AMP& b){
         a.resize(acc), a.zero = false, a.ex = b.ex;
         for(int i = 0; i < acc; i++) a[i] = b[i];
     }
-    static void add(const AMPI& a, const AMPI& b, AMPI& res){
+    static void add(const AMP& a, const AMP& b, AMP& res){
         int diff = a.ex - b.ex, carry = 0;
         if(abs(diff) > acc) return (diff > 0) ? num_sbst(res, a) : num_sbst(res, b);
 		if(diff >= 0){
@@ -60,7 +60,7 @@ private:
 		}
         trim_digit(res);
     }
-    static void sub(const AMPI& a, const AMPI& b, AMPI& res){
+    static void sub(const AMP& a, const AMP& b, AMP& res){
         int diff = a.ex - b.ex, carry = 0;
         num_sbst(res, a);
         if(diff > acc) return;
@@ -128,7 +128,7 @@ private:
             for (i = 0; i < size; i++) a[i] = mul_(a[i], v);
         }
     }
-    static void mul(const AMPI& a, const AMPI& b, AMPI& res){
+    static void mul(const AMP& a, const AMP& b, AMP& res){
         const int size = (int)a.size() + (int)b.size() - 1;
         int t = 1;
         while (t < size) t <<= 1;
@@ -233,15 +233,15 @@ private:
         }
     };
 
-    static void mpi_AMPI(MPI& a, const AMPI& b){
+    static void mpi_AMP(MPI& a, const AMP& b){
         if(b.zero){ a = MPI(0); return; }
         int n = (int)b.size();
         a.resize(n);
         for(int i = 0; i < n; i++) a[i] = b[i];
     }
 
-    static void AMPI_mpi(AMPI& a, const MPI& b){
-        if(b.isZero()){ a = AMPI(); return; }
+    static void AMP_mpi(AMP& a, const MPI& b){
+        if(b.isZero()){ a = AMP(); return; }
         int n = (int)b.size();
         a.resize(n);
         for(int i = 0; i < n; i++) a[i] = b[i];
@@ -250,7 +250,7 @@ private:
 
 public:
 
-	friend ostream& operator<<(ostream& os, const AMPI& num) {
+	friend ostream& operator<<(ostream& os, const AMP& num) {
         if(num.zero){ os << "0."; for(int i = 0; i < acc-1; i++) os << '0';
                     os << "+e0"; return os; }
 		if(num.sign) os << '-';
@@ -262,10 +262,10 @@ public:
         return os;
 	}
 
-    friend istream& operator>>(istream& is, AMPI& num) {
+    friend istream& operator>>(istream& is, AMP& num) {
         string s;
         is >> s;
-        num = AMPI(s);
+        num = AMP(s);
         return is;
     }
 
@@ -287,12 +287,12 @@ public:
         return res * pow(10.0, ex);
     }
 
-    AMPI& operator=(long long num) {
-        *this = AMPI(num);
+    AMP& operator=(long long num) {
+        *this = AMP(num);
         return *this;
     }
 
-    bool operator<(const AMPI& num) const {
+    bool operator<(const AMP& num) const {
         if(zero) return !num.zero && !num.sign;
         if(num.zero) return sign;
         if(sign ^ num.sign) return sign;
@@ -304,50 +304,50 @@ public:
     }
 
     bool operator<(const long long num) const {
-        return *this < AMPI(num);
+        return *this < AMP(num);
     }
 
-    friend bool operator<(const long long num, const AMPI& another){
-        return AMPI(num) < another;
+    friend bool operator<(const long long num, const AMP& another){
+        return AMP(num) < another;
     }
 
-    bool operator>(const AMPI& num) const {
+    bool operator>(const AMP& num) const {
         return num < *this;
     }
 
     bool operator>(const long long num) const {
-        return *this > AMPI(num);
+        return *this > AMP(num);
     }
 
-    friend bool operator>(const long long num, const AMPI& another){
-        return AMPI(num) > another;
+    friend bool operator>(const long long num, const AMP& another){
+        return AMP(num) > another;
     }
 
-    bool operator<=(const AMPI& num) const {
+    bool operator<=(const AMP& num) const {
         return !(*this > num);
     }
 
     bool operator<=(const long long num) const {
-        return *this <= AMPI(num);
+        return *this <= AMP(num);
     }
 
-    friend bool operator<=(const long long num, const AMPI& another){
-        return AMPI(num) <= another;
+    friend bool operator<=(const long long num, const AMP& another){
+        return AMP(num) <= another;
     }
 
-    bool operator>=(const AMPI& num) const {
+    bool operator>=(const AMP& num) const {
         return !(*this < num);
     }
 
     bool operator>=(const long long num) const {
-        return *this >= AMPI(num);
+        return *this >= AMP(num);
     }
 
-    friend bool operator>=(const long long num, const AMPI& another){
-        return AMPI(num) >= another;
+    friend bool operator>=(const long long num, const AMP& another){
+        return AMP(num) >= another;
     }
 
-    bool operator==(const AMPI& num) const {
+    bool operator==(const AMP& num) const {
         if(zero || num.zero) return zero && num.zero;
         if(sign ^ num.sign) return false;
         if(ex != num.ex) return false;
@@ -358,23 +358,23 @@ public:
     }
 
     bool operator==(const long long num) const {
-        return *this == AMPI(num);
+        return *this == AMP(num);
     }
 
-    friend bool operator==(const long long num, const AMPI& another){
-        return AMPI(num) == another;
+    friend bool operator==(const long long num, const AMP& another){
+        return AMP(num) == another;
     }
 
-    bool operator!=(const AMPI& num) const {
+    bool operator!=(const AMP& num) const {
         return !(*this == num);
     }
 
     bool operator!=(const long long num) const {
-        return *this != AMPI(num);
+        return *this != AMP(num);
     }
 
-    friend bool operator!=(const long long num, const AMPI& another){
-        return AMPI(num) != another;
+    friend bool operator!=(const long long num, const AMP& another){
+        return AMP(num) != another;
     }
 
     explicit operator bool() const noexcept { return !zero; }
@@ -383,26 +383,26 @@ public:
     explicit operator int() const noexcept { return (int)this->to_ll(); }
     explicit operator long long() const noexcept { return this->to_ll(); }
 
-    AMPI operator+() const {
+    AMP operator+() const {
         return *this;
     }
 
-    AMPI operator-() const {
-        AMPI res = *this;
+    AMP operator-() const {
+        AMP res = *this;
         res.sign = !sign;
         return res;
     }
 
-    friend AMPI abs(const AMPI& num){
-        AMPI res = num;
+    friend AMP abs(const AMP& num){
+        AMP res = num;
         res.sign = false;
         return res;
     }
 
-    AMPI operator+(const AMPI& num) const {
-        if(zero){ AMPI res = num; return res; }
-        if(num.zero){ AMPI res = *this; return res; }
-        AMPI res; res.sign = sign;
+    AMP operator+(const AMP& num) const {
+        if(zero){ AMP res = num; return res; }
+        if(num.zero){ AMP res = *this; return res; }
+        AMP res; res.sign = sign;
         if(sign != num.sign){
             if(abs_less(*this, num)){
                 res.sign = num.sign;
@@ -417,43 +417,43 @@ public:
         return res;
     }
 
-    AMPI operator+(long long num) const {
-        return *this + AMPI(num);
+    AMP operator+(long long num) const {
+        return *this + AMP(num);
     }
 
-    friend AMPI operator+(long long a, const AMPI& b){
+    friend AMP operator+(long long a, const AMP& b){
         return b + a;
     }
 
-    AMPI& operator+=(const AMPI& num){
+    AMP& operator+=(const AMP& num){
         *this = *this + num;
         return *this;
     }
 
-    AMPI& operator+=(long long num){
+    AMP& operator+=(long long num){
         *this = *this + num;
         return *this;
     }
 
-    AMPI& operator++(){
+    AMP& operator++(){
         return *this += 1;
     }
 
-    AMPI operator++(int){
-        AMPI res = *this;
+    AMP operator++(int){
+        AMP res = *this;
         *this += 1;
         return res;
     }
 
-    AMPI operator-(const AMPI& num) const {
-        if(zero){ AMPI res = num; res.sign = !res.sign; return res; }
-        if(num.zero){ AMPI res = *this; return res; }
+    AMP operator-(const AMP& num) const {
+        if(zero){ AMP res = num; res.sign = !res.sign; return res; }
+        if(num.zero){ AMP res = *this; return res; }
         if(sign != num.sign){
-            AMPI res; res.sign = sign;
+            AMP res; res.sign = sign;
             add(*this, num, res);
             return res;
         }
-        AMPI res; res.sign = (abs_less(*this, num) ^ sign);
+        AMP res; res.sign = (abs_less(*this, num) ^ sign);
         if(res.sign){
             sub(num, *this, res);
         }else{
@@ -462,96 +462,96 @@ public:
         return res;
     }
 
-    AMPI operator-(long long num) const {
-        return *this - AMPI(num);
+    AMP operator-(long long num) const {
+        return *this - AMP(num);
     }
 
-    friend AMPI operator-(long long a, const AMPI& b){
-        return AMPI(a) - b;
+    friend AMP operator-(long long a, const AMP& b){
+        return AMP(a) - b;
     }
 
-    AMPI& operator-=(const AMPI& num){
+    AMP& operator-=(const AMP& num){
         *this = *this - num;
         return *this;
     }
 
-    AMPI& operator-=(long long num){
+    AMP& operator-=(long long num){
         *this = *this - num;
         return *this;
     }
 
-    AMPI& operator--(){
+    AMP& operator--(){
         return *this -= 1;
     }
 
-    AMPI operator--(int){
-        AMPI res = *this;
+    AMP operator--(int){
+        AMP res = *this;
         *this -= 1;
         return res;
     }
 
-    AMPI operator*(const AMPI& num) const {
-        if(zero || num.zero) return AMPI();
-        AMPI res; res.zero = false; res.sign = (sign^num.sign);
+    AMP operator*(const AMP& num) const {
+        if(zero || num.zero) return AMP();
+        AMP res; res.zero = false; res.sign = (sign^num.sign);
         res.ex = ex + num.ex;
         mul(*this, num, res);
         return res;
     }
 
-    AMPI operator*(long long num) const {
-        return *this * AMPI(num);
+    AMP operator*(long long num) const {
+        return *this * AMP(num);
     }
 
-    friend AMPI operator*(long long a, const AMPI& b){
+    friend AMP operator*(long long a, const AMP& b){
         return b * a;
     }
 
-    AMPI& operator*=(const AMPI& num){
+    AMP& operator*=(const AMP& num){
         *this = *this * num;
         return *this;
     }
 
-    AMPI& operator*=(long long num){
+    AMP& operator*=(long long num){
         *this = *this * num;
         return *this;
     }
 
-    AMPI operator/(const AMPI& num) const {
+    AMP operator/(const AMP& num) const {
         assert(!num.zero);
-        if(zero){ return AMPI(); }
+        if(zero){ return AMP(); }
         MPI kp, res_, num_;
-        mpi_AMPI(num_, num);
-        AMPI res; res.zero = false; res.sign = (sign^num.sign); res.ex = ex - num.ex;
-        mpi_AMPI(kp, *this);
+        mpi_AMP(num_, num);
+        AMP res; res.zero = false; res.sign = (sign^num.sign); res.ex = ex - num.ex;
+        mpi_AMP(kp, *this);
         if(abs_less(*this, num)) kp.push_front(0), res.ex--;
         for(int i = 0; i < acc; i++) kp.push_front(0), res.ex--;
         MPI::div_(kp, num_, res_);
-        AMPI_mpi(res, res_);
+        AMP_mpi(res, res_);
         trim_digit(res);
         return res;
     }
 
-    AMPI operator/(long long num) const {
-        return *this / AMPI(num);
+    AMP operator/(long long num) const {
+        return *this / AMP(num);
     }
 
-    friend AMPI operator/(long long a, const AMPI& b){
-        return AMPI(a) / b;
+    friend AMP operator/(long long a, const AMP& b){
+        return AMP(a) / b;
     }
 
-    AMPI& operator/=(const AMPI& num){
+    AMP& operator/=(const AMP& num){
         *this = *this / num;
         return *this;
     }
 
-    AMPI& operator/=(long long num){
+    AMP& operator/=(long long num){
         *this = *this / num;
         return *this;
     }
 
-    AMPI div2() const {
-        if(zero) return AMPI();
-        AMPI res = *this;
+    AMP div2() const {
+        if(zero) return AMP();
+        AMP res = *this;
         int carry = 0;
         for(int i = acc-1; i >= 0; i--){
             int val = (*this)[i]+carry*10;
@@ -567,9 +567,9 @@ public:
         return res;
     }
 
-    friend AMPI sqrt(AMPI x){
-        if(x <= AMPI(0)) return AMPI();
-        AMPI s = 1, t = x;
+    friend AMP sqrt(AMP x){
+        if(x <= AMP(0)) return AMP();
+        AMP s = 1, t = x;
         while(s < t){
             s = s + s, t = t.div2();
         }
@@ -579,15 +579,15 @@ public:
         return t;
     }
 
-    friend AMPI log10(const AMPI& x){
-        assert(x > AMPI(0));
-        return AMPI(acc + x.ex);
+    friend AMP log10(const AMP& x){
+        assert(x > AMP(0));
+        return AMP(acc + x.ex);
     }
 
-    friend AMPI pow(AMPI a, long long b){
-        if(a.zero) return AMPI();
+    friend AMP pow(AMP a, long long b){
+        if(a.zero) return AMP();
         assert(b >= 0);
-        AMPI res(1);
+        AMP res(1);
         while(b){
             if(b % 2) res *= a;
             a *= a;
@@ -599,16 +599,16 @@ public:
     bool sign, zero;
 	long long ex;
 
-    AMPI() : zero(true){}
+    AMP() : zero(true){}
 
-    AMPI(long long val) : sign(false), zero(false), ex(0){
+    AMP(long long val) : sign(false), zero(false), ex(0){
         if(val == 0){ zero = true; return; }
         if(val < 0) sign = true, val = -val;
         while(val) push_back(val%10), val /= 10;
 		trim_digit(*this);
     }
 
-    AMPI(const string& s) : sign(false), zero(false), ex(0){
+    AMP(const string& s) : sign(false), zero(false), ex(0){
         if(s.empty() || s == "0"){ zero = true; return; }
         if(s[0] == '-') sign = true;
         for(int i = (int)s.size() - 1; i >= sign; i--){
