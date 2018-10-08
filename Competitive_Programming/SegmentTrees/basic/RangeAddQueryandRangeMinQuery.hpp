@@ -37,8 +37,8 @@ public:
         b++;
         T res1 = numeric_limits<T>::max(), res2 = numeric_limits<T>::max();
         while(a < b) {
-            if(a & 1) eval(a), res1 += node[a++];
-            if(b & 1) eval(--b), res2 += node[b];
+            if(a & 1) eval(a), res1 = min(res1, node[a++]);
+            if(b & 1) eval(--b), res2 = min(res2, node[b]);
             a >>= 1, b >>= 1;
         }
         return min(res1, res2);
