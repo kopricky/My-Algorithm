@@ -8,9 +8,9 @@
 template <int MAX_E> class C3_Find {
 private:
 
-    // static constexpr int alpha = floor(sqrt(MAX_E/log2((double)MAX_E+1)))+1;
-    static constexpr int alpha = floor(sqrt(MAX_E/2.0))+1;
-    static constexpr int MAX_N = ceil(2.0*MAX_E / alpha);
+    // static const int alpha = floor(sqrt(MAX_E/log2((double)MAX_E+1)))+1;
+    static const int alpha = floor(sqrt(MAX_E/2.0))+1;
+    static const int MAX_N = ceil(2.0*MAX_E / alpha);
 
     class mat {
     public:
