@@ -64,7 +64,6 @@ public:
         }
         if(s < 0) s = 0;
         dfs(s);
-        reverse(path.begin(),path.end());
         return true;
     }
 };
