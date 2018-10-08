@@ -1,66 +1,60 @@
 #include "../../header.hpp"
 
-template<typename T> class segtree{
+template<typename T> class segtree {
 private:
-    int n,sz;
+    int n,sz,h;
     vector<T> node, lazy;
-    vector<bool> lazyFlag;
 
 public:
-    segtree(vector<T>& v){
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()), h(0){
         n = 1;
         while(n < sz){
-            n *= 2;
+            n *= 2, h++;
         }
-        node.resize(2*n-1, 0);
-        lazy.resize(2*n-1, 0);
-        lazyFlag.resize(2*n-1,false);
-        rep(i,sz){
-            node[i+n-1] = v[i];
+        node.resize(2*n, 0), lazy.resize(2*n, 0);
+        for(int i = 0; i < sz; i++){
+            node[i+n] = v[i];
         }
-        for(int i=n-2; i>=0; i--){
-            node[i] = node[i*2+1] + node[i*2+2];
+        for(int i=n-1; i>=1; i--){
+            node[i] = node[i*2] + node[i*2+1];
         }
     }
-    void eval(int k, int l, int r){
-        if(lazyFlag[k]){
-            node[k] = lazy[k]*(r-l);
-            if(r - l > 1){
-                lazy[k*2+1] = lazy[k*2+2] = lazy[k];
-                lazyFlag[k*2+1] = lazyFlag[k*2+2] = true;
+    void eval(int k) {
+        if(lazy[k]) {
+            node[k] = lazy[k];
+            if(k < n) {
+                lazy[k*2] = lazy[k*2+1] = lazy[k]/2;
             }
-            lazyFlag[k] = false;
+            lazy[k] = 0;
         }
     }
-    void range(int a, int b, T x, int k=0, int l=0, int r=-1){
+    void range(int a, int b, T x, int k=1, int l=0, int r=-1) {
         if(r < 0) r = n;
-        eval(k, l, r);
-        if(b <= l || r <= a){
-            return;
+        eval(k);
+        if(b <= l || r <= a) return;
+        if(a <= l && r <= b) {
+            lazy[k] = (r - l) * x, eval(k);
         }
-        if(a <= l && r <= b){
-            lazy[k] = x;
-            lazyFlag[k] = true;
-            eval(k, l, r);
-        }else{
-            range(a, b, x, 2*k+1, l, (l+r)/2);
-            range(a, b, x, 2*k+2, (l+r)/2, r);
-            node[k] = node[2*k+1] + node[2*k+2];
-        }
+        range(a, b, x, 2*k, l, (l+r)/2), range(a, b, x, 2*k+1, (l+r)/2, r);
+        node[k] = node[2*k] + node[2*k+1];
     }
-    T query(int a, int b, int k=0, int l=0, int r=-1){
-        if(r < 0) r = n;
-        eval(k, l, r);
-        if(b <= l || r <= a){
-            return 0;
+    T query(int a, int b) {
+        a += n, b += n - 1;
+        for(int i = h; i > 0; i--) eval(a >> i), eval(b >> i);
+        b++;
+        T res1 = 0, res2 = 0;
+        while(a < b) {
+            if(a & 1) eval(a), res1 += node[a++];
+            if(b & 1) eval(--b), res2 += node[b];
+            a >>= 1, b >>= 1;
         }
-        if(a <= l && r <= b){
-            return node[k];
-        }
-        T vl = query(a, b, 2*k+1, l, (l+r)/2);
-        T vr = query(a, b, 2*k+2, (l+r)/2, r);
-        return vl + vr;
+        return res1 + res2;
     }
-    void print(){rep(i,sz)cout<<query(i,i+1)<< " ";cout<<endl;}
+    void print()
+    {
+        for(int i = 0; i < sz; i++){
+            cout << query(i,i+1) << " ";
+        }
+        cout << "\n";
+    }
 };

@@ -26,7 +26,7 @@ public:
             node[k] = min(node[2*k], node[2*k+1]);
     	}
     }
-    pair<T, int> query(int a,int b,int k=0,int l=0,int r=-1)
+    pair<T, int> query(int a,int b)
     {
         pair<T, int> res1 = make_pair(numeric_limits<T>::max(), -1);
         pair<T, int> res2 = make_pair(numeric_limits<T>::max(), -1);

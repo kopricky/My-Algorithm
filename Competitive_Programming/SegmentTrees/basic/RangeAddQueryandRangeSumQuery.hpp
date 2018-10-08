@@ -2,57 +2,56 @@
 
 template<typename T> class segtree{
 private:
-    int n,sz;
+    int n,sz,h;
     vector<T> node, lazy;
 
 public:
-    segtree(vector<T>& v) : sz((int)v.size()){
+    segtree(vector<T>& v) : sz((int)v.size()), h(0){
         n = 1;
         while(n < sz){
-            n *= 2;
+            n *= 2, h++;
         }
-        node.resize(2*n-1, 0), lazy.resize(2*n-1, 0);
+        node.resize(2*n, 0), lazy.resize(2*n, 0);
         for(int i = 0; i < sz; i++){
-            node[i+n-1] = v[i];
+            node[i+n] = v[i];
         }
-        for(int i=n-2; i>=0; i--){
-            node[i] = node[i*2+1] + node[i*2+2];
+        for(int i=n-1; i>=1; i--){
+            node[i] = node[i*2] + node[i*2+1];
         }
     }
-    void eval(int k, int l, int r){
-        if(lazy[k] != 0){
-            node[k] += lazy[k]; //kを根とするsubtreeについての情報を更新
-            if(r - l > 1){
-                lazy[2*k+1] += lazy[k] / 2, lazy[2*k+2] += lazy[k] / 2;
+    void eval(int k){
+        if(lazy[k]){
+            node[k] += lazy[k];
+            if(k < n){
+                lazy[2*k] += lazy[k] / 2, lazy[2*k+1] += lazy[k] / 2;
             }
             lazy[k] = 0;
         }
     }
-    void range(int a, int b, T x, int k=0, int l=0, int r=-1){
+    void range(int a, int b, T x, int k=1, int l=0, int r=-1){
         if(r < 0) r = n;
-        eval(k, l, r);
+        eval(k);
         if(b <= l || r <= a){
             return;
         }
         if(a <= l && r <= b){
-            lazy[k] += (r - l) * x;
-            eval(k, l, r);
+            lazy[k] += (r - l) * x, eval(k);
         }else{
-            range(a, b, x, 2*k+1, l, (l+r)/2), range(a, b, x, 2*k+2, (l+r)/2, r);
-            node[k] = node[2*k+1] + node[2*k+2];
+            range(a, b, x, 2*k, l, (l+r)/2), range(a, b, x, 2*k+1, (l+r)/2, r);
+            node[k] = node[2*k] + node[2*k+1];
         }
     }
-    T query(int a, int b, int k=0, int l=0, int r=-1){
-        if(r < 0) r = n;
-        eval(k, l, r);
-        if(b <= l || r <= a){
-            return 0;
+    T query(int a, int b) {
+        a += n, b += n - 1;
+        for(int i = h; i > 0; i--) eval(a >> i), eval(b >> i);
+        b++;
+        T res1 = 0, res2 = 0;
+        while(a < b) {
+            if(a & 1) eval(a), res1 += node[a++];
+            if(b & 1) eval(--b), res2 += node[b];
+            a >>= 1, b >>= 1;
         }
-        if(a <= l && r <= b){
-            return node[k];
-        }
-        T vl = query(a, b, 2*k+1, l, (l+r)/2), vr = query(a, b, 2*k+2, (l+r)/2, r);
-        return vl + vr;
+        return res1 + res2;
     }
     void print(){
         for(int i = 0; i < sz; i++){
