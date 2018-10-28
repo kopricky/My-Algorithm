@@ -42,7 +42,7 @@ public:
                 if(dist[v] < p.first){
                     continue;
                 }
-                rep(i,G[v].size()){
+                for(int i = 0; i < (int)G[v].size(); i++){
                     edge& e = G[v][i];
                     if(e.cap > 0 && dist[e.to] > dist[v] + e.cost + h[v] - h[e.to]){
                         dist[e.to] = dist[v] + e.cost + h[v] - h[e.to];
@@ -54,7 +54,7 @@ public:
             if(dist[t] == inf){
                 return -1;
             }
-            rep(i,V){
+            for(int i = 0; i < V; i++){
                 h[i] += dist[i];
             }
             int d = f;

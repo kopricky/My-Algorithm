@@ -1,5 +1,6 @@
 #include "../header.hpp"
 
+// double からのコンストラクタを入れたい
 template<int acc> class AMP : public deque<int> {
 private:
 
