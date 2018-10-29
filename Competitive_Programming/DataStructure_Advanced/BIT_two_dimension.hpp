@@ -9,6 +9,7 @@ public:
             for(int j_ = j+1; j_ < m; j_ += j_ & -j_)
                 bit[i_][j_] += val;
     }
+    // [0,i]×[0,j]の範囲の和を求める
     T sum(int i, int j){
         T s = 0;
             for(int i_ = i+1; i_ > 0; i_ -= i_ & -i_)
@@ -16,8 +17,9 @@ public:
                     s += bit[i_][j_];
             return s;
     }
-    T sum(int lx, int uy, int rx, int dy){
-        return sum(rx, dy) - sum(lx-1, dy) - sum(rx, uy-1) + sum(lx-1, uy-1);   
+    // [lx, rx)×[ly, ry)の範囲の和を求める
+    T sum(int lx, int rx, int ly, int ry){
+        return sum(rx-1, ry-1) - sum(lx-1, ry-1) - sum(rx-1, ly-1) + sum(lx-1, ly-1);   
     }
     BIT(int sz1, int sz2){
         n = sz1 + 1, m = sz2 + 1;

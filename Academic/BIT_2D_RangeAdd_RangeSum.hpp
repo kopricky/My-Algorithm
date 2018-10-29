@@ -50,33 +50,35 @@ template<typename T> class BIT_2D_RangeAdd_RangeSum {
 private:
     int n,m;
     void add(BIT<T>& bit,int lx, int ly, int rx, int ry, T val){
-        bit.add(lx, ly, val), bit.add(lx, ry, -val);
-        bit.add(rx, ly, -val), bit.add(rx, ry, val);
-    }
-public:
-    BIT<T> bitxy, bitx, bity, biti;
-    BIT_2D_RangeAdd_RangeSum(int sz1, int sz2) : n(sz1), m(sz2),
-            bitxy(sz1, sz2), bitx(sz1, sz2), bity(sz1, sz2), biti(sz1, sz2){}
-    void add(int lx, int ly, int rx, int ry, T val){
-        add(bitxy, lx, ly, rx, ry, val);
-        add(bitx, lx, ly, rx, ry, -val*(ly-1));
-        add(bitx, lx, ry, rx, m, val*(ry-ly));
-        add(bity, lx, ly, rx, ry, -val*(lx-1));
-        add(bity, rx, ly, n, ry, val*(rx-lx));
-        add(biti, lx, ly, rx, ry, val*(lx-1)*(ly-1));
-        add(biti, rx, ly, n, ry, -val*(ly-1)*(rx-lx));
-        add(biti, lx, ry, rx, m, -val*(lx-1)*(ry-ly));
-        add(biti, rx, ry, n, m, val*(rx-lx)*(ry-ly));
+        bit.add(lx, ly, val), bit.add(lx, ry-1, -val);
+        bit.add(rx-1, ly, -val), bit.add(rx-1, ry-1, val);
     }
     T sum(int x, int y){
         return bitxy.sum(x, y)*x*y + bitx.sum(x, y)*x + bity.sum(x, y)*y + biti.sum(x, y);
     }
+public:
+    BIT<T> bitxy, bitx, bity, biti;
+    BIT_2D_RangeAdd_RangeSum(int sz1, int sz2) : n(sz1+1), m(sz2+1),
+            bitxy(n,m), bitx(n,m), bity(n,m), biti(n,m){}
+    // [lx, rx)×[ly, ry) に val を足す
+    void add(int lx, int ly, int rx, int ry, T val){
+        add(bitxy, lx, ly, rx, ry, val);
+        add(bitx, lx, ly, rx, ry, -val*(ly-1));
+        add(bitx, lx, ry, rx, m+1, val*(ry-ly));
+        add(bity, lx, ly, rx, ry, -val*(lx-1));
+        add(bity, rx, ly, n+1, ry, val*(rx-lx));
+        add(biti, lx, ly, rx, ry, val);
+        add(biti, rx, ly, n+1, ry, -val*(ly-1)*(rx-lx));
+        add(biti, lx, ry, rx, m+1, -val*(lx-1)*(ry-ly));
+        add(biti, rx, ry, n+1, m+1, val*(rx-lx)*(ry-ly));
+    }
+    // [lx, rx)×[ly, ry) の和を求める
     T sum(int lx, int ly, int rx, int ry){
-        return sum(rx-1, ry-1) - sum(lx-1, ry-1) - sum(rx-1, ly-1) + sum(lx-1, ly-1);
+        return sum(rx, ry) - sum(lx, ry) - sum(rx, ly) + sum(lx, ly);
     }
     void print(){
-        for(int i = 0; i < n; i++){
-            for(int j = 0; j < m; j++){
+        for(int i = 0; i < n-1; i++){
+            for(int j = 0; j < m-1; j++){
                 cout<<sum(i,j,i+1,j+1)<<" ";
             }
             cout<<endl;
