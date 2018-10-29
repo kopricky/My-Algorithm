@@ -5,7 +5,7 @@
 // https://code.google.com/p/shellinford/
 // https://www.dropbox.com/sh/9lknvq4xay709cn/AAAX61z5W1m20MPkJ8V53l5ma/%23WaveletMatrix.cpp?dl=0
 // などを参照
-// WaveletMatrix は基数ソートのようなことをするので深さがlog(σ)と文字の種類数依存
+// WaveletMatrix は基数ソートをするので深さがlog(σ)と文字の種類数依存
 // のせるデータがアルファベットなどなら深さは浅いが, 数字(特にnより大きい数字)をのせると深さが深くなる
 // そのため直交領域内の点の数を返す OrthogonalRangeCount は前もって座圧をおこなっている
 
