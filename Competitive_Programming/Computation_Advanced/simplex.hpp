@@ -45,7 +45,7 @@ private:
                         if(j+2 != E) a[i][j+2] += a[i][E] * a[L][j+2];
                         if(j+3 != E) a[i][j+3] += a[i][E] * a[L][j+3];
                     }
-                    a[i][E] = a[i][E] * a[L][E];
+                    a[i][E] *= a[L][E];
         		}
     	    }
     	    E = -1;
