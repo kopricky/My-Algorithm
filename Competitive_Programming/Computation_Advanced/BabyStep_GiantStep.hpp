@@ -17,20 +17,20 @@ long long mod_pow(long long a, long long b, long long m)
 
 void extgcd(long long a, long long b, long long& x, long long& y)
 {
-	if(b != 0){
-		extgcd(b,a%b,y,x);
-		y -= (a/b)*x;
-	}else{
-		x = 1;
-		y = 0;
-	}
+    if(b != 0){
+        extgcd(b,a%b,y,x);
+        y -= (a/b)*x;
+    }else{
+        x = 1;
+        y = 0;
+    }
 }
 
 long long mod_inverse(long long a, long long m)
 {
     long long x,y;
-	extgcd(a,m,x,y);
-	return (m + x % m) % m;
+    extgcd(a,m,x,y);
+    return (m + x % m) % m;
 }
 
 //g^x ≡ y (mod p) の解xを求める (O(p^(1/2)logp))
