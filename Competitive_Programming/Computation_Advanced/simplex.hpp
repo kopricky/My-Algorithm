@@ -23,11 +23,11 @@ private:
         for(i = 0; i < row; i++){
             for(j = 0; j < column - 1; j++) a[i][j] = -A[i][j];
             a[i][column-1] = 1;
-    	    a[i][column] = b[i];
-    	    if(a[L][column] > a[i][column]) L = i;
+            a[i][column] = b[i];
+            if(a[L][column] > a[i][column]) L = i;
         }
         for(j = 0; j < column - 1; j++) a[row][j] = c[j];
-    	a[row+1][column-1] = -1;
+        a[row+1][column-1] = -1;
     }
 
     void solve(){
@@ -35,9 +35,9 @@ private:
         for(E = column - 1;;){
     	    if(L < row){
                 swap(index[E], index[L + column]);
-        		a[L][E] = 1 / a[L][E];
+                a[L][E] = 1 / a[L][E];
                 for(j = 0; j < column + 1; j++) if(j != E) a[L][j] *= -a[L][E];
-        		for(i = 0; i < row + 2; i++){
+                for(i = 0; i < row + 2; i++){
                     if(abs(a[i][E]) < EPS || i == L) continue;
                     for(j = 0; j < column + 1; j += 4){
                         if(j != E) a[i][j] += a[i][E] * a[L][j];
@@ -46,7 +46,7 @@ private:
                         if(j+3 != E) a[i][j+3] += a[i][E] * a[L][j+3];
                     }
                     a[i][E] *= a[L][E];
-        		}
+                }
     	    }
     	    E = -1;
             // double pre = EPS;
