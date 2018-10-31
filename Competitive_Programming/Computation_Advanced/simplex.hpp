@@ -57,7 +57,7 @@ private:
                     // else if(abs(a[row + 1][j]) < EPS && a[row][j] > pre) E = j, pre = a[row][j];
                 }
             }
-    	    if(E < 0) break;
+            if(E < 0) break;
             L = -1;
             for(i = 0; i < row; i++){
                 if(a[i][E] < -EPS){
@@ -71,16 +71,16 @@ private:
                 infinity = true;
                 return;
             }
-    	}
-    	if(a[row + 1][column] < -EPS){
-    	    none = true;
-    	    return;
-    	}
-    	x.assign(column - 1, 0);
+        }
+        if(a[row + 1][column] < -EPS){
+            none = true;
+            return;
+        }
+        x.assign(column - 1, 0);
         for(i = 0; i < row; i++){
             if(index[column + i] < column - 1) x[index[column + i]] = a[i][column];
         }
-    	ans = a[row][column];
+        ans = a[row][column];
     }
 public:
     bool infinity, none;
