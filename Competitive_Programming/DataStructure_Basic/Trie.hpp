@@ -8,10 +8,10 @@ public:
 		Node *next[26];
 		int sub;
 		Node() : sub(0){
-            rep(i,26){
-                next[i] = nullptr;
-            }
-        }
+			for(int i = 0; i < 26; i++){
+				next[i] = nullptr;
+			}
+		}
 	};
 	Node* root;
 	Trie(){
@@ -20,7 +20,7 @@ public:
 	//Trie木にxを加える
 	void add(string& s) {
 		Node *curr = root;
-        rep(i,(int)s.size()){
+		for(int i = 0; i < (int)s.size(); i++){
 			int y = s[i] - 'a';
 			if (!curr->next[y]) {
 				curr->next[y] = new Node();
@@ -33,7 +33,7 @@ public:
     //何らかのクエリ
 	int query(Node *curr,int d) {
 		int res = 0;
-		rep(i,26){
+		for(int i = 0; i < 26; i++){
 			if(curr->next[i]){
 				res += query(curr->next[i],d+1);
 			}
