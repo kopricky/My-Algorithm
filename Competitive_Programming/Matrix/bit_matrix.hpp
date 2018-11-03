@@ -16,4 +16,13 @@ public:
         }
         return ans;
     }
+    void set(int i, int j){
+        a[i].set(j);
+    }
+    int count(int i) const {
+        return a[i].count();
+    }
+    int get(int i, int j) const {
+        return a[i][j];
+    }
 };
