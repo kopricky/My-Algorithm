@@ -4,20 +4,24 @@
 //コストがllのときは適宜変更する
 
 #define impl(x, last) x == last ? 0 : 31 - __builtin_clz(x ^ last)
-#define INF 1000000005
-
-const int MAX_N = 100005;
 
 class RadixHeap{
-private:
-    int last, size_;
-    vector<P> bucket_[32];
 public:
+    int last, size_;
+    vector<pair<int, int> > bucket_[32];
+    
     RadixHeap() : last(0), size_(0){}
+    
+    inline pair<int, int> top(){
+        return pop(false);
+    }
+    inline bool empty(){
+        return !size_;
+    }
     inline void push(int x, int val){
         size_++, bucket_[impl(x, last)].emplace_back(x, val);
     }
-    inline P pop(bool flag = true){
+    inline pair<int, int> pop(bool flag = true){
         if(bucket_[0].empty()){
             int id = 1;
             while(bucket_[id].empty()) id++;
@@ -27,39 +31,41 @@ public:
             }
             bucket_[id].clear();
         }
-        P res = bucket_[0].back();
+        pair<int, int> res = bucket_[0].back();
         if(flag) size_--, bucket_[0].pop_back();
         return res;
     }
-    inline P top(){
-        return pop(false);
-    }
-    inline bool empty(){
-        return !size_;
-    }
 };
 
-struct edge{
-    int to, cost;
+template<typename T> class Dijkstra {
+public:
+	struct edge{
+		int to; T cost;
+	};
+	int V;
+	vector<vector<edge> > G;
+	vector<T> d;
+	using pti = pair<T,int>;
+	Dijkstra(int node_size) : V(node_size), G(V), d(V, numeric_limits<T>::max()){}
+	//無向グラフの場合
+	void add_edge(int u,int v,T cost){
+		G[u].pb((edge){v,cost});
+	}
+	void solve(int s){
+		RadixHeap que;
+		d[s] = 0;
+		que.push(0,s);
+		while(!que.empty()){
+			pti p = que.top();
+			que.pop();
+			int v = p.second;
+			if(d[v] < p.first) continue;
+			for(auto& w : G[v]){
+				if(d[w.to] > d[v] + w.cost){
+					d[w.to] = d[v] + w.cost;
+					que.push(d[w.to],w.to);
+				}
+			}
+		}
+	}
 };
-
-vector<edge> G[MAX_N];
-int d[MAX_N];
-void solve(int node_size, int s){
-    fill(d, d + node_size, INF);
-    RadixHeap que;
-    d[s] = 0;
-    que.push(0, s);
-    while(!que.empty()){
-        P p = que.top();
-        que.pop();
-        int v = p.second;
-        if(d[v] < p.first) continue;
-        for(auto& e : G[v]){
-            if(d[e.to] > d[v] + e.cost){
-                d[e.to] = d[v] + e.cost;
-                que.push(d[e.to], e.to);
-            }
-        }
-    }
-}
