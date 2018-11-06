@@ -60,7 +60,7 @@ public:
             minimum = sentinel;
             return;
         }
-        int sz = (int)log2(_size)+5;
+        int sz = (int)log2(_size)+2;
         node** array = new node*[sz];
         for(int i = 0; i < sz; i++) array[i] = nullptr;
         for(auto _node = sentinel->nx; _node != sentinel;){
