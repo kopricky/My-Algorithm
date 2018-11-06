@@ -10,10 +10,9 @@ public:
         int child;
         node *par, *prv, *nx, *ch_sentinel;
         bool mark;
-        node(KeyType val, node *_prv, node *_nx) : key(val), child(0),
-                par(nullptr), prv(_prv), nx(_nx), mark(false){}
-        node(KeyType val) : node(val, nullptr, nullptr){}
-        node() : node(0, this, this){}
+        node(KeyType val) : key(val), child(0),
+                par(nullptr), prv(nullptr), nx(nullptr), mark(false){}
+        node() : key(numeric_limits<KeyType>::max()), prv(this), nx(this){}
     };
     
 private:
@@ -29,8 +28,8 @@ private:
     }
     
 public:
-    Fibonacci_Heap() : _size(0), minimum(nullptr){
-        sentinel = new node();
+    Fibonacci_Heap() : _size(0){
+        minimum = sentinel = new node();
     }
     inline bool empty(){
         return (_size == 0);
@@ -38,18 +37,18 @@ public:
     inline int size(){
         return _size;
     }
-    inline node* top(){
-        return minimum;
+    inline KeyType top(){
+        return minimum->key;
     }
-    node *push(KeyType val){
+    void push(KeyType val){
         _size++;
         node* new_node = new node(val);
         new_node->ch_sentinel = new node();
         _insert(new_node, sentinel);
-        if(!minimum || minimum->key > val) minimum = new_node;
-        return new_node;
+        if(minimum->key > val) minimum = new_node;
     }
     void pop(){
+        assert(_size > 0);
         _size--;
         for(auto _node = minimum->ch_sentinel->nx; _node != minimum->ch_sentinel;){
             node* nx_node = _node->nx;
@@ -57,7 +56,10 @@ public:
         }
         _erase(minimum);
         delete minimum;
-        if(_size == 0) return;
+        if(_size == 0){
+            minimum = sentinel;
+            return;
+        }
         int sz = (int)log2(_size)+5;
         node** array = new node*[sz];
         for(int i = 0; i < sz; i++) array[i] = nullptr;
@@ -81,7 +83,7 @@ public:
             _node = nx_node;
         }
         delete array;
-        KeyType val = numeric_limits<KeyType>::max();
+        KeyType val = sentinel->key;
         for(auto _node = sentinel->nx; _node != sentinel; _node = _node->nx){
             if(val > _node->key) val = _node->key, minimum = _node;
         }
@@ -101,5 +103,18 @@ public:
                 break;
             }
         }
+    }
+    friend void unite(Fibonacci_Heap* fh1, Fibonacci_Heap* fh2){
+        if(fh2->_size == 0){
+            delete fh2;
+            return;
+        }
+        if(fh1->minimum->key > fh2->minimum->key) fh1->minimum = fh2->minimum;
+        fh1->_size += fh2->_size;
+        fh1->sentinel->prv->nx = fh2->sentinel->nx;
+        fh2->sentinel->nx->prv = fh1->sentinel->prv;
+        fh2->sentinel->prv->nx = fh1->sentinel;
+        fh1->sentinel->prv = fh2->sentinel->prv;
+        delete fh2->sentinel;
     }
 };
