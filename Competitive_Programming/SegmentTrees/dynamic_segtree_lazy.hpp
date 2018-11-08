@@ -74,8 +74,8 @@ public:
     	if(b <= l || r <= a) return;
     	if(a <= l && r <= b){
             opr1(k->lazy, k->st_size * x);
-    		eval(k, l, r);
-    		return;
+            eval(k, l, r);
+            return;
     	}
         k->val = id2;
     	if(k->left){
