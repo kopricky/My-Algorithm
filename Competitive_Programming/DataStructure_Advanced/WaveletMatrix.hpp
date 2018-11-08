@@ -158,7 +158,7 @@ public:
         }
         sort(Y.begin(), Y.end());
         Y.erase(unique(Y.begin(), Y.end()), Y.end());
-        rep(i,n){
+        for(int i = 0; i < n; i++){
             vec[i] = lower_bound(Y.begin(), Y.end(), candidate[i].second) - Y.begin();
         }
         wm.init(vec, (int)Y.size());

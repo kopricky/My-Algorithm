@@ -11,7 +11,7 @@ public:
             logTable[i] = logTable[i >> 1] + 1;
         }
         table.resize(sz, vector<pair<T, int> >(logTable[sz]+1));
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             table[i][0] = make_pair(v[i], i);
         }
         for(int k = 1; (1 << k) <= sz; k++){
