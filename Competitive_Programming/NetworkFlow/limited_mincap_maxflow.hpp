@@ -15,7 +15,7 @@ private:
     };
     int V;
     T cap_sum;
-    vector<vector<edge>> G;
+    vector<vector<edge> > G;
     vector<int> level, iter;
     //辺を張る
     void add_edge(int from, int to, T cap)

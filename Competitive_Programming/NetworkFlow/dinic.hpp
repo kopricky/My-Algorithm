@@ -37,7 +37,7 @@ private:
             edge& e = G[v][i];
             if(e.cap > 0 && level[v] < level[e.to]){
                 T d = dfs(e.to,t,min(f,e.cap));
-                if(d>0){
+                if(d > 0){
                     e.cap -= d;
                     G[e.to][e.rev].cap += d;
                     return d;
