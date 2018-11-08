@@ -56,23 +56,23 @@ public:
 	SAT(int node_size) : V(node_size), G(2*V), rG(2*V), used(2*V), cmp(2*V){}
 	//充足可能性判定
 	bool ok(vector<pair<int, int> >& vec){
-	   	for(pair<int, int> p : vec){
-	        _add_edge((p.first+V)%(2*V),p.second);
-	        _add_edge((p.second+V)%(2*V),p.first);
-	    }
-	    _scc();
-	    for(int i = 0; i < V; i++){
-	        if(cmp[i] == cmp[V+i]){
-	            return false;
-	        }
-	    }
-	    return true;
+		for(pair<int, int> p : vec){
+			_add_edge((p.first+V)%(2*V),p.second);
+			_add_edge((p.second+V)%(2*V),p.first);
+		}
+		_scc();
+		for(int i = 0; i < V; i++){
+			if(cmp[i] == cmp[V+i]){
+				return false;
+			}
+		}
+		return true;
 	}
 	//真のものは1,偽のものは0を返す(解の構成)
 	void restore(vector<int>& ans){
 		ans.resize(V);
-	    for(int i = 0; i < V; i++){
+		for(int i = 0; i < V; i++){
 			ans[i] = (cmp[i] > cmp[V+i]);
-	    }
+		}
 	}
 };

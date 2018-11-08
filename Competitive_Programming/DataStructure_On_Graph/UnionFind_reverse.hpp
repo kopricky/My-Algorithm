@@ -6,12 +6,12 @@ public:
     int sz;
     vector<int> par,nrank; vector<vector<int> > hist;
     UF_pop(int node_size) : sz(node_size), par(sz), nrank(sz, 0){
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             par[i] = i;
         }
     }
     void reinit(){
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             nrank[i] = 0; par[i] = i;
         }
     }

@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+const int MAX_N = 100005;
+
 //uを根とする部分木は[lb[u],rb[u])で表せる
 
 //行きがけ、通りがけ、帰りがけのすべてを記録

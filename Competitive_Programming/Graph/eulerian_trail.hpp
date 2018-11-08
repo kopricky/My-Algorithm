@@ -24,7 +24,7 @@ public:
     }
     void dfs(int u){
         while(!G[u].empty()){
-			auto it = G[u].begin();
+            auto it = G[u].begin();
             int p = (*it).first,q = (*it).second;
             if(q > 0){
                 if(directed){

@@ -15,22 +15,22 @@ public:
 		G[from].push_back(to);
 		deg[to]++;
 	}
- 	bool solve() {
+	bool solve() {
 		queue<int> que;
 		for(int i = 0; i < V; i++){
-	        if(deg[i] == 0){
-	            que.push(i);
-	        }
-	    }
+			if(deg[i] == 0){
+				que.push(i);
+			}
+		}
 		while(!que.empty()){
 			int p = que.front();
-	        que.pop();
+			que.pop();
 			res.push_back(p);
 			for(int v : G[p]){
-	            if(--deg[v] == 0){
-	                que.push(v);
-	            }
-	        }
+				if(--deg[v] == 0){
+					que.push(v);
+				}
+			}
 		}
 		return (*max_element(deg.begin(),deg.end()) != 0);
 	}

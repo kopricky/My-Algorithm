@@ -19,7 +19,7 @@ inline int sub(int x, int y)
 
 inline int mul(int x, int y)
 {
-    return (ll)x*y%MOD;
+    return (long long)x*y%MOD;
 }
 
 inline int mod_pow(int a, int b)
