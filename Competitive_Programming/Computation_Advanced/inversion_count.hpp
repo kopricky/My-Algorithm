@@ -31,45 +31,45 @@ public:
 	}
 	void print(){
 		for(int i = 0; i < n-1; i++){
-			cout<<sum(i)-sum(i-1)<< " ";
+			cout << sum(i) - sum(i-1) << " ";
 		}
-		cout<<endl;
+		cout << "\n";
 	}
 	//-1スタート
 	void print_sum(){
 		for(int i = 0; i < n; i++){
-			cout<<sum(i-1)<<" ";
+			cout << sum(i-1) << " ";
 		}
-		cout<<endl;
+		cout << "\n";
 	}
 };
 
 //u を昇順にソートするのに必要な交換回数(転倒数) (u は (0~n-1の並び替え))
 long long inv_count(vector<int>& u)
 {
-    int n = (int)(u.size());
-    BIT<int> bt(n);
-    long long ans = 0;
+	int n = (int)(u.size());
+	BIT<int> bt(n);
+	long long ans = 0;
 	for(int i = 0; i < n; i++){
-        ans += i-bt.sum(u[i]);
-        bt.add(u[i],1);
-    }
-    return ans;
+		ans += i-bt.sum(u[i]);
+		bt.add(u[i],1);
+	}
+	return ans;
 }
 
 //u を v に変換するのに必要な交換回数 (u, v は (0~n-1の並び替え))
 long long inv_count(vector<int>& u,vector<int>& v)
 {
-    int n = (int)(u.size());
-    vector<int> p(n);
-    BIT<int> bt(n);
-    long long ans = 0;
-    for(int i = 0; i < n; i++){
-        p[v[i]] = i;
-    }
+	int n = (int)(u.size());
+	vector<int> p(n);
+	BIT<int> bt(n);
+	long long ans = 0;
 	for(int i = 0; i < n; i++){
-        ans += i-bt.sum(p[u[i]]);
-        bt.add(p[u[i]],1);
-    }
-    return ans;
+		p[v[i]] = i;
+	}
+	for(int i = 0; i < n; i++){
+		ans += i-bt.sum(p[u[i]]);
+		bt.add(p[u[i]],1);
+	}
+	return ans;
 }

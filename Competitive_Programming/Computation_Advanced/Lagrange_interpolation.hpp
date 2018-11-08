@@ -19,30 +19,30 @@ void make()
 
 inline int mod_pow(int a, int b)
 {
-    int res = 1;
-    while(b){
-        if(b & 1){
-            res = (long long)res * a % MOD;
-        }
-        a = (long long)a * a % MOD;
-        b >>= 1;
-    }
-    return res;
+	int res = 1;
+	while(b){
+		if(b & 1){
+			res = (long long)res * a % MOD;
+		}
+		a = (long long)a * a % MOD;
+		b >>= 1;
+	}
+	return res;
 }
 
 inline int add(int x,int y)
 {
-    return (x + y)%MOD;
+	return (x + y)%MOD;
 }
 
 inline int sub(int x,int y)
 {
-    return (x+MOD-y)%MOD;
+	return (x+MOD-y)%MOD;
 }
 
 inline int mul(int x,int y)
 {
-    return (long long)x*y%MOD;
+	return (long long)x*y%MOD;
 }
 
 void extgcd(int a,int b, int& x,int& y)
@@ -67,18 +67,18 @@ int mod_inverse(int a,int m)
 // すべて MOD を法として考えていることに注意
 int solve(int deg, long long num, vector<int>& val)
 {
-    int ue = 1;
+	int ue = 1;
 	for(int i = 0; i < deg + 1; i++){
-        ue = mul(ue, sub(num % MOD, i));
-    }
-    int ans = 0;
-    for(int i = 0; i < deg + 1; i++){
-        int r1 = mul(ue, mul(mod_inverse(sub(num % MOD, i), MOD), val[i]));
-        int r2 = mul(finv[deg-i], finv[i]);
-        if((deg - i) % 2){
-            r2 = MOD - r2;
-        }
-        ans = add(ans, mul(r1, r2));
-    }
-    return ans;
+		ue = mul(ue, sub(num % MOD, i));
+	}
+	int ans = 0;
+	for(int i = 0; i < deg + 1; i++){
+		int r1 = mul(ue, mul(mod_inverse(sub(num % MOD, i), MOD), val[i]));
+		int r2 = mul(finv[deg-i], finv[i]);
+		if((deg - i) % 2){
+			r2 = MOD - r2;
+		}
+		ans = add(ans, mul(r1, r2));
+	}
+	return ans;
 }
