@@ -69,7 +69,7 @@ private:
 public:
     RBST() : root(nullptr), id1(0){}
     RBST(vector<T>& vec) : root(nullptr), id1(0){
-    	rep(i,len(vec)){
+        for(int i = 0; i < (int)vec.size(); i++){
     		insert(i,vec[i]);
     	}
     }
