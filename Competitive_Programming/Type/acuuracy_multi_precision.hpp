@@ -1,6 +1,5 @@
 #include "../header.hpp"
 
-// double からのコンストラクタを入れたい
 template<int acc> class AMP : public deque<int> {
 private:
 
@@ -10,22 +9,22 @@ private:
     static void trim_digit(AMP& num){
         while((int)num.size() >= 1 && num.back() == 0) num.pop_back();
         if((int)num.size() == 1 && num[0] == 0){ num.zero = true; return; }
-		while((int)num.size() < acc) num.push_front(0), num.ex--;
-		while((int)num.size() > acc + 1) num.pop_front(), num.ex++;
-		rounding(num);
+        while((int)num.size() < acc) num.push_front(0), num.ex--;
+        while((int)num.size() > acc + 1) num.pop_front(), num.ex++;
+        rounding(num);
     }
-	static void rounding(AMP& num){
-		if((int)num.size() != acc + 1) return;
-		if(num[0] >= 5){
-			int pos = 1;
-			do{ num[pos]++;
-				if(num[pos] != 10) break;
-				num[pos] = 0;
-			}while(++pos <= acc);
-			if(pos == acc+1) num.push_back(1), num.pop_back(), num.ex++;
-		}
-		num.pop_front(), num.ex++;
-	}
+    static void rounding(AMP& num){
+        if((int)num.size() != acc + 1) return;
+        if(num[0] >= 5){
+            int pos = 1;
+            do{ num[pos]++;
+                if(num[pos] != 10) break;
+                num[pos] = 0;
+            }while(++pos <= acc);
+            if(pos == acc+1) num.push_back(1), num.pop_back(), num.ex++;
+        }
+        num.pop_front(), num.ex++;
+    }
     static bool abs_less(const AMP& a, const AMP& b){
         if(a.ex != b.ex) return a.ex < b.ex;
         for(int index = acc - 1; index >= 0; index--){
@@ -40,54 +39,54 @@ private:
     static void add(const AMP& a, const AMP& b, AMP& res){
         int diff = a.ex - b.ex, carry = 0;
         if(abs(diff) > acc) return (diff > 0) ? num_sbst(res, a) : num_sbst(res, b);
-		if(diff >= 0){
-			num_sbst(res, a);
+        if(diff >= 0){
+            num_sbst(res, a);
             if(diff) res.push_front(0), res.ex--;
-			for(int i = !diff; i <= acc; i++){
-	            int val = res[i-!diff] + (i <= acc-diff ? b[i+diff-1] : 0) + carry;
-	            carry = val/10;
-	            res[i-!diff] = val%10;
-	        }
-			if(carry) res.push_back(1);
-		}else{
+            for(int i = !diff; i <= acc; i++){
+                int val = res[i-!diff] + (i <= acc-diff ? b[i+diff-1] : 0) + carry;
+                carry = val/10;
+                res[i-!diff] = val%10;
+            }
+            if(carry) res.push_back(1);
+        }else{
             num_sbst(res, b);
             res.push_front(0), res.ex--;
-			for(int i = 0; i <= acc; i++){
-	            int val = res[i] + (i <= acc+diff ? a[i-diff-1] : 0) + carry;
-	            carry = val/10;
-	            res[i] = val%10;
-	        }
-			if(carry) res.push_back(1);
-		}
+            for(int i = 0; i <= acc; i++){
+                int val = res[i] + (i <= acc+diff ? a[i-diff-1] : 0) + carry;
+                carry = val/10;
+                res[i] = val%10;
+            }
+            if(carry) res.push_back(1);
+        }
         trim_digit(res);
     }
     static void sub(const AMP& a, const AMP& b, AMP& res){
         int diff = a.ex - b.ex, carry = 0;
         num_sbst(res, a);
         if(diff > acc) return;
-		if(diff){
-			res.push_front(0), res.ex--;
-			int carry = 0;
-			for(int i = 0; i <= acc; i++){
-				int val = res[i] - carry - (i <= acc-diff ? b[i+diff-1] : 0);
-				if(val < 0){
-					carry = 1, val += 10;
-				}else{
-					carry = 0;
-				}
-				res[i] = val;
-			}
-		}else{
+        if(diff){
+            res.push_front(0), res.ex--;
+            int carry = 0;
+            for(int i = 0; i <= acc; i++){
+                int val = res[i] - carry - (i <= acc-diff ? b[i+diff-1] : 0);
+                if(val < 0){
+                    carry = 1, val += 10;
+                }else{
+                    carry = 0;
+                }
+                res[i] = val;
+            }
+        }else{
             for(int i = 0; i < acc; i++){
-				int val = res[i] - carry - b[i];
-				if(val < 0){
-					carry = 1, val += 10;
-				}else{
-					carry = 0;
-				}
-				res[i] = val;
-			}
-		}
+                int val = res[i] - carry - b[i];
+                if(val < 0){
+                    carry = 1, val += 10;
+                }else{
+                    carry = 0;
+                }
+                res[i] = val;
+            }
+        }
         trim_digit(res);
     }
     static int add_(const int x, const int y) { return (x + y < MOD_) ? x + y : x + y - MOD_; }
@@ -248,20 +247,19 @@ private:
         for(int i = 0; i < n; i++) a[i] = b[i];
     }
 
-
 public:
-
-	friend ostream& operator<<(ostream& os, const AMP& num) {
+    
+    friend ostream& operator<<(ostream& os, const AMP& num) {
         if(num.zero){ os << "0."; for(int i = 0; i < acc-1; i++) os << '0';
                     os << "+e0"; return os; }
-		if(num.sign) os << '-';
-		os << num.back() << '.';
-		for(int i = 0; i < acc-1; i++) os << num[acc-2-i];
-		os << 'e';
+        if(num.sign) os << '-';
+        os << num.back() << '.';
+        for(int i = 0; i < acc-1; i++) os << num[acc-2-i];
+        os << 'e';
         if(num.ex+acc-1 >= 0) os << '+';
         os << num.ex+acc-1;
         return os;
-	}
+    }
 
     friend istream& operator>>(istream& is, AMP& num) {
         string s;
@@ -606,7 +604,7 @@ public:
         if(val == 0){ zero = true; return; }
         if(val < 0) sign = true, val = -val;
         while(val) push_back(val%10), val /= 10;
-		trim_digit(*this);
+        trim_digit(*this);
     }
 
     AMP(const string& s) : sign(false), zero(false), ex(0){
@@ -619,6 +617,6 @@ public:
                 push_back(s[i]-'0');
             }
         }
-		trim_digit(*this);
+        trim_digit(*this);
     }
 };
