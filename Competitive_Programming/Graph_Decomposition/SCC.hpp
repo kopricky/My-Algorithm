@@ -2,7 +2,7 @@
 
 // 有向グラフを強連結成分分解する(O(n))
 
-class SCC{
+class SCC {
 public:
 	int V,cnt;
 	vector<vector<int> > G,rG,graph;
