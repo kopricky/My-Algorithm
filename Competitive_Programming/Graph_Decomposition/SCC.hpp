@@ -32,7 +32,7 @@ public:
 		}
 	}
 	int solve(){ //強連結成分の数を返す
-		rep(i,V){
+		for(int i = 0; i < V; i++){
 			if(!used[i]){
 				dfs(i);
 			}
@@ -48,7 +48,7 @@ public:
 	}
 	void make_graph(){
 		graph.resize(cnt);
-		rep(i,V){
+		for(int i = 0; i < V; i++){
 			for(int v : G[i]){
 				if(cmp[i] != cmp[v]){
 					graph[cmp[i]].push_back(cmp[v]);

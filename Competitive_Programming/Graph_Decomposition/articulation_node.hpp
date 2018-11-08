@@ -21,7 +21,7 @@ public:
 		ord[v] = low[v] = k++;
 		int ct = 0;	//ノードvの次数
 		for(int w : G[v]){
-            // if(w != p && ord[w] < ord[v]) st.push(P(v, w));
+			// if(w != p && ord[w] < ord[v]) st.push(P(v, w));
 			if(!visit[w]){
 				ct++;
 				dfs(w,v,k);
@@ -29,15 +29,15 @@ public:
 				if(p >= 0 && ord[v] <= low[w]){
 					art[v] = true;
 				}
-                // if(low[w] >= ord[v]){
-                //     edgeset.push_back(vector<P>());
-                //     while(1){
-                //         P p = st.top();
-                //         st.pop();
-                //         edgeset.back().push_back(p);
-                //         if(p == P(v, w)) break;
-                //     }
-                // }
+				// if(low[w] >= ord[v]){
+				//     edgeset.push_back(vector<P>());
+				//     while(1){
+				//         P p = st.top();
+				//         st.pop();
+				//         edgeset.back().push_back(p);
+				//         if(p == P(v, w)) break;
+				//     }
+				// }
 			}else if(w != p && ord[w] < low[v]){
 				low[v] = ord[w];
 			}

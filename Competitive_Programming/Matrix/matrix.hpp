@@ -99,36 +99,36 @@ public:
         }
         return X;
     }
-	int rank(){
-	    int res = 0;
-	    mat B(r, c);
-	    for(int i = 0; i < r; i++){
-	        for(int j = 0; j < c; j++){
-				B[i][j] = (*this)[i][j];
-			}
-	    }
-	    for(int i = 0; i < c; i++){
-	        if(res == r) return res;
-	        int pivot = res;
-	        for(int j = res + 1; j < r; j++){
-	            if(abs(B[j][i]) > abs(B[pivot][i])){
-	                pivot = j;
-	            }
-	        }
-	        if(abs(B[pivot][i]) < EPS) continue;
-	        swap(B[pivot],B[res]);
-	        for(int j = i + 1; j < c; j++){
-	            B[res][j] /= B[res][i];
-	        }
-	        for(int j = res + 1; j < r; j++){
-	            for(int k = i + 1; k < c; k++){
-	                B[j][k] -= B[res][k]*B[j][i];
-	            }
-	        }
-	        res++;
-	    }
-	    return res;
-	}
+    int rank(){
+        int res = 0;
+        mat B(r, c);
+        for(int i = 0; i < r; i++){
+            for(int j = 0; j < c; j++){
+                B[i][j] = (*this)[i][j];
+            }
+        }
+        for(int i = 0; i < c; i++){
+            if(res == r) return res;
+            int pivot = res;
+            for(int j = res + 1; j < r; j++){
+                if(abs(B[j][i]) > abs(B[pivot][i])){
+                    pivot = j;
+                }
+            }
+            if(abs(B[pivot][i]) < EPS) continue;
+            swap(B[pivot],B[res]);
+            for(int j = i + 1; j < c; j++){
+                B[res][j] /= B[res][i];
+            }
+            for(int j = res + 1; j < r; j++){
+                for(int k = i + 1; k < c; k++){
+                    B[j][k] -= B[res][k]*B[j][i];
+                }
+            }
+            res++;
+        }
+        return res;
+    }
     T det(){
         if(r != c){
             cout << "正方行列でない(行列式定義不可)" << endl;
@@ -262,18 +262,16 @@ template<typename T> mat<T> pow(mat<T> A,long long cnt)
         cout << "累乗不可" << endl;
     }
     int n = A.row();
-	mat<T> B(n,n);
-	for(int i = 0; i < n; i++){
-		B[i][i] = 1;
-	}
-	while(cnt>0){
-		if(cnt & 1){
-			B = B*A;
-		}
-		A = A*A;
-		cnt >>= 1;
-	}
-	return B;
+    mat<T> B(n,n);
+    for(int i = 0; i < n; i++){
+        B[i][i] = 1;
+    }
+    while(cnt>0){
+        if(cnt & 1) B = B*A;
+        A = A*A;
+        cnt >>= 1;
+    }
+    return B;
 }
 
 template<typename T> mat<T> mod_mul(mat<T>& A,mat<T>& B)
@@ -299,16 +297,14 @@ template<typename T> mat<T> mod_pow(mat<T> A,long long cnt)
         cout << "累乗不可" << endl;
     }
     int n = A.row();
-	mat<T> B(n,n);
-	for(int i = 0; i < n; i++){
-		B[i][i] = 1;
-	}
-	while(cnt>0){
-		if(cnt & 1){
-			B = mod_mul(B,A);
-		}
-		A = mod_mul(A,A);
-		cnt >>= 1;
-	}
-	return B;
+    mat<T> B(n,n);
+    for(int i = 0; i < n; i++){
+        B[i][i] = 1;
+    }
+    while(cnt>0){
+		if(cnt & 1) B = mod_mul(B,A);
+        A = mod_mul(A,A);
+        cnt >>= 1;
+    }
+    return B;
 }
