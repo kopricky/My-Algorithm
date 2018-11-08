@@ -12,7 +12,7 @@ public:
             n *= 2;
         }
         node.resize(2*n, make_pair(numeric_limits<T>::max(), -1));
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n] = make_pair(v[i], i);
         }
         for(int i=n-1; i>=1; i--){
@@ -40,7 +40,7 @@ public:
     }
     void print()
     {
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             pair<T, int> p;
             p = query(i,i+1);
             cout << "st[" << i << "]: " << p.fi << " " << p.se << endl;

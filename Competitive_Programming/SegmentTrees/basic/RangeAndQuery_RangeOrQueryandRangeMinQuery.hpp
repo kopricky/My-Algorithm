@@ -33,7 +33,7 @@ public:
         }
         node.resize(2*n-1, numeric_limits<T>::max()), And.resize(2*n-1, 0);
         Or.resize(2*n-1, 0), lazy.resize(2*n-1, 0);
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             node[i+n-1] = And[i+n-1] = Or[i+n-1] = v[i];
         }
         for(int i=n-2; i>=0; i--){
@@ -81,7 +81,7 @@ public:
         return min(vl,vr);
     }
     void print(){
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             cout << query(i,i+1) << " ";
         }
         cout << endl;

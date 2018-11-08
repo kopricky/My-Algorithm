@@ -22,21 +22,21 @@ public:
     	k += n-1;
     	node[k] = a;
     	while(k>0){
-    		k = (k-1)/2;
-    		node[k] = min(node[2*k+1],node[2*k+2]);
+            k = (k-1)/2;
+            node[k] = min(node[2*k+1],node[2*k+2]);
     	}
     }
     T query(int a,int b,int k=0,int l=0,int r=-1){
         if(r < 0) r = n;
     	if(r <= a || b <= l){
-    		return numeric_limits<T>::max();
+            return numeric_limits<T>::max();
     	}
     	if(a <= l && r <= b){
-    		return node[k];
+            return node[k];
     	}else{
-    		T vl = query(a,b,2*k+1,l,(l+r)/2);
-    		T vr = query(a,b,2*k+2,(l+r)/2,r);
-    		return min(vl,vr);
+            T vl = query(a,b,2*k+1,l,(l+r)/2);
+            T vr = query(a,b,2*k+2,(l+r)/2,r);
+            return min(vl,vr);
     	}
     }
     void print(){
