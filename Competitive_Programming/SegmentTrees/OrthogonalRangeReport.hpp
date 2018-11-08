@@ -54,7 +54,8 @@ public:
             });
         }
     }
-    void query(CT lx, CT ly, CT rx, CT ry, vector<int>& report) {
+    // [lx,rx)×[ly,ry)の長方形領域の範囲内の点のインデックスを報告する
+    void query(CT lx, CT rx, CT ly, CT ry, vector<int>& report) {
         int lxid = lower_bound(all(xs),lx) - xs.begin();
         int rxid = upper_bound(all(xs),rx-1) - xs.begin();
         if(lxid >= rxid) return;

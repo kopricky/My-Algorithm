@@ -60,7 +60,7 @@ public:
         }
     }
     //[lx,rx)×[ly,ry)の長方形領域に含まれる値の和に答える
-    VT query(CT lx, CT ly, CT rx, CT ry){
+    VT query(CT lx, CT rx, CT ly, CT ry){
         int lxid = lower_bound(all(xs),lx) - xs.begin();
         int rxid = upper_bound(all(xs),rx-1) - xs.begin();
         if(lxid >= rxid) return 0;
