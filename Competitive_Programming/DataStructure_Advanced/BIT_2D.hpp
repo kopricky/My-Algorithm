@@ -12,10 +12,10 @@ public:
     // [0,i]×[0,j]の範囲の和を求める
     T sum(int i, int j){
         T s = 0;
-            for(int i_ = i+1; i_ > 0; i_ -= i_ & -i_)
-                for(int j_ = j+1; j_ > 0; j_ -= j_ & -j_)
-                    s += bit[i_][j_];
-            return s;
+        for(int i_ = i+1; i_ > 0; i_ -= i_ & -i_)
+            for(int j_ = j+1; j_ > 0; j_ -= j_ & -j_)
+                s += bit[i_][j_];
+        return s;
     }
     // [lx, rx)×[ly, ry)の範囲の和を求める
     T sum(int lx, int rx, int ly, int ry){
@@ -31,6 +31,14 @@ public:
         for(int i = 0; i < n; i++)
             for(int j = 0; j < m; j++)
                 add(i, j, v[i][j]);
+    }
+    void print(){
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                cout<< sum(i-1, i, j-1, j) << " ";
+            }
+            cout << "\n";
+        }
     }
     void print_sum(){
         for(int i = 0; i < n; i++)
