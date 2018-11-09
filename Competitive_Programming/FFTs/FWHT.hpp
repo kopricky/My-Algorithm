@@ -56,39 +56,39 @@ void fwht(vector<int>& poly, bool rev=false){
 }
 
 //or convolution
-void fwht(vector<int>& poly, bool rev=false){
-    int n = (int)poly.size();
-    for(int i = 1; i < n; i *= 2){
-        for(int j = 0; j < i; j++){
-            for(int k = 0; k < n; k += i*2){
-                if(rev){
-                    poly[j+k+i] = sub(poly[j+k+i], poly[j+k]);
-                }else{
-                    poly[j+k+i] = add(poly[j+k+i], poly[j+k]);
-                }
-            }
-        }
-    }
-}
+// void fwht(vector<int>& poly, bool rev=false){
+//     int n = (int)poly.size();
+//     for(int i = 1; i < n; i *= 2){
+//         for(int j = 0; j < i; j++){
+//             for(int k = 0; k < n; k += i*2){
+//                 if(rev){
+//                     poly[j+k+i] = sub(poly[j+k+i], poly[j+k]);
+//                 }else{
+//                     poly[j+k+i] = add(poly[j+k+i], poly[j+k]);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 //and convolution
-void fwht(vector<int>& poly, bool rev=false){
-    int n = (int)poly.size();
-    for(int i = 1; i < n; i *= 2){
-        for(int j = 0; j < i; j++){
-            for(int k = 0; k < n; k += i*2){
-                int u = poly[j+k], v = poly[j+k+i];
-                if(rev){
-                    poly[j+k] = sub(v, u);
-                    poly[j+k+i] = u;
-                }else{
-                    poly[j+k] = v;
-                    poly[j+k+i] = add(u, v);
-                }
-            }
-        }
-    }
-}
+// void fwht(vector<int>& poly, bool rev=false){
+//     int n = (int)poly.size();
+//     for(int i = 1; i < n; i *= 2){
+//         for(int j = 0; j < i; j++){
+//             for(int k = 0; k < n; k += i*2){
+//                 int u = poly[j+k], v = poly[j+k+i];
+//                 if(rev){
+//                     poly[j+k] = sub(v, u);
+//                     poly[j+k+i] = u;
+//                 }else{
+//                     poly[j+k] = v;
+//                     poly[j+k+i] = add(u, v);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 vector<int> mul(vector<int> a, vector<int> b){
     int sm = (int)a.size() + (int)b.size() - 1, size_ = 1;
