@@ -182,12 +182,12 @@ public:
                 exit(1);
             }
             swap(B[i],B[pivot]);
-            for(int j = i + 1; j <= 2*r; j++){
+            for(int j = i + 1; j < 2*r; j++){
                 B[i][j] /= B[i][i];
             }
             for(int j = 0; j < r; j++){
                 if(i != j){
-                    for(int k = i + 1; k <= 2*r; k++){
+                    for(int k = i + 1; k < 2*r; k++){
                         B[j][k] -= B[j][i] * B[i][k];
                     }
                 }
@@ -228,7 +228,7 @@ template<typename T> vector<T> eq_solve(const mat<T>& A,const vector<T>& b){
     }
     for(int i = 0; i < n; i++){
         int pivot = i;
-        for(int j=i;j<n;j++){
+        for(int j = i; j < n;j++){
             if(abs(B[j][i]) > abs(B[pivot][i])){
                 pivot = j;
             }
@@ -237,13 +237,13 @@ template<typename T> vector<T> eq_solve(const mat<T>& A,const vector<T>& b){
             cout << "解なしor不定" << endl;
             exit(1);
         }
-        swap(B[i],B[pivot]);
-        for(int j=i+1;j<=n;j++){
+        swap(B[i], B[pivot]);
+        for(int j = i + 1; j <= n; j++){
             B[i][j] /= B[i][i];
         }
         for(int j = 0; j < n; j++){
             if(i != j){
-                for(int k=i+1;k<=n;k++){
+                for(int k = i + 1; k <= n; k++){
                     B[j][k] -= B[j][i] * B[i][k];
                 }
             }
