@@ -101,7 +101,7 @@ public:
     }
     int rank() const {
         int res = 0;
-        mat B(r, c);
+        mat<double> B(r, c);
         for(int i = 0; i < r; i++){
             for(int j = 0; j < c; j++){
                 B[i][j] = (*this)[i][j];
@@ -122,7 +122,7 @@ public:
             }
             for(int j = res + 1; j < r; j++){
                 for(int k = i + 1; k < c; k++){
-                    B[j][k] -= B[res][k]*B[j][i];
+                    B[j][k] -= B[res][k] * B[j][i];
                 }
             }
             res++;
@@ -137,24 +137,27 @@ public:
         T ans = 1;
         mat B(r, r);
         for(int i = 0; i < r; i++){
-            for(int j = 0; j < r; j++){
+            for(int j = 0; j < c; j++){
                 B[i][j] = (*this)[i][j];
             }
         }
-        for(int i = 0; i < r; i++){
+        for(int i = 0; i < c; i++){
+            int pivot = i;
             for(int j = i + 1; j < r; j++){
-                for (; B[j][i] != 0; ans = -ans) {
-                    T r = B[i][i] / B[j][i];
-                    for(int k = i; k < r; k++) {
-                        T t = B[i][k] - r * B[j][k];
-                        B[i][k] = B[j][k];
-                        B[j][k] = t;
-                    }
+                if(abs(B[j][i]) > abs(B[pivot][i])){
+                    pivot = j;
                 }
-           }
-           ans *= B[i][i];
-       }
-       return ans;
+            }
+            if(abs(B[pivot][i]) < EPS) return (T)0;
+            if(pivot != i) swap(B[i], B[pivot]), ans = -ans;
+            ans *= B[i][i];
+            for(int j = i + 1; j < r; j++){
+                for(int k = c - 1; k >= i; k--){
+                    B[j][k] -= B[i][k] * B[j][i] / B[i][i];
+                }
+            }
+        }
+        return ans;
     }
     mat inverse() const {
         if(r != c){

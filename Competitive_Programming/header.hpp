@@ -15,5 +15,6 @@
 #include <cstring>
 #include <functional>
 #include <bitset>
+#include <climits>
 
 using namespace std;
