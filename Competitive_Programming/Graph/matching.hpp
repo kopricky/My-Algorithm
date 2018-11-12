@@ -77,7 +77,7 @@ public:
         }
     }
 };
- 
+
 class Matching {
 private:
     int V;
@@ -90,7 +90,7 @@ private:
         x = y,y = z,z = w;
         return (w = (w^(w>>19))^(t^(t>>8)));
     }
-     
+
 public:
     Matching(int node_size) : V(node_size), cnt(V+1, 0){}
     void add_edge(int u, int v){
