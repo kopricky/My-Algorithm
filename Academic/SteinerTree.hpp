@@ -52,6 +52,6 @@ public:
                 }
             }
         }
-        return *min_element(dp[(1 << t) - 1].begin(), dp[(1 << t) - 1].end());
+        return dp[(1 << t) - 1][terminal[0]];
     }
 };
