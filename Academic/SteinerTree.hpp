@@ -1,9 +1,10 @@
 #include "header.hpp"
 
-//最小シュタイナー木を求めるアルゴリズム(Dreyfus-Wagnerのアルゴリズム)
-//計算量はグラフの頂点数n,ターミナルの数をtとしたとき O(n*3^t) である
-//verifyはしていません(verifyの問題を知らない)
-template <typename T> class SteinerTree{
+//最小シュタイナー木を求めるアルゴリズム(Dreyfus-Wagner のアルゴリズムをターミナル数について FPT 版に改良)
+//計算量はグラフの頂点数を n, ターミナルの数を t としたとき O(n 3^t + (n+m)logn 2^t)
+//軽く verify はした
+
+template<typename T> class SteinerTree {
 private:
     struct edge {
         int to;
@@ -11,47 +12,46 @@ private:
     };
     int V;
     vector<vector<edge> > G;
-    vector<vector<T> > dist;
+    vector<vector<T> > dp;
+    const T inf = numeric_limits<T>::max() / 10;
+    using pti = pair<T, int>;
+    
 public:
-    SteinerTree(int node_size) : V(node_size), G(V), dist(V, vector<T>(V, numeric_limits<T>::max()/10)){
-        rep(i,V) dist[i][i] = 0;
-    }
+    SteinerTree(int node_size) : V(node_size), G(V){}
     void add_edge(int u, int v, T cost){
-        G[u].emplace_back(v,cost), G[v].emplace_back(u,cost);
+        G[u].push_back((edge){v, cost}), G[v].push_back((edge){u, cost});
     }
     T solve(vector<int>& terminal){
-        rep(i,V){
-            for(auto& e : G[i]){
-                dist[i][e.to] = min(dist[i][e.to], e.cost);
-            }
+        int t = (int)terminal.size();
+        if(t == 0) return (T)0;
+        dp.resize((1 << t), vector<T>(V, inf));
+        for(int i = 0; i < t; i++){
+            dp[(1 << i)][terminal[i]] = 0;
         }
-        rep(k,V){
-            rep(i,V){
-                rep(j,V){
-                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+        for(int i = 1; i < (1 << t); i++){
+            for(int j = 0; j < V; j++){
+                for(int k = i; k > 0; k = (k - 1) & i){
+                    dp[i][j] = min(dp[i][j], dp[k][j] + dp[i ^ k][j]);
+                }
+            }
+            if(i == (1 << t) - 1) break;
+            priority_queue<pti, vector<pti>, greater<pti> > que;
+            for(int j = 0; j < V; j++){
+                que.push(make_pair(dp[i][j], j));
+            }
+            while(!que.empty()){
+                pti p = que.top();
+                que.pop();
+                int v = p.second;
+                if(dp[i][v] < p.first) continue;
+                for(auto& e : G[v]){
+                    if(dp[i][e.to] > dp[i][v] + e.cost){
+                        dp[i][e.to] = dp[i][v] + e.cost;
+                        que.push(make_pair(dp[i][e.to], e.to));
+                    }
                 }
             }
         }
-        int sz = (int)terminal.size();
-        vector<vector<T> > opt(1 << sz, vector<T>(V, numeric_limits<T>::max()/10));
-        rep(i,sz){
-            rep(j,V){
-                opt[1 << i][j] = dist[terminal[i]][j];
-                opt[0][j] = 0;
-            }
-        }
-        for(int i = 1; i < (1 << sz); i++){
-            for(int j = i & -i; j < i; j = (j-i)&i){
-                rep(k,V){
-                    opt[i][k] = min(opt[i][k], opt[j][k] + opt[i^j][k]);
-                }
-            }
-            rep(j,V){
-                rep(k,V){
-                    opt[i][k] = min(opt[i][k], opt[i][j] + dist[j][k]);
-                }
-            }
-        }
-        return *min_element(opt[(1 << sz) - 1].begin(), opt[(1 << sz) - 1].end());
+        return *min_element(dp[(1 << t) - 1].begin(), dp[(1 << t) - 1].end());
     }
 };
