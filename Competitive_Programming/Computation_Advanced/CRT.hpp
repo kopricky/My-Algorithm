@@ -24,7 +24,13 @@ void extgcd(T a, T b, T& x, T& y)
     }
 }
 
-//modが10^6より大きい値を扱うときはm1*xを__int128にキャストする(10^12とかまで可能)
+//mod が ll のときに以下のようなものが使えるらしい (a * b % mod)
+long long mod_prod(long long a, long long b, long long mod) {
+    long long res = (a * b - (long long)((long double)a / mod * b) * mod) % mod;
+    return res < 0 ? res + mod : res;
+}
+
+//modが10^6より大きい値を扱うときはm1*xを__int128にキャストする(上記の mod_prod 使った方がいいかも)(10^12とかまで可能)
 //(value, mod)
 template <typename T>
 pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
