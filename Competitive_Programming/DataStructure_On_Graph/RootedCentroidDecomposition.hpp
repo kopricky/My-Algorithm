@@ -2,11 +2,11 @@
 
 // 下記論文の solver の途中で使うので実装した
 // A Simple, Combinatorial Algorithm for Solving SDD Systems in Nearly-Linear Time 2013 STOC
-//根付きの重心分解(こういう概念が実際に存在するかは知らない)
-//重心分解を根付きにすることでパスに対するクエリをHL分解よりも高速に処理できる
-//枝iの重みをA[i]*x+B[i] (A[i],B[i]は定数) としたとき
-//パス上の枝に対して加算(x→x+a)と総和をO(log(n))で計算する
-//verifyしていない(上記のクエリを処理するような問題ありませんかね~)のでバグがないかが不安
+// 根付きの重心分解(こういう概念が実際に存在するかは知らない)
+// 重心分解を根付きにすることでパスに対するクエリをHL分解よりも高速に処理できる
+// 枝 i の重みを A[i] * x + B[i] (A[i], B[i]は定数) としたとき
+// パス上の枝に対して加算(x→x+a)と総和をO(log(n))で計算する
+// verifyしていない(上記のクエリを処理するような問題ありませんかね~)のでバグがないかが不安
 
 template<typename T> class RootedCentroidDecomposition
 {
