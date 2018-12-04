@@ -13,6 +13,7 @@ private:
     using VT = ValueType;
     using pcc = pair<CT, CT>;
     using pci = pair<CT, int>;
+    int n, sz;
     vector<vector<VT> > sum;
     //座標, インデックス
     vector<pair<pcc, int> > sorted;
@@ -20,7 +21,6 @@ private:
     vector<CT> xs;
     //y座標, インデックス
     vector<vector<pci> > ys;
-    int n, sz;
     VT query(int lxid, int rxid, CT ly, CT ry, int k, int l, int r){
         if(r <= lxid || rxid <= l) return 0;
         if(lxid <= l && r <= rxid){
