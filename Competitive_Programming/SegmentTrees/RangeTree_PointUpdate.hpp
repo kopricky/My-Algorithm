@@ -66,6 +66,7 @@ private:
     using VT = ValueType;
     using pcc = pair<CT, CT>;
     using pci = pair<CT, int>;
+    int n, sz;
     vector<segtree<VT> > seg;
     //座標, インデックス
     vector<pair<pcc, int> > sorted;
@@ -73,7 +74,6 @@ private:
     vector<CT> xs;
     //y座標, インデックス
     vector<vector<pci> > ys;
-    int n, sz;
     void update(int xid, CT y, const VT x) {
         xid += n-1;
         int yid = lower_bound(all(y[xid]),pci(y,-1)) - y[xid].begin();
