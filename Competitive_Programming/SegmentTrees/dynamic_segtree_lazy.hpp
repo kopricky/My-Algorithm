@@ -20,13 +20,13 @@ private:
     T opr2(T arg1,T arg2){
         return arg1 + arg2;
     }
+    int nw_size;
     static const int POOL_SIZE = 2000000;
     static const int MAX_SIZE = 1000000001;
     static node *root;
     static node pool[POOL_SIZE];
     static const T id1 = (T)0;
     static const T id2 = (T)0;
-    int nw_size;
     node* alloc(){
         assert(nw_size < POOL_SIZE);
         return (&pool[nw_size++]);

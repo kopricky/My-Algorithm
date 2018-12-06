@@ -18,18 +18,18 @@ private:
     T opr2(T arg1,T arg2){
         return min(arg1,arg2);
     }
+    int nw_size;
     static const int POOL_SIZE = 2000000;
     static const int MAX_SIZE = 1000000001;
     static node *root;
     static node pool[POOL_SIZE];
     static const T identity = numeric_limits<T>::max();
-    int nw_size;
     node *alloc(){
         assert(nw_size < POOL_SIZE);
         return (&pool[nw_size++]);
     }
 public:
-    dynamic_segtree(){ nw_size = 0; root = alloc(); }
+    dynamic_segtree() : nw_size(0){ root = alloc(); }
     void insert(int a, T x, node *k = root, int l = 0, int r = MAX_SIZE){
         k->val = opr2(k->val,x);
         if(r - l == 1){

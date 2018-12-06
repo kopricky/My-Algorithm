@@ -7,7 +7,6 @@
 template<typename T> class segtree {
 private:
     int n,sz;
-
 public:
     vector<T> node, lazy;
     segtree(vector<T>& v) {
