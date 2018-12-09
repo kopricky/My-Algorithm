@@ -145,7 +145,7 @@ private:
     using ptt = pair<T, T>;
     vector<T> X, Y;
     WaveletMatrix wm;
-    int n;
+    
 public:
     // 座標を引数に渡す
     OrthogonalRangeCount(vector<ptt> candidate) {
