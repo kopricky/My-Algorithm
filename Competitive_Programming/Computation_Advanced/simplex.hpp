@@ -32,18 +32,23 @@ private:
 
     void solve(){
         int E, i, j;
+        int* ls = new int[column + 2];
         for(E = column - 1;;){
     	    if(L < row){
                 swap(index[E], index[L + column]);
                 a[L][E] = 1 / a[L][E];
-                for(j = 0; j < column + 1; j++) if(j != E) a[L][j] *= -a[L][E];
+                int prv = column + 1;
+                for(j = 0; j < column + 1; j++){
+                    if(j != E){
+                        a[L][j] *= -a[L][E];
+                        if(abs(a[L][j]) > EPS) ls[prv] = j, prv = j;
+                    }
+                }
+                ls[prv] = column + 1;
                 for(i = 0; i < row + 2; i++){
                     if(abs(a[i][E]) < EPS || i == L) continue;
-                    for(j = 0; j < column + 1; j += 4){
-                        if(j != E) a[i][j] += a[i][E] * a[L][j];
-                        if(j+1 != E) a[i][j+1] += a[i][E] * a[L][j+1];
-                        if(j+2 != E) a[i][j+2] += a[i][E] * a[L][j+2];
-                        if(j+3 != E) a[i][j+3] += a[i][E] * a[L][j+3];
+                    for(j = ls[column + 1]; j < column + 1; j = ls[j]){
+                        a[i][j] += a[i][E] * a[L][j];
                     }
                     a[i][E] *= a[L][E];
                 }
