@@ -19,7 +19,7 @@ private:
         for(i = 0; i < row + column; i++) index[i] = i;
         L = row;
         a = new double*[row + 2];
-        for(i = 0; i < row + 2; i++) a[i] = new double[column + 4];
+        for(i = 0; i < row + 2; i++) a[i] = new double[column + 1];
         for(i = 0; i < row; i++){
             for(j = 0; j < column - 1; j++) a[i][j] = -A[i][j];
             a[i][column-1] = 1;
