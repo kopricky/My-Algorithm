@@ -16,18 +16,19 @@ public:
         p->left = p->right = nullptr;
         delete p;
     }
+    const T& operator[](int k) const { return get(root,k); }
     //k番目の値の参照を返す
     T& operator[](int k){ return get(root,k); }
     void print(){
         int sz = size(root);
-        rep(i,sz) cout << (*this)[i] << " ";
+        for(int i = 0; i < sz; i++) cout << (*this)[i] << " ";
         cout << "\n";
     }
 private:
     struct node{
         T val;
         node *left, *right;
-        int st_size;   // 部分木のサイズ
+        int st_size;
         node(){}
         node(T v) : val(v), left(nullptr), right(nullptr), st_size(1){}
         ~node() { delete left; delete right; }
