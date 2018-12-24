@@ -1,8 +1,9 @@
 #include "../header.hpp"
 
 // a↑↑b % mod を求めるプログラム
+// 何度も a↑↑b % mod を計算する場合は phi 関数の値を持っておいたほうが良い
 
-int euler_function(int n)
+int phi(int n)
 {
 	int res = n;
 	for(int i = 2; i * i <= n; ++i){
@@ -32,7 +33,7 @@ int rec(long long a, int b, int mod)
 {
     if(a == 1 || b == 0) return 1;
     if(mod == 1) return 0;
-    int ans = rec(a, b-1, euler_function(mod)), ad = mod;
+    int ans = rec(a, b-1, phi(mod)), ad = mod;
     if(ans <= 30 && a < mod && pow((double)a, ans) < mod) ad = 0;
     return mod_pow(a % mod, ans, mod) + ad;
 }
