@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 // a↑↑b % mod を求めるプログラム
-// 何度も a↑↑b % mod を計算する場合は phi 関数の値を持っておいたほうが良い
+// 何度も a↑↑b % mod を計算する場合は phi 関数の値を持っておいたほうがよい
 
 int phi(int n)
 {
