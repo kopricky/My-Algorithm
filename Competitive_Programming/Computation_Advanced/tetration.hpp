@@ -29,7 +29,7 @@ int mod_pow(int a, int b, int mod)
     return res;
 }
 
-int rec(long long a, int b, int mod)
+int rec(int a, int b, int mod)
 {
     if(a == 1 || b == 0) return 1;
     if(mod == 1) return 0;
@@ -38,7 +38,7 @@ int rec(long long a, int b, int mod)
     return mod_pow(a % mod, ans, mod) + ad;
 }
 
-inline int tetration(long long a, int b, int mod)
+inline int tetration(int a, int b, int mod)
 {
     return rec(a, b, mod) % mod;
 }
