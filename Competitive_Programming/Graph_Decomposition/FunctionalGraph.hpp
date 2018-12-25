@@ -12,6 +12,7 @@ public:
     FunctionalGraph(int node_size)  : V(node_size), nx(V, 0), visit(V, 0){}
     void add_edge(int u,int v){
         nx[u] = v;
+        if(nx[u] == u) visit[u] = -1, loop.push_back({u});
     }
     void make_loop(const int st,int nw,int ch,vector<int>& vec){
         while(nx[nw] != st){
