@@ -34,7 +34,7 @@ int rec(long long a, int b, int mod)
     if(a == 1 || b == 0) return 1;
     if(mod == 1) return 0;
     int ans = rec(a, b-1, phi(mod)), ad = mod;
-    if(ans <= 30 && a < mod && pow((double)a, ans) < mod) ad = 0;
+    if(ans <= 32 && a < mod && pow((double)a, ans) < mod) ad = 0;
     return mod_pow(a % mod, ans, mod) + ad;
 }
 
