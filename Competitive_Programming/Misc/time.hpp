@@ -7,7 +7,7 @@ struct SW {
         st = clock();
     }
     void end() {
-        cout << (clock() - st) * 1000 / CLOCKS_PER_SEC << " msec\n";
+        cout << (clock() - st) * 1000 / CLOCKS_PER_SEC << " msec" << endl;
     }
 };
 
@@ -18,6 +18,6 @@ struct SW {
     }
     void end() {
         ed = chrono::high_resolution_clock::now();
-        cout << chrono::duration_cast<chrono::milliseconds>(ed - st).count() << " msec\n";
+        cout << chrono::duration_cast<chrono::milliseconds>(ed - st).count() << " msec" << endl;
     }
 };

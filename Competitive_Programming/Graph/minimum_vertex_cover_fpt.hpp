@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+//最小頂点被覆問題に対する FPT アルゴリズム
+
 template<typename T> class ListIterator;
 
 // 常に不変なイテレーターが欲しい場合に使う
@@ -198,25 +200,18 @@ private:
         info(int ag1, int ag2, int ag3) : 
             from(ag1), to(ag2), next(ag3){}
     };
-    
-    using LL = unsigned __int128;
-    
     int V, rem_edge_size, fp_size;
     vector<List<edge> > G;
     List<int> rem_ver;
     vector<int> cand, deg;
     vector<vector<info> > edge_info;
-    LL small_deg_ver, use_ver;
+    set<int> small_deg_ver, use_ver;
     
-    int get_first_element(LL num){
-        int x = __builtin_ffsll(num & (((LL)1 << 64) - 1));
-        int y = __builtin_ffsll((num >> 64) & (((LL)1 << 64) - 1));
-        return x ? (x - 1) : (y + 63);
-    }
     bool push_cand(int u, int& add_size){
         add_size++, cand.push_back(u);
         return (int)cand.size() < ans_size;
     }
+    
     bool erase(int u, bool use, bool alr_use, int& add_size, vector<pair<int, int> >& erase_ver){
         if(use && !alr_use){
             if(!push_cand(u, add_size)) return false;
@@ -227,31 +222,31 @@ private:
             deg[e.to]--, rem_edge_size--;
             if(deg[e.to] == 0) erase_ver.emplace_back(e.to, rem_ver.erase(e.to));
             if(!use){
-                if(use_ver >> e.to & 1) continue;
+                if(use_ver.count(e.to) == 1) continue;
                 if(!push_cand(e.to, add_size)) return false;
-                if(deg[e.to] > 0) use_ver |= (LL)1 << e.to;
+                if(deg[e.to] > 0) use_ver.insert(e.to);
             }else{
-                if(deg[e.to] == 1 && !(use_ver >> e.to & 1)) small_deg_ver |= (LL)1 << e.to;
+                if(deg[e.to] == 1 && use_ver.count(e.to) == 0) small_deg_ver.insert(e.to);
             }
         }
         return true;
     }
-    bool erase_rec_set(LL& st, bool flag, int& add_size, vector<pair<int, int> >& erase_ver){
-        while(st != 0){
-            int v = get_first_element(st);
-            st ^= (LL)1 << v;
+    bool erase_rec_set(set<int>& st, bool flag, int& add_size, vector<pair<int, int> >& erase_ver){
+        while(!st.empty()){
+            int v = *st.begin();
+            st.erase(v);
             if(deg[v] == 0) continue;
             if(!erase(v, flag, flag, add_size, erase_ver)) return false;
         }
         return true;
     }
     bool reset(){
-        small_deg_ver = use_ver = 0;
+        small_deg_ver.clear(), use_ver.clear();
         return false;
     }
     bool erase_rec(int u, bool use, int& add_size, vector<pair<int, int> >& erase_ver){
         if(!erase(u, use, false, add_size, erase_ver)) return reset();
-        while(small_deg_ver != 0 || use_ver != 0){
+        while(!small_deg_ver.empty() || !use_ver.empty()){
             if(!erase_rec_set(small_deg_ver, false, add_size, erase_ver)) return reset();
             if(!erase_rec_set(use_ver, true, add_size, erase_ver)) return reset();
         }
@@ -324,7 +319,7 @@ public:
     int ans_size;
     
     MVC(int node_size) :
-        V(node_size), rem_edge_size(0), G(V), rem_ver(V), deg(V, 0), edge_info(V), small_deg_ver(0), use_ver(0){
+        V(node_size), rem_edge_size(0), G(V), rem_ver(V), deg(V, 0), edge_info(V){
             for(int i = 0; i < V; i++) rem_ver[i] = i;
     }
     void add_edge(int u, int v){
