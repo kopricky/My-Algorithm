@@ -141,7 +141,7 @@ public:
     ListIterator(const ListIterator& itr){
         ls_ptr = itr.ls_ptr, index = itr.index;
     }
-    operator int() const noexcept { return index; }
+    explicit operator int() const noexcept { return index; }
     ListIterator& operator=(const ListIterator& itr) & {
         ls_ptr = itr.ls_ptr, index = itr.index;
         return *this;
