@@ -1,5 +1,7 @@
 #include "../header.hpp"
 
+// 最小頂点被覆問題に対するアルゴリズム
+
 template<typename T> class ListIterator;
 
 // 常に不変なイテレーターが欲しい場合に使う
