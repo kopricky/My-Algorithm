@@ -10,7 +10,7 @@ public:
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n, make_pair(numeric_limits<T>::max(), -1));
+        node.resize(2*n, make_pair(numeric_limits<T>::max(), sz));
         for(int i = 0; i < sz; i++){
             node[i+n] = make_pair(v[i], i);
         }
@@ -20,15 +20,16 @@ public:
     }
     void update(int k, T a)
     {
-    	node[k+=n] = make_pair(a, k);
+    	node[k+n] = make_pair(a, k);
+        k += n;
     	while(k>>=1){
             node[k] = min(node[2*k], node[2*k+1]);
     	}
     }
     pair<T, int> query(int a,int b,int k=0,int l=0,int r=-1)
     {
-        pair<T, int> res1 = make_pair(numeric_limits<T>::max(), -1);
-        pair<T, int> res2 = make_pair(numeric_limits<T>::max(), -1);
+        pair<T, int> res1 = make_pair(numeric_limits<T>::max(), sz);
+        pair<T, int> res2 = make_pair(numeric_limits<T>::max(), sz);
         a += n, b += n;
         while(a != b){
             if(a % 2) cmn(res1, node[a++]);
@@ -42,7 +43,7 @@ public:
         for(int i = 0; i < sz; i++){
             pair<T, int> p;
             p = query(i,i+1);
-            cout << "st[" << i << "]: " << p.fi << " " << p.se << endl;
+            cout << "st[" << i << "]: " << p.first << " " << p.second << endl;
         }
     }
 };

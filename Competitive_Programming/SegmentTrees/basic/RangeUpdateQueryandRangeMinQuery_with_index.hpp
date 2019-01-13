@@ -64,9 +64,9 @@ public:
     }
     void print() {
         for(int i = 0; i < sz; i++){
-            pair<T,int> p;
+            pair<T, int> p;
             p = query(i,i+1);
-            cout << "st[" << i << "]: " << p.fi << " " << p.se << endl;
+            cout << "st[" << i << "]: " << p.first << " " << p.second << endl;
         }
     }
 };
