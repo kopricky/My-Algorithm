@@ -29,14 +29,14 @@ public:
         }
         return f(head, x);
         // int low = -1, high = lines.size() - 1;
-		// while (high - low > 1) {
-		// 	int mid = (high + low) / 2;
+        // while (high - low > 1) {
+        // 	int mid = (high + low) / 2;
         //     if(f(mid, x) >= f(mid+1, x)){
         //         low = mid;
         //     }else{
         //         high = mid;
         //     }
-		// }
-		// return f(high, x);
+        // }
+        // return f(high, x);
     }
 };
