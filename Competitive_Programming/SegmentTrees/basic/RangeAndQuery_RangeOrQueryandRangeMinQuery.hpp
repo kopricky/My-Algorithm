@@ -8,8 +8,8 @@
 template<typename T> class segtree
 {
 private:
-    vector<T> node, And, Or, lazy;
     int n,sz;
+    vector<T> node, And, Or, lazy;
     void update(int id){
         node[id] = min(node[2*id+1],node[2*id+2]);
         And[id] = (And[2*id+1] & And[2*id+2]);
@@ -25,8 +25,7 @@ private:
         }
     }
 public:
-    segtree(vector<T>& v){
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;

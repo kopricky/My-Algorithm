@@ -9,8 +9,7 @@ private:
     int n,sz;
 public:
     vector<T> node, lazy;
-    segtree(vector<T>& v) {
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;

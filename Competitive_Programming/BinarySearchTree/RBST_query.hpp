@@ -70,7 +70,7 @@ public:
     RBST() : root(nullptr), id1(0){}
     RBST(vector<T>& vec) : root(nullptr), id1(0){
         for(int i = 0; i < (int)vec.size(); i++){
-    		insert(i,vec[i]x  );
+    		insert(i,vec[i]);
     	}
     }
     // 0_indexedでkにinsert

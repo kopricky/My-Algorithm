@@ -5,8 +5,7 @@ private:
     int n,sz;
     vector<pair<T, int> > node;
 public:
-    segtree(vector<T>& v){
-        sz = (int)v.size();
+    segtree(vector<T>& v) : sz((int)v.size()){
         n = 1;
         while(n < sz){
             n *= 2;

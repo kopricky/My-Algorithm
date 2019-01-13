@@ -2,13 +2,11 @@
 
 template<typename T> class SparseTable {
 private:
+    int sz;
     vector<int> LogTable;
     vector<vector<T> > Table; //最小値を保持
-    int sz;
 public:
-    SparseTable(vector<T>& v){
-        sz = (int)v.size();
-        LogTable.resize(sz+1);
+    SparseTable(vector<T>& v) : sz((int)v.size()), LogTable(sz+1){
         for(int i = 2; i < sz + 1; i++){
             LogTable[i] = LogTable[i >> 1] + 1;
         }

@@ -128,7 +128,7 @@ public:
     T get(int k){ return get(root,k); }
     void print(){
         int sz = size(root);
-        rep(i,sz) cout << get(i) << " ";
+        for(int i = 0;i < sz; i++) cout << get(i) << " ";
         cout << "\n";
     }
 };

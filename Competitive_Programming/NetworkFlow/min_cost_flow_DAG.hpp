@@ -22,7 +22,7 @@ public:
 	    tsort(vector<vector<edge> >& g) : G{g}{
             V = (int)G.size();
 	        deg.resize(V,0);
-            rep(i,V){
+            for(int i = 0; i < V; i++){
                 for(edge& e : G[i]){
                     if(!e.is_rev){
                         deg[e.to]++;
@@ -32,7 +32,7 @@ public:
         }
         void solve(){
 	        queue<int> que;
-	        rep(i,V){
+	        for(int i = 0; i < V; i++){
 	            if(deg[i] == 0){
 	                que.push(i);
 	            }
@@ -41,9 +41,9 @@ public:
 	            int p = que.front();
 	            que.pop();
 	            order.push_back(p);
-	            rep(i,G[p].size()){
-	                if(--deg[G[p][i].to] == 0){
-	                    que.push(G[p][i].to);
+                for(auto& e : G[p]){
+	                if(--deg[e.to] == 0){
+	                    que.push(e.to);
 	                }
 	            }
 	        }
@@ -73,14 +73,14 @@ public:
 		fill(h.begin(),h.end(),0);
         tsort ts(G);
         ts.solve();
-        rep(i,V){
+        for(int i = 0; i < V; i++){
             h[i] = inf;
         }
         h[s] = 0;
         for(int i : ts.order){
             if(h[i] != inf){
-                rep(j,G[i]){
-                    h[G[i][j].to] = min(h[G[i][j].to],h[i]+G[i][j].cost);
+                for(auto& e : G[i]){
+                    h[e.to] = min(h[e.to],h[i]+e.cost);
                 }
             }
         }
@@ -96,7 +96,7 @@ public:
                 if(dist[v] < p.first){
                     continue;
                 }
-                rep(i,G[v].size()){
+                for(int i = 0; i < (int)G[v].size(); i++){
                     edge& e = G[v][i];
                     if(e.cap > 0 && dist[e.to] > dist[v] + e.cost + h[v] - h[e.to]){
                         dist[e.to] = dist[v] + e.cost + h[v] - h[e.to];
@@ -108,7 +108,7 @@ public:
             if(dist[t] == inf){
                 return -1;
             }
-            rep(i,V){
+            for(int i = 0; i < V; i++){
                 h[i] += dist[i];
             }
             int d = f;
