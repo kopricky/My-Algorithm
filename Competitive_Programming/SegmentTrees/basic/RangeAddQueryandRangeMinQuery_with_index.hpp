@@ -28,24 +28,19 @@ public:
              node[i] = min(node[2*i], node[2*i+1]);
         }
     }
-    void range(int a, int b, T x) {
-        a += n, b += n - 1;
-        for(int i = h; i > 0; i--){
-            eval(a >> i), eval(b >> i);
+    void range(int a, int b, T x, int k=1, int l=0, int r=-1){
+        if(r < 0) r = n;
+        eval(k);
+        if(b <= l || r <= a){
+            return;
         }
-        int ta = a, tb = b++;
-        while(a < b){
-            if(a & 1) lazy[a++] += x;
-            if(b & 1) lazy[--b] += x;
-            a >>= 1, b >>= 1;
-        }
-        while(ta >>= 1, tb >>= 1, ta){
-            if(!lazy[ta]){
-                eval(2*ta), eval(2*ta+1), node[ta] = min(node[2*ta], node[2*ta+1]);
-            }
-            if(!lazy[tb]){
-                eval(2*tb), eval(2*tb+1), node[tb] = min(node[2*tb], node[2*tb+1]);
-            }
+        if(a <= l && r <= b){
+            lazy[k] += x;
+            eval(k);
+        }else{
+            range(a, b, x, 2*k, l, (l+r)/2);
+            range(a, b, x, 2*k+1, (l+r)/2, r);
+            node[k] = min(node[2*k], node[2*k+1]);
         }
     }
     pair<T, int> query(int a, int b) {

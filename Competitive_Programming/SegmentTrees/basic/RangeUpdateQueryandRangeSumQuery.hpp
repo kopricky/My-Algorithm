@@ -22,22 +22,19 @@ public:
         for(int i = 0; i < sz; i++) node[i+n] = v[i];
         for(int i = n-1; i >= 1; i--) node[i] = node[2*i] + node[2*i+1];
     }
-    void range(int a, int b, T x) {
-        a += n, b += n - 1;
-        for(int i = h; i > 0; i--) eval(a >> i), eval(b >> i);
-        int ta = a, tb = b++, length = 1;
-        while(a < b){
-            if(a & 1) lazy[a++] = length * x;
-            if(b & 1) lazy[--b] = length * x;
-            a >>= 1, b >>= 1, length <<= 1;
+    void range(int a, int b, T x, int k=1, int l=0, int r=-1){
+        if(r < 0) r = n;
+        eval(k);
+        if(b <= l || r <= a){
+            return;
         }
-        while(ta >>= 1, tb >>= 1, ta){
-            if(!lazy[ta]){
-                eval(2*ta), eval(2*ta+1), node[ta] = node[2*ta] + node[2*ta+1];
-            }
-            if(!lazy[tb]){
-                eval(2*tb), eval(2*tb+1), node[tb] = node[2*tb] + node[2*tb+1];
-            }
+        if(a <= l && r <= b){
+            lazy[k] += (r-l)*x, lazyFlag[k] = true;
+            eval(k);
+        }else{
+            range(a, b, x, 2*k, l, (l+r)/2);
+            range(a, b, x, 2*k+1, (l+r)/2, r);
+            node[k] = node[2*k] + node[2*k+1];
         }
     }
     T query(int a, int b) {

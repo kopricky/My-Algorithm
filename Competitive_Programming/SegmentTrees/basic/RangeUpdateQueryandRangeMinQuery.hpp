@@ -22,24 +22,19 @@ public:
         for(int i = 0; i < sz; i++) node[i+n] = v[i];
         for(int i = n - 1; i >= 1; i--) node[i] = min(node[i*2],node[i*2+1]);
     }
-    void range(int a, int b, T x) {
-        a += n, b += n - 1;
-        for(int i = h; i > 0; i--){
-            eval(a >> i), eval(b >> i);
+    void range(int a, int b, T x, int k=1, int l=0, int r=-1){
+        if(r < 0) r = n;
+        eval(k);
+        if(b <= l || r <= a){
+            return;
         }
-        int ta = a, tb = b++;
-        while(a < b){
-            if(a & 1) lazy[a] = x, lazyFlag[a++] = true;
-            if(b & 1) lazy[--b] = x, lazyFlag[b] = true;
-            a >>= 1, b >>= 1;
-        }
-        while(ta >>= 1, tb >>= 1, ta){
-            if(!lazyFlag[ta]){
-                eval(2*ta), eval(2*ta+1), node[ta] = min(node[2*ta], node[2*ta+1]);
-            }
-            if(!lazyFlag[tb]){
-                eval(2*tb), eval(2*tb+1), node[tb] = min(node[2*tb], node[2*tb+1]);
-            }
+        if(a <= l && r <= b){
+            lazy[k] = x, lazyFlag = true;
+            eval(k);
+        }else{
+            range(a, b, x, 2*k, l, (l+r)/2);
+            range(a, b, x, 2*k+1, (l+r)/2, r);
+            node[k] = min(node[2*k], node[2*k+1]);
         }
     }
     T query(int a, int b) {
