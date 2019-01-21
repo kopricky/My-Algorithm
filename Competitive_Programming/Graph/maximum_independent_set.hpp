@@ -1,6 +1,7 @@
 #include "../header.hpp"
 
 //最大独立集合問題に対するアルゴリズム
+//多重辺が存在しないことを仮定している！
 
 template<typename T> class ListIterator;
 
