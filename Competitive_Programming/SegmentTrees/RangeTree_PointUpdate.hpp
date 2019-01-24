@@ -10,51 +10,48 @@
 
 #define all(v) (v).begin(),(v).end()
 
-template<typename V> class segtree{
+template<typename T> class segtree {
 private:
-    int n,sz;
-    vector<V> node;
+    int n, sz;
+    vector<T> node;
 public:
-    void init(vector<V>& v){
+    void init(vector<T>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
             n *= 2;
         }
-        node.resize(2*n-1);
+        node.assign(2*n, numeric_limits<T>::max());
         for(int i = 0; i < sz; i++){
-            node[i+n-1] = v[i];
+            node[i+n] = v[i];
         }
-        for(int i=n-2; i>=0; i--){
-            node[i] = min(node[i*2+1],node[i*2+2]);
+        for(int i=n-1; i>=1; i--){
+            node[i] = min(node[2*i], node[2*i+1]);
         }
     }
-    void update(int k,V a){
-    	k += n-1;
-    	node[k] = a;
-    	while(k>0){
-    		k = (k-1)/2;
-    		node[k] = min(node[2*k+1],node[2*k+2]);
+    void update(int k, T a)
+    {
+    	node[k+=n] = a;
+    	while(k>>=1){
+    		node[k] = min(node[2*k], node[2*k+1]);
     	}
     }
-    V query(int a,int b,int k=0,int l=0,int r=-1){
-        if(r < 0) r = n;
-    	if(r <= a || b <= l){
-    		return numeric_limits<V>::max();
-    	}
-    	if(a <= l && r <= b){
-    		return node[k];
-    	}else{
-    		V vl = query(a,b,2*k+1,l,(l+r)/2);
-    		V vr = query(a,b,2*k+2,(l+r)/2,r);
-    		return min(vl,vr);
-    	}
+    T query(int a, int b)
+    {
+        T res1 = numeric_limits<T>::max(), res2 = numeric_limits<T>::max();
+        a += n, b += n;
+        while(a != b){
+            if(a % 2) res1 = min(res1, node[a++]);
+            if(b % 2) res2 = min(res2, node[--b]);
+            a >>= 1, b>>= 1;
+        }
+        return min(res1, res2);
     }
     void print(){
         for(int i = 0; i < sz; i++){
-            cout<<query(i,i+1)<< " ";
+            cout << query(i, i+1) << " ";
         }
-        cout<<endl;
+        cout << endl;
     }
 };
 
@@ -74,48 +71,50 @@ private:
     vector<CT> xs;
     //y座標, インデックス
     vector<vector<pci> > ys;
-    void update(int xid, CT y, const VT x) {
+    void update_(int xid, CT y, const VT val) {
         xid += n-1;
-        int yid = lower_bound(all(y[xid]),pci(y,-1)) - y[xid].begin();
-        seg[xid].update(yid,x);
-        while(xid>0){
-            xid = (xid-1)/2;
-            int yid = lower_bound(all(y[xid]),pci(y,-1)) - y[xid].begin();
-            seg[xid].update(yid,x);
+        int yid = lower_bound(all(ys[xid]), pci(y, -1)) - ys[xid].begin();
+        seg[xid].update(yid, val);
+        while(xid > 0){
+            xid = (xid - 1) / 2;
+            int yid = lower_bound(all(ys[xid]), pci(y, -1)) - ys[xid].begin();
+            seg[xid].update(yid, val);
         }
     }
     VT query(int lxid, int rxid, CT ly, CT ry, int k, int l, int r) {
         if(r <= lxid || rxid <= l) return numeric_limits<VT>::max();
         if(lxid <= l && r <= rxid){
-            int lyid = lower_bound(all(ys[k]),pci(ly,-1)) - ys[k].begin();
-            int ryid = upper_bound(all(ys[k]),pci(ry,-1)) - ys[k].begin();
+            int lyid = lower_bound(all(ys[k]), pci(ly, -1)) - ys[k].begin();
+            int ryid = upper_bound(all(ys[k]), pci(ry, -1)) - ys[k].begin();
             if(lyid >= ryid) return numeric_limits<VT>::max();
-            return seg[k].query(lyid,ryid);
+            return seg[k].query(lyid, ryid);
         }else{
-            return min(query(lxid,rxid,ly,ry,2*k+1,l,(l+r)/2), query(lxid,rxid,ly,ry,2*k+2,(l+r)/2,r));
+            return min(query(lxid, rxid, ly, ry, 2*k+1, l, (l+r)/2), query(lxid, rxid, ly, ry, 2*k+2, (l+r)/2, r));
         }
     }
 public:
     // 座標, 点の値
-    RangeTree(vector<pcc>& cand, vector<VT>& val) : sz((int)cand.size()), sorted(sz), xs(sz){
+    RangeTree(vector<pcc>& cand, vector<VT>& val){
+        sz = (int)cand.size();
         n = 1;
         while(n < sz){
             n *= 2;
         }
+        sorted.resize(sz);
         for(int i = 0; i < sz; i++){
             sorted[i] = make_pair(cand[i], i);
         }
         sort(sorted.begin(), sorted.end());
-        ys.resize(2*n-1), seg.resize(2*n-1);
+        xs.resize(sz), ys.resize(2*n-1), seg.resize(2*n-1);
         for(int i = 0; i < sz; i++){
             xs[i] = (sorted[i].first).first;
             ys[i+n-1] = {pci((sorted[i].first).second, sorted[i].second)};
             vector<VT> arg = {val[sorted[i].second]};
             seg[i+n-1].init(arg);
         }
-        for(int i=n-2; i>=0; i--){
+        for(int i = n-2; i >= 0; i--){
             ys[i].resize((int)ys[2*i+1].size() + (int)ys[2*i+2].size());
-            merge(all(ys[2*i+1]),all(ys[2*i+2]),ys[i].begin(),[&](pci& a, pci& b){
+            merge(all(ys[2*i+1]), all(ys[2*i+2]), ys[i].begin(), [&](pci& a, pci& b){
                 return a.first < b.first;
             });
             vector<VT> arg((int)ys[i].size());
@@ -127,14 +126,15 @@ public:
     }
     //点(x,y)の更新を行う
     void update(CT x, CT y, const VT val){
-        int xid = lower_bound(all(xs),x) - xs.begin();
-        return update(xid,y,val);
+        int xid = lower_bound(all(xs), x) - xs.begin();
+        return update_(xid, y, val);
     }
     //[lx,rx)×[ly,ry)の長方形領域のクエリに答える
-    VT query(CT lx, CT rx, CT ly, CT ry){
-        int lxid = lower_bound(all(xs),lx) - xs.begin();
-        int rxid = upper_bound(all(xs),rx-1) - xs.begin();
+    VT query(CT lx, CT ly, CT rx, CT ry){
+        int lxid = lower_bound(all(xs), lx) - xs.begin();
+        int rxid = upper_bound(all(xs), rx-1) - xs.begin();
         if(lxid >= rxid) return numeric_limits<VT>::max();
-        return query(lxid,rxid,ly,ry,0,0,n);
+        return query(lxid, rxid, ly, ry, 0, 0, n);
     }
 };
+
