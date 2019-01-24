@@ -5,123 +5,100 @@
 //min_cost_flow<int> mcf(n);
 //適宜add_edge
 //mcf.solve(始点,終点,流量)で最小費用流を計算
-template<typename T> class min_cost_flow{
+template<typename CapType, typename CostType> class min_cost_flow_DAG {
 public:
+    using Cat = CapType;
+    using Cot = CostType;
+    using pti = pair<Cot, int>;
     struct edge {
-        int to,cap;
-        T cost;
-        int rev;
-        bool is_rev;
+        int to; Cat cap; Cot cost; int rev; bool is_for;
     };
-	class tsort {
-	public:
-        vector<vector<edge> >& G;
-		vector<int> deg;
-	    vector<int> order;
-        int V;
-	    tsort(vector<vector<edge> >& g) : G{g}{
-            V = (int)G.size();
-	        deg.resize(V,0);
-            for(int i = 0; i < V; i++){
-                for(edge& e : G[i]){
-                    if(!e.is_rev){
-                        deg[e.to]++;
-                    }
-                }
-            }
-        }
-        void solve(){
-	        queue<int> que;
-	        for(int i = 0; i < V; i++){
-	            if(deg[i] == 0){
-	                que.push(i);
-	            }
-	        }
-	        while(!que.empty()){
-	            int p = que.front();
-	            que.pop();
-	            order.push_back(p);
-                for(auto& e : G[p]){
-	                if(--deg[e.to] == 0){
-	                    que.push(e.to);
-	                }
-	            }
-	        }
-	        if(*max_element(deg.begin(),deg.end()) != 0){
-	            order.clear();
-	        }
-	    }
-	};
-	using pti = pair<T,int>;
-    vector<vector<edge> > G;
-	vector<T> h,dist;
-	vector<int> prevv,preve;
-    tsort ts;
-	T inf;
     int V;
-    min_cost_flow(int node_size){
-        V = node_size;
-		inf = numeric_limits<T>::max() / 100;
-        G.resize(V), h.resize(V), dist.resize(V), prevv.resize(V), preve.resize(V);
-	}
-    void add_edge(int from, int to, int cap, T cost){
-        G[from].push_back((edge){to, cap, cost, (int)G[to].size(),false});
-        G[to].push_back((edge){from, 0, -cost, (int)G[from].size() - 1,true});
+    Cot inf;
+    vector<vector<edge> > G;
+    vector<CostType> h, dist;
+    vector<int> deg, ord, prevv, preve;
+    min_cost_flow_DAG(int node_size) : V(node_size), inf(numeric_limits<Cot>::max()),
+        G(V), h(V, inf), dist(V), deg(V, 0), prevv(V), preve(V){}
+    void add_edge(int from, int to, Cat cap, Cot cost){
+        G[from].push_back((edge){to, cap, cost, (int)G[to].size(), true});
+        G[to].push_back((edge){from, 0, -cost, (int)G[from].size() - 1, false});
+        deg[to]++;
     }
-    T solve(int s,int t,int f){
-        T res = 0;
-		fill(h.begin(),h.end(),0);
-        tsort ts(G);
-        ts.solve();
-        for(int i = 0; i < V; i++){
-            h[i] = inf;
-        }
+    bool tsort(){
+        queue<int> que;
+		for(int i = 0; i < V; i++){
+			if(deg[i] == 0){
+				que.push(i);
+			}
+		}
+		while(!que.empty()){
+			int p = que.front();
+			que.pop();
+			ord.push_back(p);
+			for(auto& e : G[p]){
+				if(e.is_for && --deg[e.to] == 0){
+					que.push(e.to);
+				}
+			}
+		}
+		return (*max_element(deg.begin(),deg.end()) == 0);
+    }
+    void calc_potential(int s){
         h[s] = 0;
-        for(int i : ts.order){
-            if(h[i] != inf){
-                for(auto& e : G[i]){
-                    h[e.to] = min(h[e.to],h[i]+e.cost);
+        for(int v : ord){
+            if(h[v] == inf) continue;
+            for(edge& e : G[v]){
+                if(e.is_for) h[e.to] = min(h[e.to], h[v] + e.cost);
+            }
+        }
+    }
+    void Dijkstra(int s){
+        priority_queue<pti,vector<pti>,greater<pti> > que;
+        fill(dist.begin(), dist.end(), inf);
+        dist[s] = 0;
+        que.push(pti(0, s));
+        while(!que.empty()){
+            pti p = que.top();
+            que.pop();
+            int v = p.second;
+            if(dist[v] < p.first) continue;
+            for(int i = 0; i < (int)G[v].size(); i++){
+                edge& e = G[v][i];
+                if(e.cap > 0 && dist[e.to] > dist[v] + e.cost + h[v] - h[e.to]){
+                    dist[e.to] = dist[v] + e.cost + h[v] - h[e.to];
+                    prevv[e.to] = v, preve[e.to] = i;
+                    que.push(pti(dist[e.to], e.to));
                 }
             }
         }
+    }
+    void update(int s, int t, Cat& f, Cot& res){
+        for(int i = 0; i < V; i++){
+            h[i] += dist[i];
+        }
+        int d = f;
+        for(int v = t; v != s; v = prevv[v]){
+            d = min(d, G[prevv[v]][preve[v]].cap);
+        }
+        f -= d;
+        res += d * h[t];
+        for(int v = t; v != s; v = prevv[v]){
+            edge& e = G[prevv[v]][preve[v]];
+            e.cap -= d;
+            G[v][e.rev].cap += d;
+        }
+    }
+    Cot solve(int s, int t, Cat f){
+        tsort();
+        calc_potential(s);
+        Cot res = 0;
         while(f > 0){
-            priority_queue<pti,vector<pti>,greater<pti> > que;
-            fill(dist.begin(),dist.end(),inf);
-            dist[s] = 0;
-            que.push(pti(0,s));
-            while(!que.empty()){
-                pti p = que.top();
-                que.pop();
-                int v = p.second;
-                if(dist[v] < p.first){
-                    continue;
-                }
-                for(int i = 0; i < (int)G[v].size(); i++){
-                    edge& e = G[v][i];
-                    if(e.cap > 0 && dist[e.to] > dist[v] + e.cost + h[v] - h[e.to]){
-                        dist[e.to] = dist[v] + e.cost + h[v] - h[e.to];
-                        prevv[e.to] = v, preve[e.to] = i;
-                        que.push(pti(dist[e.to], e.to));
-                    }
-                }
-            }
+            Dijkstra(s);
             if(dist[t] == inf){
                 return -1;
             }
-            for(int i = 0; i < V; i++){
-                h[i] += dist[i];
-            }
-            int d = f;
-            for(int v = t; v != s; v = prevv[v]){
-                d = min(d, G[prevv[v]][preve[v]].cap);
-            }
-            f -= d;
-            res += d * h[t];
-            for(int v = t; v != s;v = prevv[v]){
-                edge& e = G[prevv[v]][preve[v]];
-                e.cap -= d;
-                G[v][e.rev].cap += d;
-            }
+            update(s, t, f, res);
         }
         return res;
     }

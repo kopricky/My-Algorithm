@@ -32,6 +32,6 @@ public:
 				}
 			}
 		}
-		return (*max_element(deg.begin(),deg.end()) != 0);
+		return (*max_element(deg.begin(),deg.end()) == 0);
 	}
 };

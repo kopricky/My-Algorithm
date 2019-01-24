@@ -13,23 +13,19 @@ public:
         int rev;
     };
     using pti = pair<T,int>;
+    int V;
+    T inf;
     vector<vector<edge> > G;
     vector<T> h,dist;
     vector<int> prevv,preve;
-    T inf;
-    int V;
-    min_cost_flow(int node_size){
-        V = node_size;
-        inf = numeric_limits<T>::max() / 100;
-        G.resize(V), h.resize(V), dist.resize(V), prevv.resize(V), preve.resize(V);
-    }
+    min_cost_flow(int node_size) : V(node_size), inf(numeric_limits<T>::max()),
+        G(V), h(V, 0), dist(V), prevv(V), preve(V){}
     void add_edge(int from, int to, int cap, T cost){
         G[from].push_back((edge){to, cap, cost, (int)G[to].size()});
         G[to].push_back((edge){from, 0, -cost, (int)G[from].size() - 1});
     }
     T solve(int s,int t,int f){
         T res = 0;
-        fill(h.begin(),h.end(),0);
         while(f > 0){
             priority_queue<pti,vector<pti>,greater<pti> > que;
             fill(dist.begin(),dist.end(),inf);
@@ -63,7 +59,7 @@ public:
             }
             f -= d;
             res += d * h[t];
-            for(int v = t; v != s;v = prevv[v]){
+            for(int v = t; v != s; v = prevv[v]){
                 edge& e = G[prevv[v]][preve[v]];
                 e.cap -= d;
                 G[v][e.rev].cap += d;
