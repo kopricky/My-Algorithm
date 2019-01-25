@@ -1,6 +1,7 @@
 #include "../header.hpp"
 
 // 最小頂点被覆問題に対するアルゴリズム
+// 多重辺が存在しないことを仮定している
 
 template<typename T> class ListIterator;
 
