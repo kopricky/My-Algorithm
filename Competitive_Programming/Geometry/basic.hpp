@@ -70,5 +70,5 @@ int ccw(C a, C b, C c)
     if(cross(b, c) < 0)   return -1;       // clockwise
     if(dot(b, c) < 0)     return +2;       // c--a--b on line
     if(norm(b) < norm(c)) return -2;       // a--b--c on line
-    return 0;   //b--a--c on line
+    return 0;   // a--c--b on line
 }
