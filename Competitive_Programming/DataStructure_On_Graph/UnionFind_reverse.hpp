@@ -10,11 +10,6 @@ public:
             par[i] = i;
         }
     }
-    void reinit(){
-        for(int i = 0; i < sz; i++){
-            nrank[i] = 0; par[i] = i;
-        }
-    }
     int find(int x){
         return (par[x] == x)?(x):find(par[x]);
     }
