@@ -30,6 +30,7 @@ private:
     }
 public:
     dynamic_segtree() : nw_size(0){ root = alloc(); }
+    // a 番目に x を追加(すでに a 番目に値が存在すればそれを x に更新)
     void insert(int a, T x, node *k = root, int l = 0, int r = MAX_SIZE){
         k->val = opr2(k->val,x);
         if(r - l == 1){
