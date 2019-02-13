@@ -18,7 +18,7 @@ public:
     bitset<COL_SIZE>* a;
     int r;
     // 正方行列の場合
-    mat(){ a = new bitset<COL_SIZE>[COL_SIZE]; }
+    mat() : mat(COL_SIZE){}
     // 一般の行列の場合
     mat(int row_size) : r(row_size){ a = new bitset<COL_SIZE>[r]; }
     int rank() const {
