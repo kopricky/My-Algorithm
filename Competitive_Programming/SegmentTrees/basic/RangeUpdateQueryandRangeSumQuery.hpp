@@ -3,7 +3,8 @@
 template<typename T> class segtree {
 private:
     int n,sz,h;
-    vector<T> node, lazy, lazyFlag;
+    vector<T> node, lazy;
+    vector<bool> lazyFlag;
     void eval(int k) {
         if(lazyFlag[k]){
             node[k] = lazy[k];
