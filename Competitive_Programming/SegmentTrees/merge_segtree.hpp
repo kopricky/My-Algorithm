@@ -33,8 +33,7 @@ private:
         }
     }
 public:
-    segtree(vector<pcc>& cand, vector<VT>& val) : sz((int)cand.size()), sorted(sz), xs(sz){
-        n = 1;
+    segtree(vector<pcc>& cand, vector<VT>& val) : n(1), sz((int)cand.size()), sorted(sz), xs(sz){
         while(n < sz){
             n *= 2;
         }

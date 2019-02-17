@@ -7,8 +7,7 @@ template<typename T> class segtree {
 private:
     int n,sz; vector<T> node, lazy_update, lazy_add; vector<bool> lazyFlag;
 public:
-    segtree(vector<T> v) : sz((int)v.size()){
-        n = 1;
+    segtree(vector<T>& v) : n(1), sz((int)v.size()){
         while(n < sz) n *= 2;
         node.resize(2*n-1, 0);
         lazy_update.resize(2*n-1, 0); lazyFlag.resize(2*n-1,false);

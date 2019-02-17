@@ -94,18 +94,13 @@ private:
     }
 public:
     // 座標, 点の値
-    RangeTree(vector<pcc>& cand, vector<VT>& val){
-        sz = (int)cand.size();
-        n = 1;
-        while(n < sz){
-            n *= 2;
-        }
-        sorted.resize(sz);
+    RangeTree(vector<pcc>& cand, vector<VT>& val) : n(1), sz((int)cand.size()), sorted(sz), xs(sz){
+        while(n < sz) n *= 2;
         for(int i = 0; i < sz; i++){
             sorted[i] = make_pair(cand[i], i);
         }
         sort(sorted.begin(), sorted.end());
-        xs.resize(sz), ys.resize(2*n-1), seg.resize(2*n-1);
+        ys.resize(2*n-1), seg.resize(2*n-1);
         for(int i = 0; i < sz; i++){
             xs[i] = (sorted[i].first).first;
             ys[i+n-1] = {pci((sorted[i].first).second, sorted[i].second)};

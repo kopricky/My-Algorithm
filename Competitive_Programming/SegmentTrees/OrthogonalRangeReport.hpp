@@ -33,11 +33,8 @@ private:
         }
     }
 public:
-    OrthogonalRangeReport(vector<pcc>& cand) : sz((int)cand.size()), sorted(sz), xs(sz){
-        n = 1;
-        while(n < sz){
-            n *= 2;
-        }
+    OrthogonalRangeReport(vector<pcc>& cand) : n(1), sz((int)cand.size()), sorted(sz), xs(sz){
+        while(n < sz) n *= 2;
         for(int i = 0; i < sz; i++){
             sorted[i] = make_pair(cand[i], i);
         }

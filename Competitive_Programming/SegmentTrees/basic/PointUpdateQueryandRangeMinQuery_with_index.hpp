@@ -5,11 +5,8 @@ private:
     int n,sz;
     vector<pair<T, int> > node;
 public:
-    segtree(vector<T>& v) : sz((int)v.size()){
-        n = 1;
-        while(n < sz){
-            n *= 2;
-        }
+    segtree(vector<T>& v) : n(1), sz((int)v.size()){
+        while(n < sz) n *= 2;
         node.resize(2*n, make_pair(numeric_limits<T>::max(), sz));
         for(int i = 0; i < sz; i++){
             node[i+n] = make_pair(v[i], i);
