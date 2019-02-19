@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 // セグ木で持てないくらい大きい範囲の区間更新のクエリに答える
-// mpは(key=区間の左端:val=値)でコンストラクタで(-inf,0)を詰めている
+// mpは(key=区間の左端:val=値)でコンストラクタで(-inf,0)を詰めている(適宜変更する)
 template<typename CandType, typename ValType> class UpdateInterval
 {
 public:
