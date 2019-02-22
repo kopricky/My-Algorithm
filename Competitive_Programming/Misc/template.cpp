@@ -27,8 +27,15 @@ template<typename K,typename T>auto&operator<<(ostream&o,map<K,T>&m){for(auto&e:
 template<typename T>auto&operator<<(ostream&o,vector<T>&v){for(auto&e:v)o<<e<<" ";return o;}
 template<typename...A>void ashow(A&...a){for(auto&e:{a...})cout<<e<<" ";cout<<endl;}
 
-typedef pair<int,int>P;typedef pair<ll,ll>pll;typedef vector<int>vi;typedef vector<ll>vl;typedef vector<P>vp;
-typedef vector<vi>vvi;typedef vector<vl>vvl;typedef vector<double>vd;typedef vector<string>vs;
+typedef pair<int,int> P;
+typedef pair<ll,ll> pll;
+typedef vector<int> vi;
+typedef vector<ll> vl;
+typedef vector<vi> vvi;
+typedef vector<vl> vvl;
+typedef vector<P> vp;
+typedef vector<double> vd;
+typedef vector<string> vs;
 
 const int MAX_N = 100005;
 
