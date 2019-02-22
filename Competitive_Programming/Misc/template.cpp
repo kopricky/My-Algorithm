@@ -16,24 +16,19 @@
 #define se second
 #define pb push_back
 #define show(x) cout<<#x<<" = "<<(x)<<endl
-#define spair(p) cout<<#p<<": "<<p.fi<<" "<<p.se<<endl
-#define sar(a,n) cout<<#a<<":";rep(kbrni,n)cout<<" "<<a[kbrni];cout<<endl
-#define svec(v) cout<<#v<<":";rep(kbrni,v.size())cout<<" "<<v[kbrni];cout<<endl
-#define svecp(v) cout<<#v<<":";each(kbrni,v)cout<<" {"<<kbrni.first<<":"<<kbrni.second<<"}";cout<<endl
-#define sset(s) cout<<#s<<":";each(kbrni,s)cout<<" "<<kbrni;cout<<endl
-#define smap(m) cout<<#m<<":";each(kbrni,m)cout<<" {"<<kbrni.first<<":"<<kbrni.second<<"}";cout<<endl
 
 using namespace std;
 
-typedef pair<int,int> P;
-typedef pair<ll,ll> pll;
-typedef vector<int> vi;
-typedef vector<vi> vvi;
-typedef vector<ll> vl;
-typedef vector<vl> vvl;
-typedef vector<double> vd;
-typedef vector<P> vp;
-typedef vector<string> vs;
+template<typename S,typename T>auto&operator<<(ostream&o,pair<S,T>&p){return o<<"{"<<p.fi<<","<<p.se<<"}";}
+template<typename T>auto&operator<<(ostream&o,set<T>&s){for(auto&e:s)o<<e<<" ";return o;}
+template<typename S,typename T,typename U>
+auto&operator<<(ostream&o,priority_queue<S,T,U>q){while(!q.empty())o<<q.top()<<" ",q.pop();return o;}
+template<typename K,typename T>auto&operator<<(ostream&o,map<K,T>&m){for(auto&e:m)o<<e<<" ";return o;}
+template<typename T>auto&operator<<(ostream&o,vector<T>&v){for(auto&e:v)o<<e<<" ";return o;}
+template<typename...A>void ashow(A&...a){for(auto&e:{a...})cout<<e<<" ";cout<<endl;}
+
+typedef pair<int,int>P;typedef pair<ll,ll>pll;typedef vector<int>vi;typedef vector<ll>vl;typedef vector<P>vp;
+typedef vector<vi>vvi;typedef vector<vl>vvl;typedef vector<double>vd;typedef vector<string>vs;
 
 const int MAX_N = 100005;
 
@@ -43,6 +38,6 @@ int main()
     ios::sync_with_stdio(false);
     int n;
     cin >> n;
-
+    
     return 0;
 }
