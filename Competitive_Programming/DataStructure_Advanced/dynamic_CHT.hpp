@@ -57,7 +57,7 @@ private:
 public:
     // arg1:クエリになげる最小の値, arg2:クエリになげる最大の値
     CHT(T arg1, T arg2)
-        : min_val(arg1), max_val(arg2) { root = new node(0,numeric_limits<T>::max()); }
+        : min_val(arg1), max_val(arg2) { root = new node(0,numeric_limits<T>::max()/10); }
     // f(x) = a*x+b を挿入
     void add(T a, T b) {
         return root->add(min_val, max_val, a, b);
