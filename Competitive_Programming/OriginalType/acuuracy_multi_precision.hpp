@@ -447,13 +447,13 @@ public:
     AMP operator-(const AMP& num) const {
         if(zero){ AMP res = num; res.sign = !res.sign; return res; }
         if(num.zero){ AMP res = *this; return res; }
+        AMP res; res.sign = sign;
         if(sign != num.sign){
-            AMP res; res.sign = sign;
             add(*this, num, res);
             return res;
         }
-        AMP res; res.sign = (abs_less(*this, num) ^ sign);
-        if(res.sign){
+        if(abs_less(*this, num)){
+            res.sign = !sign;
             sub(num, *this, res);
         }else{
             sub(*this, num, res);
