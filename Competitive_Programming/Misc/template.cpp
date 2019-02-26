@@ -19,13 +19,13 @@
 
 using namespace std;
 
-template<typename S,typename T>auto&operator<<(ostream&o,pair<S,T>&p){return o<<"{"<<p.fi<<","<<p.se<<"}";}
-template<typename T>auto&operator<<(ostream&o,set<T>&s){for(auto&e:s)o<<e<<" ";return o;}
+template<typename S,typename T>auto&operator<<(ostream&o,pair<S,T>p){return o<<"{"<<p.fi<<","<<p.se<<"}";}
+template<typename T>auto&operator<<(ostream&o,set<T>s){for(auto&e:s)o<<e<<" ";return o;}
 template<typename S,typename T,typename U>
 auto&operator<<(ostream&o,priority_queue<S,T,U>q){while(!q.empty())o<<q.top()<<" ",q.pop();return o;}
-template<typename K,typename T>auto&operator<<(ostream&o,map<K,T>&m){for(auto&e:m)o<<e<<" ";return o;}
-template<typename T>auto&operator<<(ostream&o,vector<T>&v){for(auto&e:v)o<<e<<" ";return o;}
-template<typename...A>void ashow(A&...a){for(auto&e:{a...})cout<<e<<" ";cout<<endl;}
+template<typename K,typename T>auto&operator<<(ostream&o,map<K,T>m){for(auto&e:m)o<<e<<" ";return o;}
+template<typename T>auto&operator<<(ostream&o,vector<T>v){for(auto&e:v)o<<e<<" ";return o;}
+template<typename...A>void ashow(A...a){for(auto&e:{a...})cout<<e<<" ";cout<<endl;}
 
 typedef pair<int,int> P;
 typedef pair<ll,ll> pll;
