@@ -26,7 +26,7 @@ template<typename S,typename T,typename U>
 auto&operator<<(ostream&o,priority_queue<S,T,U>q){while(!q.empty())o<<q.top()<<" ",q.pop();return o;}
 template<typename K,typename T>auto&operator<<(ostream&o,map<K,T>m){for(auto&e:m)o<<e<<" ";return o;}
 template<typename T>auto&operator<<(ostream&o,vector<T>v){for(auto&e:v)o<<e<<" ";return o;}
-void ashow(){}template<typename T,typename...A>void ashow(T t,A...a){cout<<t<<endl;ashow(a...);}
+void ashow(){cout<<endl;}template<typename T,typename...A>void ashow(T t,A...a){cout<<t<<" ";ashow(a...);}
 
 typedef pair<int,int> P;
 typedef pair<ll,ll> pll;
@@ -46,6 +46,6 @@ int main()
     ios::sync_with_stdio(false);
     int n;
     cin >> n;
-    
+
     return 0;
 }
