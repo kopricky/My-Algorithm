@@ -8,6 +8,7 @@ public:
     int V;
     vector<vector<int> > G;
     vector<int> stsize, parent, pathtop, in, out;
+    int root;
     void BuildStsize(int u, int p){
         stsize[u] = 1, parent[u] = p;
         for(int& v : G[u]){
@@ -33,9 +34,10 @@ public:
     void add_edge(int u, int v){
         G[u].push_back(v), G[v].push_back(u);
     }
-    void build(){
+    void build(int _root){
+        root = _root;
         int tm = 0;
-        BuildStsize(0, -1), BuildPath(0, -1, tm);
+        BuildStsize(root, -1), BuildPath(root, -1, tm);
     }
     //元の頂点のインデックスの配列上でのidを返す
     inline int get(int a){
