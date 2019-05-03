@@ -15,7 +15,7 @@ private:
     int n, sz;
     vector<T> node;
 public:
-    void init(vector<T>& v){
+    void init(const vector<T>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
@@ -132,4 +132,3 @@ public:
         return query(lxid, rxid, ly, ry, 0, 0, n);
     }
 };
-

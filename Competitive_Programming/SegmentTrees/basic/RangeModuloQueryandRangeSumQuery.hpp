@@ -16,7 +16,7 @@ private:
         max_val[id] = max(max_val[2*id+1],max_val[2*id+2]);
     }
 public:
-    segtree(vector<T>& v) : n(1), sz((int)v.size()){
+    segtree(const vector<T>& v) : n(1), sz((int)v.size()){
         while(n < sz) n *= 2;
         node.resize(2*n-1,0);
         lazy.resize(2*n-1,0);

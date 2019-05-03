@@ -5,7 +5,7 @@ private:
     int n,sz;
     vector<T> node;
 public:
-    segtree(vector<T>& v) : n(1), sz((int)v.size()){
+    segtree(const vector<T>& v) : n(1), sz((int)v.size()){
         while(n < sz) n *= 2;
         node.resize(2*n-1, numeric_limits<T>::max());
         for(int i = 0; i < sz; i++){

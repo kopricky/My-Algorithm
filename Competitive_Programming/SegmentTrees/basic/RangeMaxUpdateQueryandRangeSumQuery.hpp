@@ -28,7 +28,7 @@ private:
         }
     }
 public:
-    segtree(vector<T>& v) : n(1), sz((int)v.size()){
+    segtree(const vector<T>& v) : n(1), sz((int)v.size()){
         while(n < sz) n *= 2;
         node.resize(2*n-1, 0);
         lazy.resize(2*n-1, 0);

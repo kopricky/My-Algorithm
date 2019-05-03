@@ -16,7 +16,7 @@ private:
     }
 
 public:
-    segtree(vector<T>& v) : n(1), sz((int)v.size()), h(0){
+    segtree(const vector<T>& v) : n(1), sz((int)v.size()), h(0){
         while(n < sz) n *= 2, h++;
         node.resize(2*n, numeric_limits<T>::max());
         lazy.resize(2*n); lazyFlag.resize(2*n, false);
