@@ -34,7 +34,6 @@ public:
 					check[u][i].second = 1;
 					check[v][check[u][i].first].second = 1;
 				}
-			// (v,w)は後退辺
 			}else if(v != p){
 				low[u] = min(low[u],ord[v]);
 			}

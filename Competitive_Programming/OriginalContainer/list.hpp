@@ -171,8 +171,4 @@ public:
     bool operator!=(const ListIterator& itr) const {
         return this->ls_ptr != itr.ls_ptr || this->index != itr.index;
     }
-    friend void swap(const ListIterator<T>& itr1, const ListIterator<T>& itr2){
-        ListIterator<T> tmp = itr1;
-        itr1 = itr2, itr2 = itr1;
-    };
 };

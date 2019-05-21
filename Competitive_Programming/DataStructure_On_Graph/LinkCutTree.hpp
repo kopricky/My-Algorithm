@@ -55,7 +55,7 @@ private:
     }
     bool connected(node* u, node* v){
         access(u), access(v);
-        return u->par;
+        return u == v || u->par;
     }
     void link(node* u, node* v){
         access(u), u->par = v;

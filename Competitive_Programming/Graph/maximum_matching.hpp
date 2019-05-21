@@ -216,7 +216,7 @@ private:
     random_device rnd;
 	mt19937 mt;
     uniform_int_distribution<> randval;
-    static constexpr int LOOP = 1;
+    static constexpr int LOOP = 2;
     static constexpr uint mod = 1000000007;
     mat<ModInt<mod> > inverse_22(const int id, const mat<ModInt<mod> >& invT){
         ModInt<mod> invdev = (ModInt<mod>)1 / (invT[0][0]*invT[id][id] - invT[0][id]*invT[id][0]);
@@ -259,7 +259,7 @@ private:
     }
 
 public:
-    Matching(int node_size) : V(node_size), cnt(V+1, 0), mt(rnd()), randval(1, mod-1){}
+    Matching(int node_size) : V(node_size), cnt(V+1, 0), mt(rnd()), randval(0, mod-1){}
     void add_edge(int u, int v){
         es.push_back(make_pair(u, v));
     }

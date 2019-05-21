@@ -11,7 +11,6 @@ private:
         int rev;
     };
     int V;
-    vector<vector<edge> > G;
     vector<int> level,iter;
     void bfs(int s) {
         fill(level.begin(),level.end(),-1);
@@ -46,9 +45,11 @@ private:
         }
         return 0;
     }
- 
+
 public:
-    Dinic(int node_size) : V(node_size), G(V), level(V), iter(V){}
+    vector<vector<edge> > G;
+
+    Dinic(int node_size) : V(node_size), level(V), iter(V), G(V){}
     //辺を張る
     void add_edge(int from,int to,T cap) {
         G[from].push_back((edge){to,cap,(int)G[to].size()});
