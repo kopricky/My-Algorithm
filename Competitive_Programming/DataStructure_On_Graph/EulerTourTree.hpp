@@ -9,7 +9,7 @@ public:
         : from(_from), to(_to), sz(0), value(id1), al(id2), lazy(id1),
             left(nullptr), right(nullptr), par(nullptr){}
     BSTNode(const int _from, const int _to, const _Tp& _value) noexcept
-        : from(_from), to(_to), sz(1), value(_value), al(id2), lazy(id1),
+        : from(_from), to(_to), sz(1), value(_value), al(value), lazy(id1),
             left(nullptr), right(nullptr), par(nullptr){}
     static const _Tp id1 = (_Tp)0;
     static const _Tp id2 = (_Tp)0;

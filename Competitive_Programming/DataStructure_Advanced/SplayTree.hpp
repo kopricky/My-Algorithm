@@ -1,13 +1,12 @@
 #include "../header.hpp"
 
-// root ポインタは nullptr 初期化することを忘れない
 template<typename _Key, typename _Tp> class node {
 public:
     int sz;
     _Key key;
     _Tp val, al, lazy;
     node *left, *right, *par;
-    node(_Key _key, _Tp _val) noexcept : sz(1), key(_key), val(_val), al(id2), lazy(id1),
+    node(_Key _key, _Tp _val) noexcept : sz(1), key(_key), val(_val), al(val), lazy(id1),
         left(nullptr), right(nullptr), par(nullptr){}
     static const _Tp id1 = (_Tp)0;
     static const _Tp id2 = (_Tp)0;
@@ -194,21 +193,21 @@ pair<node<_Key, _Tp>*, node<_Key, _Tp>*> split_key(const _Key _key, node<_Key, _
     return make_pair(res1, res2);
 }
 
-// root を根とする木のうちキー値が [lval, rval) のものに対して x の更新を行う.
+// root を根とする木のうちキー値が [lkey, rkey) のものに対して x の更新を行う.
 template<typename _Key, typename _Tp>
-node<_Key, _Tp>* range(_Key lval, _Key rval, _Tp x, node<_Key, _Tp>* root) noexcept {
-    auto pnn1 = split(lval, root);
-    auto pnn2 = split(rval, pnn1.second);
-    if(pnn2.first) opr1(pnn2.first->lazy, x);
+node<_Key, _Tp>* range(_Key lkey, _Key rkey, _Tp x, node<_Key, _Tp>* root) noexcept {
+    auto pnn1 = split_key(lkey, root);
+    auto pnn2 = split_key(rkey, pnn1.second);
+    if(pnn2.first) node<_Key, _Tp>::opr1(pnn2.first->lazy, x);
     return join(pnn1.first, join(pnn2.first, pnn2.second));
 }
 
-// root を根とする木のうちキー値が [lval, rval) のものに対するクエリに答える.
+// root を根とする木のうちキー値が [lkey, rkey) のものに対するクエリに答える.
 // 返り値は(木の根, 値)
 template<typename _Key, typename _Tp>
-pair<node<_Key, _Tp>*, _Tp> query(_Key lval, _Key rval, node<_Key, _Tp>* root) noexcept {
-    auto pnn1 = split(lval, root);
-    auto pnn2 = split(rval, pnn1.second);
+pair<node<_Key, _Tp>*, _Tp> query(_Key lkey, _Key rkey, node<_Key, _Tp>* root) noexcept {
+    auto pnn1 = split_key(lkey, root);
+    auto pnn2 = split_key(rkey, pnn1.second);
     _Tp res = (pnn2.first ? pnn2.first->al : node<_Key, _Tp>::id2);
     return make_pair(join(pnn1.first, join(pnn2.first, pnn2.second)), res);
 }
