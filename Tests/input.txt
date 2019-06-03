@@ -1,1 +1,0 @@
-python3 test.py test.cpp 'http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ITP2_3_A'
