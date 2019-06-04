@@ -102,15 +102,15 @@ private:
     void make_lcp(){
         lcp = new int[sz+1];
         rnk = new int[sz+1];
-        for(int i = 0; i < sz; i++){
-            rnk[sa[i]] = i;
-        }
+        for(int i = 0; i <= sz; i++) rnk[sa[i]] = i;
+        lcp[0] = 0;
         for(int i = 0, h = 0; i < sz; i++){
-            if(rnk[i] < sz - 1){
-                for(int j = sa[rnk[i]+1]; CS[i+h] == CS[j+h]; h++);
-                lcp[rnk[i]] = h;
-                if(h > 0) --h;
+            int j = sa[rnk[i]-1];
+            if(h > 0) h--;
+            for(;j+h<sz&&i+h<sz;h++){
+                if(CS[j+h] != CS[i+h]) break;
             }
+            lcp[rnk[i]-1] = h;
         }
     }
 public:
