@@ -34,7 +34,7 @@ struct BitRank {
         int j = i/MAX_BIT, k = i % MAX_BIT;
         return count[j] + (k ? __builtin_popcountll(block[j] << (MAX_BIT-k)) : 0);
     }
-    // [j, i) ビットの 1 の数
+    // [i, j) ビットの 1 の数
     inline int rank1(int i, int j) {
         return rank1(j) - rank1(i);
     }
@@ -42,7 +42,7 @@ struct BitRank {
     inline int rank0(int i) {
         return i - rank1(i);
     }
-    // [j, i) ビットの 0 の数
+    // [i, j) ビットの 0 の数
     inline int rank0(int i, int j) {
         return rank0(j) - rank0(i);
     }
@@ -117,7 +117,7 @@ public:
         return res;
     }
     int rangefreq(int i, int j, int a, int b, int l, int r, int x) {
-        if(r <= a || b <= l) return 0;
+        if(i == j || r <= a || b <= l) return 0;
         int mid = (l + r) >> 1;
         if(a <= l && r <= b){
             return j - i;
