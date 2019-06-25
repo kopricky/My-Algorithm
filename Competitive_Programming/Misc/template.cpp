@@ -20,17 +20,17 @@
 
 using namespace std;
 
-template<typename S,typename T>auto&operator<<(auto&o,pair<S,T>p){return o<<"{"<<p.fi<<","<<p.se<<"}";}
-template<typename T>auto&operator<<(auto&o,set<T>s){for(auto&e:s)o<<e<<" ";return o;}
+template<typename S,typename T>auto&operator<<(ostream&o,pair<S,T>p){return o<<"{"<<p.fi<<","<<p.se<<"}";}
+template<typename T>auto&operator<<(ostream&o,set<T>s){for(auto&e:s)o<<e<<" ";return o;}
 template<typename S,typename T,typename U>
-auto&operator<<(auto&o,priority_queue<S,T,U>q){while(!q.empty())o<<q.top()<<" ",q.pop();return o;}
-template<typename K,typename T>auto&operator<<(auto&o,map<K,T>&m){for(auto&e:m)o<<e<<" ";return o;}
-template<typename T>auto&operator<<(auto&o,vector<T>v){for(auto&e:v)o<<e<<" ";return o;}
+auto&operator<<(ostream&o,priority_queue<S,T,U>q){while(!q.empty())o<<q.top()<<" ",q.pop();return o;}
+template<typename K,typename T>auto&operator<<(ostream&o,map<K,T>&m){for(auto&e:m)o<<e<<" ";return o;}
+template<typename T>auto&operator<<(ostream&o,vector<T>v){for(auto&e:v)o<<e<<" ";return o;}
 void ashow(){cout<<endl;}template<typename T,typename...A>void ashow(T t,A...a){cout<<t<<" ";ashow(a...);}
 template<typename S,typename T,typename U>
 struct TRI{S fi;T se;U th;TRI(){}TRI(S f,T s,U t):fi(f),se(s),th(t){}};
 template<typename S,typename T,typename U>
-auto& operator<<(auto& o,TRI<S,T,U>& t){return o<<"{"<<t.fi<<","<<t.se<<","<<t.th<<"}";}
+auto&operator<<(ostream&o,TRI<S,T,U>&t){return o<<"{"<<t.fi<<","<<t.se<<","<<t.th<<"}";}
 
 typedef pair<int, int> P;
 typedef pair<ll, ll> pll;
