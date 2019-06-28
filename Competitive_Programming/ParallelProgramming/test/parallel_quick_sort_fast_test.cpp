@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-    int n = 10000000;
+    int n = 1000000;
     vector<int> vec1(n), vec2;
     iota(vec1.begin(), vec1.end(), 0);
     shuffle(vec1.begin(), vec1.end(), mt19937(random_device{}()));
