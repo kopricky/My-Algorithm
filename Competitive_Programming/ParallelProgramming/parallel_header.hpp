@@ -1,3 +1,6 @@
+#ifndef PARALLEL_HEADER_HPP
+#define PARALLEL_HEADER_HPP
+
 #include <iostream>
 #include <thread>
 #include <numeric>
@@ -10,6 +13,9 @@
 #include <iterator>
 #include <future>
 #include <queue>
+#include <functional>
+#include <cassert>
+#include <memory>
 
 struct SW {
     std::chrono::high_resolution_clock::time_point st,ed;
@@ -21,3 +27,5 @@ struct SW {
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(ed - st).count() << " msec\n";
     }
 };
+
+#endif

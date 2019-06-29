@@ -1,7 +1,7 @@
 #include "parallel_header.hpp"
 
-template<typename Iterator, typename T>
-T parallel_accumulate(const Iterator first, const Iterator last, const T init)
+template<typename ForwardIterator, typename T, class AssociativeBinaryOperation>
+T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, const T init, const AssociativeBinaryOperation op)
 {
     const unsigned long length = std::distance(first, last);
     if(!length)
@@ -13,13 +13,14 @@ T parallel_accumulate(const Iterator first, const Iterator last, const T init)
     const unsigned long block_size = length / num_threads;
     std::vector<T> results(num_threads);
     std::vector<std::thread> threads(num_threads - 1);
-    Iterator block_start = first;
-    auto accumulate_block = [](Iterator first, Iterator last, T& result){
-        result = std::accumulate(first, last, result);
+    ForwardIterator block_start = first;
+    auto accumulate_block = [op](ForwardIterator first, ForwardIterator last, T& result)
+    {
+        result = std::accumulate(first, last, result, op);
     };
     for(unsigned long i = 0; i < (num_threads - 1); ++i)
     {
-        Iterator block_end = block_start;
+        ForwardIterator block_end = block_start;
         std::advance(block_end, block_size);
         threads[i] = std::thread(accumulate_block, block_start, block_end, std::ref(results[i]));
         block_start = block_end;
@@ -27,5 +28,11 @@ T parallel_accumulate(const Iterator first, const Iterator last, const T init)
     accumulate_block(block_start, last, results[num_threads - 1]);
     for(auto& entry : threads)
         entry.join();
-    return std::accumulate(results.begin(), results.end(), init);
+    return std::accumulate(results.begin(), results.end(), init, op);
 };
+
+template<typename ForwardIterator, typename T>
+T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, const T init)
+{
+    return parallel_accumulate(first, last, init, std::plus<T>());
+}
