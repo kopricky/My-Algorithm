@@ -94,7 +94,7 @@ private:
     }
 public:
     // 座標, 点の値
-    RangeTree(vector<pcc>& cand, vector<VT>& val) : n(1), sz((int)cand.size()), sorted(sz), xs(sz){
+    RangeTree(const vector<pcc>& cand, const vector<VT>& val) : n(1), sz((int)cand.size()), sorted(sz), xs(sz){
         while(n < sz) n *= 2;
         for(int i = 0; i < sz; i++){
             sorted[i] = make_pair(cand[i], i);

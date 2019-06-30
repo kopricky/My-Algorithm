@@ -147,7 +147,7 @@ public:
         int n = (int)candidate.size();
         sort(candidate.begin(), candidate.end());
         X.resize(n), Y.resize(n);
-        vector<T> vec(n);
+        vector<int> vec(n);
         for(int i = 0; i < n; i++){
             X[i] = candidate[i].first, Y[i] = candidate[i].second;
         }
@@ -165,6 +165,6 @@ public:
         int lyid = lower_bound(Y.begin(), Y.end(), ly) - Y.begin();
         int ryid = upper_bound(Y.begin(), Y.end(), ry-1) - Y.begin();
         if(lxid >= rxid || lyid >= ryid) return 0;
-        return wm.rangefreq(lxid, rxid-1, lyid, ryid-1);
+        return wm.rangefreq(lxid, rxid, lyid, ryid);
     }
 };

@@ -58,7 +58,7 @@ public:
         return is >> v, n = v, is;
     }
     friend ostream& operator<<(ostream& os, const ModInt& n){ return (os << n()); }
-    friend ModInt pow(ModInt x, long long n){
+    friend ModInt mod_pow(ModInt x, long long n){
         ModInt ans = 1;
         while(n){
             if(n & 1) ans *= x;
