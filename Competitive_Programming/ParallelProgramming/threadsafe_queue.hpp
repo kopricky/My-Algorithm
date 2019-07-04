@@ -94,7 +94,6 @@ public:
         {
             std::lock_guard<std::mutex> tail_lock(tail_mutex);
             tail->data = new_data;
-            // Node* const と const Node* の違い
             Node* const new_tail = p.get();
             tail->next = std::move(p);
             tail = new_tail;

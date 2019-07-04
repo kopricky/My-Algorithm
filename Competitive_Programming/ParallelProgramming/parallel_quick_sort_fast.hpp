@@ -220,8 +220,7 @@ RandomAccessIterator ParallelPartitionSolver<RandomAccessIterator, UnaryPredicat
     const int leftMostBlock = arrange_leftBlocks();
     const int rightMostBlock = arrange_rightBlocks();
     return std::partition(first + (leftMostBlock + 1) * block_size,
-                            last - (rightMostBlock + 1) * block_size,
-                                func);
+                            last - (rightMostBlock + 1) * block_size, func);
 }
 
 template<typename RandomAccessIterator, class UnaryPredicate>
