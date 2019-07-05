@@ -212,7 +212,7 @@ void given_probability_random_simple_graph(const int node_size, const double pro
     }
 }
 
-// ランダムな単純グラフ (平均計算量 O(m))
+// G(n, m) ランダムな単純グラフ (平均計算量 O(m))
 void random_simple_graph(const int node_size, int edge_size, vector<vector<int> >& graph){
     assert(edge_size <= (long long)(node_size)*(node_size-1)/2);
     bool complement = false;
