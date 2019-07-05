@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-// 次数列 d とグラフ G(vector<vecotr<int> >型で予め頂点数分の配列を確保する), 連結であるべきかを与える.
+// 次数列 d とグラフ G (vector<vecotr<int> >型で予め頂点数分の配列を確保する), 連結であるべきかを与える.
 // TIME は適宜設定する. (計算量 o(m^2))
 class GraphGenerator {
 private:
@@ -188,7 +188,7 @@ struct pair_hash {
     }
 };
 
-// G(n, m) (計算量 O(m))
+// (多重辺、自己ループも許した)ランダムグラフ (計算量 O(m))
 void random_graph(const int node_size, const int edge_size, vector<vector<int> >& graph){
     random_device rnd;
     mt19937 mt(rnd());
@@ -203,7 +203,7 @@ void random_graph(const int node_size, const int edge_size, vector<vector<int> >
 void given_probability_random_simple_graph(const int node_size, const double prob, vector<vector<int> >& graph){
     random_device rnd;
     mt19937 mt(rnd());
-    uniform_real_distribution<double> _rand(0.0,1.0);
+    uniform_real_distribution<double> _rand(0.0, 1.0);
     int v = 1, w = -1;
     while(v < node_size){
         w += 1 + floor(log(1.0 -_rand(mt))/log(1.0 - prob));
@@ -212,9 +212,14 @@ void given_probability_random_simple_graph(const int node_size, const double pro
     }
 }
 
-// ランダムな単純グラフ (平均計算量 O(nlogn))
-void random_simple_graph(const int node_size, const int edge_size, vector<vector<int> >& graph){
+// ランダムな単純グラフ (平均計算量 O(m))
+void random_simple_graph(const int node_size, int edge_size, vector<vector<int> >& graph){
     assert(edge_size <= (long long)(node_size)*(node_size-1)/2);
+    bool complement = false;
+    if((edge_size > (long long)(node_size)*(node_size-1)/4)){
+        complement = true;
+        edge_size = (long long)(node_size)*(node_size-1)/2 - edge_size;
+    }
     unordered_set<pair<int, int>, pair_hash> edge_set;
     random_device rnd;
     mt19937 mt(rnd());
@@ -224,16 +229,28 @@ void random_simple_graph(const int node_size, const int edge_size, vector<vector
             int from = rand1(mt), to = rand2(mt);
             if(to < from) swap(from, to); else to++;
             if(edge_set.find({from, to}) != edge_set.end()) continue;
-            graph[from].push_back(to), graph[to].push_back(from);
+            if(!complement){
+                graph[from].push_back(to), graph[to].push_back(from);
+            }
             edge_set.insert({from, to});
             break;
         }
     }
+    if(complement){
+        for(int i = 0; i < node_size-1; i++){
+            for(int j = i+1; j < node_size; j++){
+                if(edge_set.find({i, j}) == edge_set.end()){
+                    graph[i].push_back(j), graph[j].push_back(i);
+                }
+            }
+        }
+    }
 }
 
-// ランダムな単純グラフ (平均計算量 O(nlogn))
-void random_simple_connected_graph(const int node_size, const int edge_size, vector<vector<int> >& graph){
+// ランダムな単純連結グラフ (平均計算量 O(m))
+void random_simple_connected_graph(const int node_size, int edge_size, vector<vector<int> >& graph){
     assert(edge_size >= node_size - 1);
+    assert(edge_size <= (long long)(node_size)*(node_size-1)/2);
     unordered_set<pair<int, int>, pair_hash> edge_set;
     random_device rnd;
     mt19937 mt(rnd());
@@ -245,15 +262,32 @@ void random_simple_connected_graph(const int node_size, const int edge_size, vec
         graph[ver[u]].push_back(ver[i]), graph[ver[i]].push_back(ver[u]);
         edge_set.insert({min(ver[i], ver[u]), max(ver[i], ver[u])});
     }
+    edge_size -= node_size - 1;
+    bool complement = false;
+    if((edge_size > (long long)(node_size)*(node_size-1)/4)){
+        complement = true;
+        edge_size = (long long)(node_size)*(node_size-1)/2 - edge_size;
+    }
     uniform_int_distribution<> rand1(0, node_size-1), rand2(0, node_size-2);
-    for(int i = 0; i < edge_size - node_size + 1; i++){
+    for(int i = 0; i < edge_size; i++){
         while(true){
             int from = rand1(mt), to = rand2(mt);
             if(to < from) swap(from, to); else to++;
             if(edge_set.find({from, to}) != edge_set.end()) continue;
-            graph[from].push_back(to), graph[to].push_back(from);
+            if(!complement){
+                graph[from].push_back(to), graph[to].push_back(from);
+            }
             edge_set.insert({from, to});
             break;
+        }
+    }
+    if(complement){
+        for(int i = 0; i < node_size-1; i++){
+            for(int j = i+1; j < node_size; j++){
+                if(edge_set.find({i, j}) == edge_set.end()){
+                    graph[i].push_back(j), graph[j].push_back(i);
+                }
+            }
         }
     }
 }

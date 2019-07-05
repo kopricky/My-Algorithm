@@ -30,19 +30,19 @@ public:
             lazy[k] = 0;
         }
     }
-    void range(int a, int b, T x, int k=0, int l=0, int r=-1) {
+    void range(int a, int b, int k=0, int l=0, int r=-1) {
         if(r < 0) r = n;
         eval(k, l, r);
         if(b <= l || r <= a){
             return;
         }
         if(a <= l && r <= b) {
-            lazy[k] ^= x;
+            lazy[k] ^= 1;
             eval(k, l, r);
         }
         else {
-            range(a, b, x, 2*k+1, l, (l+r)/2);
-            range(a, b, x, 2*k+2, (l+r)/2, r);
+            range(a, b, 2*k+1, l, (l+r)/2);
+            range(a, b, 2*k+2, (l+r)/2, r);
             node[k] = node[2*k+1] + node[2*k+2];
         }
     }
