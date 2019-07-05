@@ -1,7 +1,7 @@
 #include "parallel_header.hpp"
 
-template<typename ForwardIterator, typename T, class AssociativeBinaryOperation>
-T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, const T init, const AssociativeBinaryOperation op)
+template<typename ForwardIterator, typename T, class AssociativeBinaryOperation=std::plus<T> >
+T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, const T init, const AssociativeBinaryOperation op=std::plus<T>())
 {
     const unsigned long length = std::distance(first, last);
     if(!length)
@@ -30,9 +30,3 @@ T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, c
         entry.join();
     return std::accumulate(results.begin(), results.end(), init, op);
 };
-
-template<typename ForwardIterator, typename T>
-T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, const T init)
-{
-    return parallel_accumulate(first, last, init, std::plus<T>());
-}

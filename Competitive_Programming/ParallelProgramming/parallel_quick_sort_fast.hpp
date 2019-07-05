@@ -343,7 +343,7 @@ void ParallelQuickSortSolver<RandomAccessIterator, Compare>::parallel_partial_so
         actthread_num.fetch_sub(1, std::memory_order_acq_rel);
         return;
     }
-    std::uniform_int_distribution<> uid(0, length);
+    std::uniform_int_distribution<> uid(0, length-1);
     const RandomAccessIterator pivot_itr = std::next(_first, uid(mt));
     const auto pivot = *pivot_itr;
     std::iter_swap(_first, pivot_itr);
@@ -369,15 +369,9 @@ void ParallelQuickSortSolver<RandomAccessIterator, Compare>::operator()()
     }
 }
 
-template<typename RandomAccessIterator, class Compare>
-void parallel_quick_sort(const RandomAccessIterator first, const RandomAccessIterator last, const Compare comp)
+template<typename RandomAccessIterator, class Compare=std::less<typename RandomAccessIterator::value_type> >
+void parallel_quick_sort(const RandomAccessIterator first, const RandomAccessIterator last, const Compare comp=std::less<typename RandomAccessIterator::value_type>())
 {
     ParallelQuickSortSolver<RandomAccessIterator, Compare> solver(first, last, comp);
     solver();
-}
-
-template<typename RandomAccessIterator>
-void parallel_quick_sort(const RandomAccessIterator first, const RandomAccessIterator last)
-{
-    parallel_quick_sort(first, last, std::less<typename RandomAccessIterator::value_type>());
 }

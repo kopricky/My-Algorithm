@@ -30,7 +30,7 @@ void ParallelQuickSortSolver<BidirectionalIterator, Compare>::parallel_partial_s
             std::sort(_first, _last);
         return;
     }
-    std::uniform_int_distribution<> uid(0, length);
+    std::uniform_int_distribution<> uid(0, length-1);
     const auto pivot_itr = std::next(_first, uid(mt));
     const auto pivot = *pivot_itr;
     std::iter_swap(_first, pivot_itr);
@@ -42,15 +42,9 @@ void ParallelQuickSortSolver<BidirectionalIterator, Compare>::parallel_partial_s
     fut.wait();
 }
 
-template<typename BidirectionalIterator, class Compare>
-void parallel_quick_sort(const BidirectionalIterator first, const BidirectionalIterator last, const Compare comp)
+template<typename BidirectionalIterator, class Compare=std::less<typename BidirectionalIterator::value_type> >
+void parallel_quick_sort(const BidirectionalIterator first, const BidirectionalIterator last, const Compare comp=std::less<typename BidirectionalIterator::value_type>())
 {
     ParallelQuickSortSolver<BidirectionalIterator, Compare> solver(first, last, comp);
     solver();
-}
-
-template<typename BidirectionalIterator>
-void parallel_quick_sort(const BidirectionalIterator first, const BidirectionalIterator last)
-{
-    parallel_quick_sort(first, last, std::less<typename BidirectionalIterator::value_type>());
 }
