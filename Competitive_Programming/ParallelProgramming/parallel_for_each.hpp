@@ -1,7 +1,7 @@
 #include "parallel_header.hpp"
 
 template<class Function, typename ForwardIterator>
-void parallel_call(const Function f, const ForwardIterator first, const ForwardIterator last)
+void parallel_for_each(const ForwardIterator first, const ForwardIterator last, const Function f)
 {
     const unsigned long length = std::distance(first, last);
     if(!length)
