@@ -225,7 +225,7 @@ private:
         invN_3n_3n[1][0] = -invT[id][0] * invdev, invN_3n_3n[1][1] = invT[0][0] * invdev;
         return invN_3n_3n;
     }
-    void shur_complement(const int id, mat<ModInt<mod> >& invT){
+    void schur_complement(const int id, mat<ModInt<mod> >& invT){
         int sz = invT.row(), x = 0;
         mat<ModInt<mod> >N_12_12(sz-2), N_12_3n(sz-2, 2), N_3n_12(2, sz-2);
         for(int i = 1; i < sz; i++){
@@ -250,7 +250,7 @@ private:
                 if(invT[0][j] && T[vset[0]][vset[j]]){
                     if(vset[j] < V) res.emplace_back(vset[0], vset[j]);
                     vset.erase(vset.begin()), vset.erase(vset.begin() + j - 1);
-                    shur_complement(j, invT);
+                    schur_complement(j, invT);
                     break;
                 }
             }
