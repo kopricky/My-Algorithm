@@ -1,7 +1,7 @@
 #include "parallel_header.hpp"
 
 template<typename T>
-class ThreadSafeQueue
+class ThreadsafeQueue
 {
 private:
     class Node
@@ -65,9 +65,9 @@ private:
     }
 
 public:
-    ThreadSafeQueue() : head(new Node), tail(head.get()){}
-    ThreadSafeQueue(const ThreadSafeQueue& another) = delete;
-    ThreadSafeQueue& operator=(const ThreadSafeQueue& another) = delete;
+    ThreadsafeQueue() : head(new Node), tail(head.get()){}
+    ThreadsafeQueue(const ThreadsafeQueue& another) = delete;
+    ThreadsafeQueue& operator=(const ThreadsafeQueue& another) = delete;
     std::shared_ptr<T> try_pop()
     {
         std::unique_ptr<Node> old_head = try_pop_head();

@@ -1,7 +1,7 @@
 #include "parallel_header.hpp"
 
 template<typename T>
-class threadsafe_list
+class ThreadsafeList
 {
     struct node
     {
@@ -13,13 +13,13 @@ class threadsafe_list
     };
     node head;
 public:
-    threadsafe_list(){}
-    ~threadsafe_list()
+    ThreadsafeList(){}
+    ~ThreadsafeList()
     {
         remove_if([](node const&){ return true; });
     }
-    threadsafe_list(threadsafe_list const& another)=delete;
-    threadsafe_list& operator=(threadsafe_list const& another)=delete;
+    ThreadsafeList(ThreadsafeList const& another)=delete;
+    ThreadsafeList& operator=(ThreadsafeList const& another)=delete;
     void push_front(T const& value)
     {
         std::unique_ptr<node> new_node(new_node(value));

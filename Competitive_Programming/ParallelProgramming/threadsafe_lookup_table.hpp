@@ -1,7 +1,7 @@
 #include "parallel_header.hpp"
 
 template<typename Key, typename Value, typename Hash=std::hash<Key> >
-class threadsafe_lookup_table
+class ThreadsafeLookupTable
 {
 private:
     class bucket_type
@@ -57,15 +57,15 @@ public:
     using key_type=Key;
     using mapped_type=Value;
     using hash_type=Hash;
-    threadsafe_lookup_table(unsigned num_buckets=19, Hash const& hasher_=Hash())
+    ThreadsafeLookupTable(unsigned num_buckets=19, Hash const& hasher_=Hash())
         : buckets(num_buckets), hasher(hasher_)
     {
         for(unsigned i=0;i<num_buckets;++i){
             buckets[i].reset(new bucket_type);
         }
     }
-    threadsafe_lookup_table(threadsafe_lookup_table const& another)=delete;
-    threadsafe_lookup_table& operator=(threadsafe_lookup_table const& another)=delete;
+    ThreadsafeLookupTable(ThreadsafeLookupTable const& another)=delete;
+    ThreadsafeLookupTable& operator=(ThreadsafeLookupTable const& another)=delete;
     Value value_for(Key const& key, Value const& default_value=Value()) const
     {
         return get_bucket(key).value_for(key, default_value);
