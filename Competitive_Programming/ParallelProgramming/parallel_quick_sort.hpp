@@ -43,7 +43,7 @@ void ParallelQuickSortSolver<BidirectionalIterator, Compare>::parallel_partial_s
 }
 
 template<typename BidirectionalIterator, class Compare=std::less<typename BidirectionalIterator::value_type> >
-void parallel_quick_sort(const BidirectionalIterator first, const BidirectionalIterator last, const Compare comp=std::less<typename BidirectionalIterator::value_type>())
+void parallel_quick_sort(const BidirectionalIterator first, const BidirectionalIterator last, const Compare comp=Compare())
 {
     ParallelQuickSortSolver<BidirectionalIterator, Compare> solver(first, last, comp);
     solver();

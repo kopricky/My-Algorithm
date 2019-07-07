@@ -1,7 +1,7 @@
 #include "parallel_header.hpp"
 
 template<typename ForwardIterator, typename T, class AssociativeBinaryOperation=std::plus<T> >
-T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, const T init, const AssociativeBinaryOperation op=std::plus<T>())
+T parallel_accumulate(const ForwardIterator first, const ForwardIterator last, const T init, const AssociativeBinaryOperation op=AssociativeBinaryOperation())
 {
     const unsigned long length = std::distance(first, last);
     if(!length)

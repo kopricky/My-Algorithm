@@ -1,11 +1,10 @@
-#include "../parallel_stack.hpp"
-#include <bits/stdc++.h>
+#include "../threadsafe_stack.hpp"
 
 using namespace std;
 
 const int MAX_N = 100000000;
 
-threadsafe_stack<int> st1;
+ThreadsafeStack<int> st1;
 stack<int> st2;
 vector<int> ok;
 

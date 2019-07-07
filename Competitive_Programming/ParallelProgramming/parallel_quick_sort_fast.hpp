@@ -370,7 +370,7 @@ void ParallelQuickSortSolver<RandomAccessIterator, Compare>::operator()()
 }
 
 template<typename RandomAccessIterator, class Compare=std::less<typename RandomAccessIterator::value_type> >
-void parallel_quick_sort(const RandomAccessIterator first, const RandomAccessIterator last, const Compare comp=std::less<typename RandomAccessIterator::value_type>())
+void parallel_quick_sort(const RandomAccessIterator first, const RandomAccessIterator last, const Compare comp=Compare())
 {
     ParallelQuickSortSolver<RandomAccessIterator, Compare> solver(first, last, comp);
     solver();
