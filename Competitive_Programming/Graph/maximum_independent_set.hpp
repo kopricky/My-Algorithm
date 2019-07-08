@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-//最大独立集合問題に対するアルゴリズム
+//最大独立集合問題に対する FPT アルゴリズム(頂点数が小さい場合)
 //多重辺が存在しないことを仮定している
 
 template<typename T> class ListIterator;
@@ -10,13 +10,13 @@ template<typename T>
 class List {
 public:
     using iterator = ListIterator<T>;
-    
+
 private:
     int N, sz;
     vector<int> prev, next;
     vector<T> container;
     friend ListIterator<T>;
-    
+
 public:
     // 添字 next_index の要素の前に添字 now_index の要素を挿入
     iterator insert(int next_index, int now_index){
@@ -31,7 +31,7 @@ public:
         next[prev[index]] = next[index], prev[next[index]] = prev[index];
         return iterator(this, next[index]);
     }
-	
+
 public:
     friend ostream& operator<< (ostream& os, List& ls){
         for(auto& val : ls){
@@ -82,7 +82,7 @@ public:
         index_clear();
         container.clear();
     }
-	
+
 public:
     List() : N(0), sz(0), prev({0}), next({0}){}
     List(int _N) : container(_N){
@@ -138,7 +138,7 @@ private:
 
 private:
     ListIterator(List<T>* ls, int _index) : ls_ptr(ls), index(_index){}
-	
+
 public:
     ListIterator(){}
     ListIterator(const ListIterator& itr){
@@ -197,19 +197,19 @@ private:
     };
     struct info {
         int from, to, next;
-        info(int ag1, int ag2, int ag3) : 
+        info(int ag1, int ag2, int ag3) :
             from(ag1), to(ag2), next(ag3){}
     };
-    
+
     using LL = unsigned __int128;
-    
+
     int V;
     vector<List<edge> > G;
     List<int> rem_ver;
     vector<int> cand, deg, is_rem;
     vector<vector<info> > edge_info;
     LL not_use_ver;
-    
+
     int get_first_element(LL num){
         int x = __builtin_ffsll(num & (((LL)1 << 64) - 1));
         int y = __builtin_ffsll((num >> 64) & (((LL)1 << 64) - 1));
@@ -320,7 +320,7 @@ private:
 public:
     vector<int> ans_set;
     int ans_size;
-    
+
     MIS(int node_size) :
         V(node_size), G(V), rem_ver(V), deg(V, 0), is_rem(V, 1), edge_info(V), not_use_ver(0), ans_size(0){
             for(int i = 0; i < V; i++) rem_ver[i] = i;
