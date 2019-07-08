@@ -2,12 +2,9 @@
 
 int main()
 {
-    int n = 10000000;
-    SW sw1, sw2;
-    sw1.start();
-    std::unordered_map<int, int> mp1;
-    sw1.end();
-    sw2.start();
-    ThreadsafeUnorderedMap<int, int> mp2(n);
-    sw2.end();
+    // int n = 10000000;
+    ThreadsafeUnorderedMap<int, int> mp2(19);
+    mp2[1] = 2;
+    mp2.erase(2);
+    std::cout << mp2[1] << std::endl;
 }
