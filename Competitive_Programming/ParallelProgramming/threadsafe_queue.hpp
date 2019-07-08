@@ -1,5 +1,6 @@
 #include "parallel_header.hpp"
 
+// pop される Node のメモリはちゃんと解放されていることに注意する
 template<typename T>
 class ThreadsafeQueue
 {
