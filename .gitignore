@@ -3,3 +3,4 @@ test2.cpp
 output.txt
 PersistentDataStructure
 DominatorTree.hpp
+PolynomialSolver.hpp
