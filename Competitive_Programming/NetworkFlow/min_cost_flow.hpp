@@ -18,7 +18,7 @@ public:
     vector<vector<edge> > G;
     vector<T> h,dist;
     vector<int> prevv,preve;
-    min_cost_flow(int node_size) : V(node_size), inf(numeric_limits<T>::max()),
+    min_cost_flow(int node_size) : V(node_size), inf(numeric_limits<T>::max() / 4),
         G(V), h(V, 0), dist(V), prevv(V), preve(V){}
     void add_edge(int from, int to, int cap, T cost){
         G[from].push_back((edge){to, cap, cost, (int)G[to].size()});

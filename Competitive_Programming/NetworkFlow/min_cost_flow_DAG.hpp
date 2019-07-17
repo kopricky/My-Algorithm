@@ -18,7 +18,7 @@ public:
     vector<vector<edge> > G;
     vector<CostType> h, dist;
     vector<int> deg, ord, prevv, preve;
-    min_cost_flow_DAG(int node_size) : V(node_size), inf(numeric_limits<Cot>::max()),
+    min_cost_flow_DAG(int node_size) : V(node_size), inf(numeric_limits<Cot>::max() / 4),
         G(V), h(V, inf), dist(V), deg(V, 0), prevv(V), preve(V){}
     void add_edge(int from, int to, Cat cap, Cot cost){
         G[from].push_back((edge){to, cap, cost, (int)G[to].size(), true});
