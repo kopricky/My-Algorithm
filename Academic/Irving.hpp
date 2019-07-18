@@ -110,6 +110,7 @@ public:
     vector<int> solve(const vector<vector<int> >& _pref)
     {
         n = (int)_pref.size();
+        assert(n % 2 == 0);
         pref.resize(n);
         pref_iter.resize(n, vector<list<int>::iterator>(n-1));
         order.resize(n, vector<int>(n));
