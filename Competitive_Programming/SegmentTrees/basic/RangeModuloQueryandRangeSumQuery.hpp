@@ -3,14 +3,14 @@
 //更新 a_i → a_i (l <= i < r)
 //modulo更新 a_i → a_i % mod (l <= i < r)
 //クエリ sum (a[l]...a[r-1])
-//計算量はならしO(log^2(n))
+//計算量はならしO(log(n)log(max_i a[i]))
 
 template<typename T> class segtree {
 private:
     int n,sz;
     vector<T> node, min_val, max_val, lazy;
     vector<bool> lazyFlag;
-    void opr(int id){
+    void update(int id){
         node[id] = node[2*id+1] + node[2*id+2];
         min_val[id] = min(min_val[2*id+1],min_val[2*id+2]);
         max_val[id] = max(max_val[2*id+1],max_val[2*id+2]);
@@ -27,7 +27,7 @@ public:
             node[i+n-1] = min_val[i+n-1] = max_val[i+n-1] = v[i];
         }
         for(int i=n-2; i>=0; i--){
-            opr(i);
+            update(i);
         }
     }
     void eval(int k, int l, int r) {
@@ -54,7 +54,7 @@ public:
         }else{
             update(a, b, x, 2*k+1, l, (l+r)/2);
             update(a, b, x, 2*k+2, (l+r)/2, r);
-            opr(k);
+            update(k);
         }
     }
     void modulo_update(int a, int b, T x, int k=0, int l=0, int r=-1){
@@ -70,7 +70,7 @@ public:
         }else{
             modulo_update(a, b, x, 2*k+1, l, (l+r)/2);
             modulo_update(a, b, x, 2*k+2, (l+r)/2, r);
-            opr(k);
+            update(k);
         }
     }
     T query(int a, int b, int k=0, int l=0, int r=-1) {

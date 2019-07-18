@@ -3,7 +3,7 @@
 //更新 a_i → a_i & x (l <= i < r)
 //更新 a_i → a_i | x (l <= i < r)
 //クエリ min (a[l]...a[r-1])
-//計算量はならしO(log(MAX_VAL)log(n))
+//計算量はならし O(max(log n, log MAX_VAL))
 
 template<typename T> class segtree
 {
