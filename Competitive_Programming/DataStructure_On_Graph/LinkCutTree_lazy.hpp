@@ -99,6 +99,17 @@ private:
         access(u);
         u->left->par = nullptr, u->left = nullptr, u->eval();
     }
+    void cut(node* u, node* v){
+        access(u);
+        node* prev = u;
+        for(u = u->left; u; u = u->right) prev = u;
+        if(prev == v){
+            u->left->par = nullptr, u->left = nullptr, u->eval();
+            splay(prev);
+        }else{
+            splay(prev), cut(v);
+        }
+    }
     node* lca(node* u, node* v){
         access(u);
         return access(v);
@@ -142,6 +153,8 @@ public:
     void link(int id1, int id2){ return link(arr[id1], arr[id2]); }
     // id とその親の間の辺を削除する
     void cut(int id){ return cut(arr[id]); }
+    // id と id2 の間の辺を削除する
+    void cut(int id1, int id2){ return cut(arr[id1], arr[id2]); }
     // id1 と id2 の LCA を求める
     int lca(int id1, int id2){ return lca(arr[id1], arr[id2])->id; }
     // 元の木の根を id にする
