@@ -2,7 +2,6 @@
 
 template<typename T> class ListIterator;
 
-// 常に不変なイテレーターが欲しい場合に使う
 template<typename T>
 class List {
 public:
@@ -10,165 +9,101 @@ public:
 
 private:
     struct block {
-        int prev, next;
-        T value;
-        block(){}
-        block(T value_) : value(value_){}
-        block(int prev_, int next_) : prev(prev_), next(next_){}
+        block *prev, *next;
+        T data;
+        block() : prev(this), next(this){}
+        block(T _data) : prev(this), next(this), data(_data){}
+        block(block *_prev, block *_next) : prev(_prev), next(_next){}
     };
-    int N, sz;
+    int N;
+    size_t sz;
     vector<block> container;
     friend ListIterator<T>;
-
-public:
-    // 添字 next_index の要素の前に添字 now_index の要素を挿入
-    iterator insert(int next_index, int now_index){
-        sz++;
-        auto& nw = container[now_index]; auto& nx = container[next_index];
-        nw.prev = nx.prev, nw.next = next_index;
-        container[nx.prev].next = now_index, nx.prev = now_index;
-        return iterator(this, now_index);
+    // cur を nx の前に挿入
+    iterator insert(block* const nx, block* const cur){
+        ++sz;
+        cur->prev = nx->prev, cur->next = nx;
+        nx->prev->next = cur, nx->prev = cur;
+        return iterator(cur);
     }
-    // 添字 index の値を削除 → 次の要素の iterator を返す
-    iterator erase(int index){
-        sz--;
-        auto& cur = container[index];
-        container[cur.prev].next = cur.next, container[cur.next].prev = cur.prev;
-        return iterator(this, cur.next);
+    // cur を削除
+    iterator erase(block* const cur){
+        --sz;
+        cur->prev->next = cur->next, cur->next->prev = cur->prev;
+        return iterator(cur->next);
     }
 
 public:
-    friend ostream& operator<< (ostream& os, List& ls){
-        for(auto& val : ls){
-            os << val << ' ';
+    iterator insert(const iterator nx, const iterator cur){ return insert(nx.ls_ptr, cur.ls_ptr); }
+    iterator insert(const iterator nx, int cur_index){ return insert(nx.ls_ptr, &container[cur_index]); }
+    iterator insert(int next_index, int cur_index){ return iterator(&container[next_index], &container[cur_index]); }
+    iterator erase(const iterator cur){ return erase(cur.ls_ptr); }
+    iterator erase(int cur_index){ return erase(&container[cur_index]); }
+
+public:
+    List() : N(0), sz(0){}
+    List(int _N) : N(_N), sz(N), container(_N+1){}
+    List(const vector<T>& _data) : List((int)_data.size()){ build(_data); }
+    List(const List& ls) : N(ls.N), sz(ls.sz), container(ls.container){}
+    void build(const vector<T>& _data){
+        for(int i = 0; i <= N; i++){
+            container[i].prev = &container[(i+N)%(N+1)];
+            container[i].next = &container[(i+1)%(N+1)];
+            if(i < N) container[i].data = _data[i];
         }
+    }
+    void push_back(const T _data){ ++N, ++sz, container.push_back(_data); }
+    void build(){
+        container.push_back(T());
+        for(int i = 0; i <= N; i++){
+            container[i].prev = &container[(i+N)%(N+1)];
+            container[i].next = &container[(i+1)%(N+1)];
+        }
+    }
+    friend ostream& operator<< (ostream& os, List& ls){
+        for(auto& val : ls) os << val << ' ';
         return os;
     }
-    const T& operator[](size_t index) const {
-        return container[index].value;
-    }
-    T& operator[](size_t index){
-        return container[index].value;
-    }
-    size_t size(){
-        return sz;
-    }
-    bool empty(){
-        return size() == 0;
-    }
-    T& front(){
-        return container[container[N].next].value;
-    }
-    T& back(){
-        return container[container[N].prev].value;
-    }
-    iterator begin(){
-        return iterator(this, container[N].next);
-    }
-    iterator end(){
-        return iterator(this, N);
-    }
-    iterator insert(const iterator& itr, int index){
-        return insert(itr.index, index);
-    }
-    iterator erase(const iterator& itr){
-        return erase(itr.index);
-    }
-    iterator push_back(){
-        return insert(N, container[N].prev+1);
-    }
-    void pop_back(){
-        erase(container[N].prev);
-    }
-    void index_clear(){
-        N = sz = 0, container = {(block){0, 0}};
-    }
-    void clear(){
-        index_clear(); container.clear();
-    }
-
-public:
-    List() : N(0), sz(0), container({(block){0, 0}}){}
-    List(int _N) : container(_N + 1){
-        build();
-    }
-    List(const List& ls):
-        N(ls.N), sz(ls.sz), container(ls.container){}
-    List& operator=(const List& ls){
-        container = ls.container;
-        build();
-        return *this;
-    }
-    List& operator=(const List&& ls) noexcept {
-        container = ls.container;
-        build();
-        return *this;
-    }
-    iterator push_back(T val){
-        N++, sz++;
-        container[0].prev = container.back().next = N, container.back().value = val;
-        container.emplace_back(N-1, 0);
-        return iterator(this, N-1);
-    }
-	void build(){
-        N = sz = (int)container.size() - 1;
-        for(int i = 0; i <= N; i++) container[i].prev = i-1, container[i].next = i+1;
-        container[0].prev = N, container[N].next = 0;
-    }
+    const T& operator[](size_t index) const { return container[index].data; }
+    T& operator[](size_t index){ return container[index].data; }
+    size_t size() const { return sz; }
+    bool empty() const { return (size() == 0); }
+    T& front(){ return container[N].next->data; }
+    T& back(){ return container[N].prev->data; }
+    iterator begin(){ return iterator(container[N].next); }
+    iterator end(){ return iterator(&container[N]); }
 };
 
 template<typename T>
 class ListIterator : public std::iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&>{
 private:
     friend List<T>;
-    List<T>* ls_ptr;
-    int index;
+    typename List<T>::block *ls_ptr;
+    using base = std::iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&>;
+    using value_type = typename base::value_type;
+    using pointer = typename base::pointer;
+    using reference = typename base::reference;
 
 private:
-    ListIterator(List<T>* ls, int _index) : ls_ptr(ls), index(_index){}
+    ListIterator(typename List<T>::block *ls) : ls_ptr(ls){}
 
 public:
     ListIterator(){}
-    ListIterator(const ListIterator& itr){
-        ls_ptr = itr.ls_ptr, index = itr.index;
-    }
-    explicit operator int() const noexcept { return index; }
-    ListIterator& operator=(const ListIterator& itr) & {
-        ls_ptr = itr.ls_ptr, index = itr.index;
-        return *this;
-    }
-    ListIterator& operator=(ListIterator&& itr) & noexcept {
-        ls_ptr = itr.ls_ptr, index = itr.index;
-        return *this;
-    }
-    T& operator*() const {
-        return ls_ptr->container[index].value;
-    }
-    T* operator->() const {
-        return &ls_ptr->container[index].value;
-    }
-    ListIterator& operator++(){
-        index = ls_ptr->container[index].next;
-        return *this;
-    }
+    ListIterator(const ListIterator& itr) : ls_ptr(itr.ls_ptr){}
+    ListIterator& operator=(const ListIterator& itr) & { return ls_ptr = itr.ls_ptr, *this; }
+    ListIterator& operator=(ListIterator&& itr) & { return ls_ptr = itr.ls_ptr, *this; }
+    reference operator*() const { return ls_ptr->data; }
+    pointer operator->() const { return &(ls_ptr->data); }
+    ListIterator& operator++(){ return ls_ptr = ls_ptr->next, *this; }
     ListIterator operator++(int){
         ListIterator res = *this;
-        index = ls_ptr->container[index].next;
-        return res;
+        return res.ls_ptr = ls_ptr->next, res;
     }
-    ListIterator& operator--(){
-        index = ls_ptr->container[index].prev;
-        return *this;
-    };
+    ListIterator& operator--(){ return ls_ptr = ls_ptr->prev, *this; }
     ListIterator operator--(int){
         ListIterator res = *this;
-        index = ls_ptr->container[index].prev;
-        return res;
+        return res.ls_ptr = ls_ptr->prev, res;
     };
-    bool operator==(const ListIterator& itr) const {
-        return !(*this != itr);
-    };
-    bool operator!=(const ListIterator& itr) const {
-        return this->ls_ptr != itr.ls_ptr || this->index != itr.index;
-    }
+    bool operator==(const ListIterator& itr) const { return !(*this != itr); };
+    bool operator!=(const ListIterator& itr) const { return ls_ptr != itr.ls_ptr; }
 };
