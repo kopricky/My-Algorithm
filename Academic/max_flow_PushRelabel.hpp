@@ -152,7 +152,7 @@ public:
     vector<vector<edge> > G;
     PushRelabel(const int node_size)
         : V(node_size), pot_max(-1), checker(0), excess(V, (T)0),
-            potential(V), cur_edge(V), que(V), all_ver(V, V), act_ver(V, V), G(V){}
+            potential(V, 0), cur_edge(V), que(V), all_ver(V, V), act_ver(V, V), G(V){}
     void add_edge(const int _from, const int _to, const T _cap){
         G[_from].emplace_back(_to, (int)G[_to].size(), _cap);
         G[_to].emplace_back(_from, (int)G[_from].size() - 1, 0);
