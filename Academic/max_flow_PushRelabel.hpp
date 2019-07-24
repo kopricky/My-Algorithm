@@ -97,6 +97,7 @@ private:
         pot_max = -1;
         for(int i = 0; i < V; ++i){
             if(potential[i] < V){
+                cur_edge[i] = 0;
                 pot_max = (potential[i] > pot_max) ? potential[i] : pot_max;
                 all_ver.insert(potential[i], i);
                 if(excess[i] > 0 && i != t) act_ver.push(potential[i], i);
@@ -121,7 +122,6 @@ private:
                 if(excess[u] == 0) return potential[u];
             }
         }
-        cur_edge[u] = 0;
         return relabel(u);
     }
     void push(const int u, edge& e){
@@ -134,8 +134,12 @@ private:
     int relabel(const int u){
         ++checker;
         int prv = potential[u], cur = V;
-        for(edge& e : G[u]){
-            if(cur > potential[e.to] + 1 && e.cap > 0) cur = potential[e.to] + 1;
+        for(int i = 0; i < (int)G[u].size(); ++i){
+            edge& e = G[u][i];
+            if(cur > potential[e.to] + 1 && e.cap > 0){
+                cur_edge[u] = i;
+                cur = potential[e.to] + 1;
+            }
         }
         if((int)all_ver.size(prv) > 1){
             all_ver.erase(prv, u);
