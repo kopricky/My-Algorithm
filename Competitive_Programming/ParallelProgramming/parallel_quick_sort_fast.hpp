@@ -20,7 +20,7 @@ private:
         static const unsigned max_blockCount = (1 << 15) - 1;
 
     public:
-        unsigned block_size, block_count;
+        const unsigned block_size, block_count;
         std::atomic<unsigned> counter;
         BlockCounter(unsigned length)
             : block_size(std::max((length - 1) / max_blockCount + 1, min_blockSize)),
@@ -207,7 +207,7 @@ RandomAccessIterator ParallelPartitionSolver<RandomAccessIterator, UnaryPredicat
         return std::partition(first, last, func);
     const unsigned block_count = counter.block_count;
     const unsigned block_size = counter.block_size;
-    unsigned workerCount = std::min(std::thread::hardware_concurrency(), block_count / 2);
+    const unsigned workerCount = std::min(std::thread::hardware_concurrency(), block_count / 2);
     std::vector<std::future<ChunkResult> > fut;
     for(unsigned i = 0; i < workerCount; ++i)
     {
