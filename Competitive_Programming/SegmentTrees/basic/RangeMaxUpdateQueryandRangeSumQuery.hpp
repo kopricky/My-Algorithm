@@ -15,16 +15,16 @@ private:
         node[id] = node[2*id+1] + node[2*id+2];
         if(min_val[2*id+1] < min_val[2*id+2]){
             min_val[id] = min_val[2*id+1];
-            second_val[id] = min(second_val[2*id+1],min_val[2*id+2]);
+            second_val[id] = min(second_val[2*id+1], min_val[2*id+2]);
             count[id] = count[2*id+1];
         }else if(min_val[2*id+1] > min_val[2*id+2]){
             min_val[id] = min_val[2*id+2];
-            second_val[id] = min(min_val[2*id+1],second_val[2*id+2]);
+            second_val[id] = min(min_val[2*id+1], second_val[2*id+2]);
             count[id] = count[2*id+2];
         }else{
             min_val[id] = min_val[2*id+1];
-            second_val[id] = min(second_val[2*id+1],second_val[2*id+2]);
-            count[id] = count[2*id+1]+count[2*id+2];
+            second_val[id] = min(second_val[2*id+1], second_val[2*id+2]);
+            count[id] = count[2*id+1] + count[2*id+2];
         }
     }
 public:
@@ -32,10 +32,10 @@ public:
         while(n < sz) n *= 2;
         node.resize(2*n-1, 0);
         lazy.resize(2*n-1, 0);
-        lazyFlag.resize(2*n-1,false);
-        min_val.resize(2*n-1,numeric_limits<T>::max());
-        second_val.resize(2*n-1,numeric_limits<T>::max());
-        count.resize(2*n-1,1);
+        lazyFlag.resize(2*n-1, false);
+        min_val.resize(2*n-1, numeric_limits<T>::max());
+        second_val.resize(2*n-1, numeric_limits<T>::max());
+        count.resize(2*n-1, 1);
         for(int i = 0; i < sz; i++){
             node[i+n-1] = min_val[i+n-1] = v[i];
         }
