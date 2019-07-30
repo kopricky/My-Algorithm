@@ -1,7 +1,5 @@
 #include "header.hpp"
 
-//実装が雑なので速くない
-//ヒューリスティックにより高速化可能
 //O(n^2 m^(1/2)) Goldberg and Tarjan 1988 を参照(動的木により計算量は改善可能)
 class Stack {
 private:
@@ -9,8 +7,8 @@ private:
     vector<int> node;
 public:
     Stack(const int _N, const int _H) : N(_N), H(_H), node(N+H){ clear(); }
-    inline bool empty(const int h){ return node[N+h] == N+h; }
-    inline int top(const int h){ return node[N+h]; }
+    inline bool empty(const int h) const { return node[N+h] == N+h; }
+    inline int top(const int h) const { return node[N+h]; }
     inline void pop(const int h){ node[N+h] = node[node[N+h]]; }
     inline void push(const int h, const int u){ node[u] = node[N+h], node[N+h] = u; }
     inline void clear(){ iota(node.begin() + N, node.end(), N); }
@@ -46,9 +44,9 @@ template <typename T> class PushRelabel
 {
 public:
     struct edge {
-        int to, rev;
+        const int to, rev;
         T cap;
-        edge(int _to, int _rev, T _cap) : to(_to), rev(_rev), cap(_cap){}
+        edge(const int _to, const int _rev, T _cap) : to(_to), rev(_rev), cap(_cap){}
     };
 private:
     const int V;
@@ -77,7 +75,7 @@ private:
         int qh = 0, qt = 0;
         for(que[qt++] = t; qh++ < qt;){
             int u = que[qh-1];
-            for(edge& e : G[u]){
+            for(const edge& e : G[u]){
                 if(potential[e.to] == V && G[e.to][e.rev].cap > 0){
                     potential[e.to] = potential[u] + 1, que[qt++] = e.to;
                 }
@@ -130,7 +128,7 @@ private:
         ++checker;
         int prv = potential[u], cur = V;
         for(int i = 0; i < (int)G[u].size(); ++i){
-            edge& e = G[u][i];
+            const edge& e = G[u][i];
             if(cur > potential[e.to] + 1 && e.cap > 0){
                 cur_edge[u] = i;
                 cur = potential[e.to] + 1;
