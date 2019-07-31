@@ -46,7 +46,7 @@ public:
     struct edge {
         const int to, rev;
         T cap;
-        edge(const int _to, const int _rev, T _cap) : to(_to), rev(_rev), cap(_cap){}
+        edge(const int _to, const int _rev, const T _cap) : to(_to), rev(_rev), cap(_cap){}
     };
 private:
     const int V;
