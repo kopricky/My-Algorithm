@@ -8,7 +8,6 @@ private:
     const UnaryPredicate func;
     const unsigned length;
     const unsigned THRESHOLD;
-    enum Update {Left, Right, Both};
 
     class BlockCounter
     {
@@ -55,7 +54,7 @@ private:
     BlockCounter counter;
     std::vector<ChunkResult> remain;
 
-    auto arrange_blocks
+    int arrange_blocks
         (RandomAccessIterator& leftFrom, const RandomAccessIterator leftTo, RandomAccessIterator& rightFrom, const RandomAccessIterator rightTo);
     auto arrange_chunk(const unsigned index);
     inline void swapBlocks(RandomAccessIterator from, RandomAccessIterator to, const int blockSize);
@@ -70,7 +69,7 @@ public:
 };
 
 template<typename RandomAccessIterator, class UnaryPredicate>
-auto ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_blocks
+int ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_blocks
     (RandomAccessIterator& leftFrom, const RandomAccessIterator leftTo, RandomAccessIterator& rightFrom, const RandomAccessIterator rightTo)
 {
     while(leftFrom < leftTo && rightFrom < rightTo)
@@ -83,10 +82,10 @@ auto ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_bloc
         ++leftFrom, ++rightFrom;
     }
     if(leftFrom == leftTo && rightFrom == rightTo)
-        return Both;
+        return 0;
     if(leftFrom == leftTo)
-        return Left;
-    return Right;
+        return -1;
+    return 1;
 }
 
 template<typename RandomAccessIterator, class UnaryPredicate>
@@ -97,10 +96,10 @@ auto ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_chun
     RandomAccessIterator leftFrom, rightFrom;
     RandomAccessIterator leftTo = leftFrom, rightTo = rightFrom;
     unsigned block_size = counter.block_size;
-    Update result = Both;
+    int result = 0;
     while(true)
     {
-        if(result == Left || result == Both)
+        if(result <= 0)
         {
             localLeftMost = leftBlock;
             if(!counter.get_left_block(leftBlock))
@@ -108,7 +107,7 @@ auto ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_chun
             leftFrom = first + leftBlock * block_size;
             leftTo = leftFrom + block_size;
         }
-        if(result == Right || result == Both)
+        if(result >= 0)
         {
             localRightMost = rightBlock;
             if(!counter.get_right_block(rightBlock))
