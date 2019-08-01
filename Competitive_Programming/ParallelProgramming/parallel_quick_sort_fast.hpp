@@ -8,7 +8,7 @@ private:
     const UnaryPredicate func;
     const unsigned length;
     const unsigned THRESHOLD;
-    enum Process {Left, Right, Both};
+    enum Update {Left, Right, Both};
 
     class BlockCounter
     {
@@ -97,7 +97,7 @@ auto ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_chun
     RandomAccessIterator leftFrom, rightFrom;
     RandomAccessIterator leftTo = leftFrom, rightTo = rightFrom;
     unsigned block_size = counter.block_size;
-    Process result = Both;
+    Update result = Both;
     while(true)
     {
         if(result == Left || result == Both)
