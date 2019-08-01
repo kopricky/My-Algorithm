@@ -1,4 +1,5 @@
-#include "../parallel_quick_sort_fast.hpp"
+// #include "../parallel_quick_sort_fast.hpp"
+#include "../parallel_quick_sort.hpp"
 
 using namespace std;
 
