@@ -6,7 +6,7 @@ private:
     const BidirectionalIterator first, last;
     const Compare comp;
     std::mt19937 mt;
-    static const unsigned long THRESHOLD = 15000;
+    static const unsigned long THRESHOLD = (1u << 14);
     void parallel_partial_sort(const BidirectionalIterator _first, const BidirectionalIterator _last);
 
 public:

@@ -12,11 +12,11 @@ private:
     class BlockCounter
     {
     private:
-        static const unsigned leftBlock = 1 << 16;
-        static const unsigned rightBlock = 1;
-        static const unsigned mask = leftBlock - 1;
-        static const unsigned min_blockSize = 1024;
-        static const unsigned max_blockCount = (1 << 15) - 1;
+        const unsigned leftBlock = 1 << 16;
+        const unsigned rightBlock = 1;
+        const unsigned mask = leftBlock - 1;
+        const unsigned min_blockSize = 1024;
+        const unsigned max_blockCount = (1 << 15) - 1;
 
     public:
         const unsigned block_size, block_count;
@@ -231,7 +231,7 @@ RandomAccessIterator parallel_partition
 }
 
 template<typename T>
-class ThreadSafeQueue
+class ThreadsafeQueue
 {
 private:
     class Node
@@ -245,6 +245,7 @@ private:
     std::mutex tail_mutex;
     Node* tail;
     std::condition_variable data_cond;
+    std::atomic<bool> complete;
 
     Node* get_tail()
     {
@@ -258,7 +259,7 @@ private:
     }
 
 public:
-    ThreadSafeQueue() : head(new Node), tail(head.get()){}
+    ThreadsafeQueue() : head(new Node), tail(head.get()), complete(false){}
     void push(const T new_value)
     {
         std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
@@ -272,27 +273,40 @@ public:
         }
         data_cond.notify_one();
     }
-    bool wait_and_pop(T& value, std::atomic<unsigned>& num, std::atomic<bool>& state)
+    bool wait_and_pop(T& value, std::atomic<unsigned>& num)
     {
         std::unique_lock<std::mutex> head_lock(head_mutex);
+        if(locked_empty() && num.load(std::memory_order_acquire) == 0)
+        {
+            finish();
+            return false;
+        }
         bool check;
         data_cond.wait(head_lock, [&]
         {
-            return (check = (head.get() != get_tail())) || (num.load(std::memory_order_acquire) == 0);
+            return (check = !locked_empty()) || (num.load(std::memory_order_acquire) == 0);
         });
         if(!check)
         {
-            if(!state.load(std::memory_order_acquire))
-            {
-                state.store(true, std::memory_order_release);
-                data_cond.notify_all();
-            }
+            finish();
             return false;
         }
         num.fetch_add(1, std::memory_order_acq_rel);
         value = std::move(*head->data);
         pop_head();
         return true;
+    }
+    void finish()
+    {
+        if(!complete.load(std::memory_order_acquire))
+        {
+            complete.store(true, std::memory_order_release);
+            data_cond.notify_all();
+        }
+    }
+    bool locked_empty()
+    {
+        return (head.get() == get_tail());
     }
 };
 
@@ -301,10 +315,9 @@ class ParallelQuickSortSolver {
 private:
     const RandomAccessIterator first, last;
     const Compare comp;
-    ThreadSafeQueue<std::pair<RandomAccessIterator, RandomAccessIterator> > task_queue;
+    ThreadsafeQueue<std::pair<RandomAccessIterator, RandomAccessIterator> > task_queue;
     std::mt19937 mt;
     std::atomic<unsigned> actthread_num;
-    std::atomic<bool> finish;
     const unsigned total_length;
     const unsigned THRESHOLD;
 
@@ -314,7 +327,7 @@ private:
 public:
     ParallelQuickSortSolver(const RandomAccessIterator _first, const RandomAccessIterator _last, const Compare _comp)
         : first(_first), last(_last), comp(_comp), task_queue(), mt(std::random_device{}()),
-            actthread_num(0), finish(false), total_length(std::distance(first, last)), THRESHOLD(total_length / 200)
+            actthread_num(0), total_length(std::distance(first, last)), THRESHOLD(std::max(total_length / 200, (1u << 14)))
     {
         task_queue.push(std::make_pair(first, last));
     }
@@ -325,7 +338,7 @@ template<typename RandomAccessIterator, class Compare>
 void ParallelQuickSortSolver<RandomAccessIterator, Compare>::getTask_and_run()
 {
     std::pair<RandomAccessIterator, RandomAccessIterator> task;
-    while(finish.load(std::memory_order_acquire) || task_queue.wait_and_pop(task, actthread_num, finish))
+    while(task_queue.wait_and_pop(task, actthread_num))
     {
         parallel_partial_sort(task.first, task.second);
     }
@@ -346,7 +359,8 @@ void ParallelQuickSortSolver<RandomAccessIterator, Compare>::parallel_partial_so
     const RandomAccessIterator pivot_itr = std::next(_first, uid(mt));
     const auto pivot = *pivot_itr;
     std::iter_swap(_first, pivot_itr);
-    const RandomAccessIterator middle = parallel_partition(_first + 1, _last, std::bind(comp, std::placeholders::_1, std::cref(pivot)), total_length / 4);
+    const RandomAccessIterator middle
+        = parallel_partition(_first + 1, _last, std::bind(comp, std::placeholders::_1, std::cref(pivot)), std::max(total_length / 4, (1u << 17)));
     std::iter_swap(_first, middle - 1);
     task_queue.push(std::make_pair(_first, middle - 1));
     parallel_partial_sort(middle, _last);
@@ -356,15 +370,14 @@ template<typename RandomAccessIterator, class Compare>
 void ParallelQuickSortSolver<RandomAccessIterator, Compare>::operator()()
 {
     const unsigned hardware_threads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
-    for(unsigned i = 0; i < hardware_threads-1; ++i)
+    std::vector<std::future<void> > fut;
+    for(unsigned i = 0; i < hardware_threads; ++i)
     {
-        threads.push_back(std::thread(&ParallelQuickSortSolver<RandomAccessIterator, Compare>::getTask_and_run, this));
+        fut.push_back(std::async(&ParallelQuickSortSolver<RandomAccessIterator, Compare>::getTask_and_run, this));
     }
-    getTask_and_run();
-    for(auto& entry : threads)
+    for(auto& entry : fut)
     {
-        entry.join();
+        entry.get();
     }
 }
 

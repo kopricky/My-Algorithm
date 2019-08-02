@@ -1,4 +1,5 @@
-#include "../parallel_accumulate.hpp"
+// #include "../parallel_accumulate.hpp"
+#include "../exception-safe_parallel_accumulate.hpp"
 #include <cassert>
 
 using namespace std;
