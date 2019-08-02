@@ -30,7 +30,10 @@ private:
     std::unique_lock<std::mutex> wait_for_data()
     {
         std::unique_lock<std::mutex> head_lock(head_mutex);
-        data_cond.wait(head_lock, [&]{ return head.get() != get_tail(); });
+        data_cond.wait(head_lock, [&]
+        {
+            return head.get() != get_tail();
+        });
         return std::move(head_lock);
     }
     std::unique_ptr<Node> try_pop_head()

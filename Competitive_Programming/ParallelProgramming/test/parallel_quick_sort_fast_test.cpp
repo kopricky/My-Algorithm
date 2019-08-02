@@ -1,5 +1,5 @@
-// #include "../parallel_quick_sort_fast.hpp"
-#include "../parallel_quick_sort.hpp"
+#include "../parallel_quick_sort_fast.hpp"
+// #include "../parallel_quick_sort.hpp"
 
 using namespace std;
 
@@ -8,7 +8,8 @@ int main()
     int n = 100000000;
     vector<int> vec1(n), vec2;
     iota(vec1.begin(), vec1.end(), 0);
-    shuffle(vec1.begin(), vec1.end(), mt19937(1));
+    reverse(vec1.begin(), vec1.end());
+    // shuffle(vec1.begin(), vec1.end(), mt19937(1));
     vec2 = vec1;
     SW sw1, sw2;
     sw1.start();
