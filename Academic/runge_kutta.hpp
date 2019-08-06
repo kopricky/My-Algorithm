@@ -1,68 +1,25 @@
 #include "header.hpp"
 
-using namespace std;
-
-const int sz = 2;
-const int cnt_limit = 10000;
-const double dt = 5;
-
-array<double, sz> operator+(const array<double, sz>& arg1, const array<double, sz>& arg2)
+double f(double t, double y)
 {
-    array<double, sz> res;
-    for(int i = 0; i < sz; i++){
-        res[i] = arg1[i] + arg2[i];
-    }
-    return res;
+    return y * cos(t);
 }
 
-array<double, sz> operator*(const array<double, sz>& arg1, const double arg2)
+pair<double, double> proceed(double t, double y, double h)
 {
-    array<double, sz> res;
-    for(int i = 0; i < sz; i++){
-        res[i] = arg1[i] * arg2;
-    }
-    return res;
+    double k1 = f(t, y);
+    double k2 = f(t + h / 2, y + h / 2 * k1);
+    double k3 = f(t + h / 2, y + h / 2 * k2);
+    double k4 = f(t + h, y + h * k3);
+    return make_pair(t + h, y + h * (k1 + 2 * (k2 + k3) + k4) / 6);
 }
 
-array<double, sz> operator/(const array<double, sz>& arg1, const double arg2)
+vector<pair<double, double> > runge_kutta(double t0, double y0, double h, double n)
 {
-    array<double, sz> res;
-    for(int i = 0; i < sz; i++){
-        res[i] = arg1[i] / arg2;
+    vector<pair<double, double> > result(n + 1);
+    result[0] = {t0, y0};
+    for(int i = 1; i <= n; ++i){
+        result[i] = proceed(result[i-1].first, result[i-1].second, h);
     }
-    return res;
-}
-
-
-void df(array<double, sz>& x, array<double, sz>& res)
-{
-    res[0] = -pow(x[0],3)-pow(x[1],3),res[1] = x[0]-pow(x[1],5);
-}
-
-void runge_kutta(array<double, sz>& st_pos, array<double, sz>& ed_pos)
-{
-    array<array<double, sz>, 5> tilt;
-    df(st_pos, tilt[0]);
-    array<double, sz> nx_pos1 = st_pos + tilt[0] * (0.5*dt);
-    df(nx_pos1, tilt[1]);
-    array<double, sz> nx_pos2 = st_pos + tilt[1] * (0.5*dt);
-    df(nx_pos2, tilt[2]);
-    array<double, sz> nx_pos3 = st_pos + tilt[2] * dt;
-    df(nx_pos3, tilt[3]);
-    tilt[4] = (tilt[0] + tilt[1]*2.0 + tilt[2]*2.0 + tilt[3]) / 6.0;
-    ed_pos = st_pos + tilt[4] * dt;
-}
-
-int main()
-{
-    array<double, sz> input;
-    for(int i = 0; i < sz; i++){
-        cin >> input[i];
-    }
-    for(int i = 0; i <= cnt_limit; i++){
-        array<double, sz> output;
-        cout << input[0] << " " << input[1] << "\n";
-        runge_kutta(input, output);
-        input = output;
-    }
+    return result;
 }
