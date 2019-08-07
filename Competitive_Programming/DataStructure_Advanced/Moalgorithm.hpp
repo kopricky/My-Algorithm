@@ -14,24 +14,24 @@ int res;        //区間内の種類の数
 class Mo{
 private:
     vector<int> left, right;
-    int w;
-    void add(int id);
-    void del(int id);
+    const int w;
+    void add(const int id);
+    void del(const int id);
 
 public:
     vector<int> ans;
 
-    Mo(int n) : w((int)sqrt(n)){}
+    Mo(const int n) : w((int)sqrt(n)){}
     //クエリ[l, r)
-    void insert(int l, int r){
+    void insert(const int l, const int r){
         left.push_back(l), right.push_back(r);
     }
     void solve(){
-        int sz = (int)left.size();
+        const int sz = (int)left.size();
         int nl = 0, nr = 0;
         vector<int> ord(sz);
         iota(ord.begin(), ord.end(), 0);
-        sort(ord.begin(), ord.end(), [&](int a, int b){
+        sort(ord.begin(), ord.end(), [&](const int a, const int b){
             const int c = left[a] / w, d = left[b] / w;
             return (c == d) ? ((c & 1) ? (right[a] < right[b]) : (right[b] < right[a])) : (c < d);
         });
@@ -48,7 +48,7 @@ public:
 };
 
 //idは元の配列のインデックス
-void Mo::add(int id)
+void Mo::add(const int id)
 {
     if(cnt[a[id]] == 0){
         cnt[a[id]]++;
@@ -56,7 +56,7 @@ void Mo::add(int id)
     }
 }
 
-void Mo::del(int id)
+void Mo::del(const int id)
 {
     if(cnt[a[id]] == 1){
         cnt[a[id]]--;
