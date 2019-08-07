@@ -32,7 +32,8 @@ public:
         vector<int> ord(sz);
         iota(ord.begin(), ord.end(), 0);
         sort(ord.begin(), ord.end(), [&](int a, int b){
-            return (left[a] / w == left[b] / w) ? (right[a] < right[b]) : (left[a] < left[b]);
+            const int c = left[a] / w, d = left[b] / w;
+            return (c == d) ? ((c & 1) ? (right[a] < right[b]) : (right[b] < right[a])) : (c < d);
         });
         ans.resize(sz);
         for(int i = 0; i < sz; i++){
