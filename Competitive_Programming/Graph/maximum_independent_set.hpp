@@ -135,8 +135,8 @@ private:
     LL not_use_ver;
 
     int get_first_element(LL num){
-        int x = __builtin_ffsll(num & (((LL)1 << 64) - 1));
-        int y = __builtin_ffsll((num >> 64) & (((LL)1 << 64) - 1));
+        int x = __builtin_ffsll(num & 0xffffffffffffffff);
+        int y = __builtin_ffsll((num >> 64) & 0xffffffffffffffff);
         return x ? (x - 1) : (y + 63);
     }
     bool finish(){
