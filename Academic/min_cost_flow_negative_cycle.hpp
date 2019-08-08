@@ -1,5 +1,8 @@
 #include "./header.hpp"
 
+// 負の有向閉路が存在する場合の最小費用流問題を解くアルゴリズム.
+// 計算量 O(min(m^2 n^2 log(n cap_min), m^3 n^2 log n)
+
 template<class edge> class Dinic {
 private:
     using Cat = decltype(edge::cap);
