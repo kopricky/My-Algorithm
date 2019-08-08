@@ -4,7 +4,6 @@
 // add,del を変更していろいろなクエリに対応する
 // 以下は区間内の数の種類数についてのクエリが飛んでくる場合
 
-
 //現在の状態および値
 const int MAX_VAL = 30000;
 int a[MAX_VAL]; //要素
@@ -14,15 +13,15 @@ int res;        //区間内の種類の数
 class Mo{
 private:
     vector<int> left, right;
-    const int w;
+    const int width;
     void add(const int id);
     void del(const int id);
 
 public:
     vector<int> ans;
 
-    Mo(const int n) : w((int)sqrt(n)){}
-    //クエリ[l, r)
+    Mo(const int n) : width((int)sqrt(n)){}
+    //クエリ[l,r)
     void insert(const int l, const int r){
         left.push_back(l), right.push_back(r);
     }
@@ -32,12 +31,11 @@ public:
         vector<int> ord(sz);
         iota(ord.begin(), ord.end(), 0);
         sort(ord.begin(), ord.end(), [&](const int a, const int b){
-            const int c = left[a] / w, d = left[b] / w;
-            return (c == d) ? ((c & 1) ? (right[a] < right[b]) : (right[b] < right[a])) : (c < d);
+            const int c = left[a] / width, d = left[b] / width;
+            return (c == d) ? ((c & 1) ? (right[b] < right[a]) : (right[a] < right[b])) : (c < d);
         });
         ans.resize(sz);
-        for(int i = 0; i < sz; i++){
-            const int id = ord[i];  //order:クエリのsort後のorder→元のorder
+        for(const int id : ord){
             while(nl > left[id]) add(--nl);
             while(nr < right[id]) add(nr++);  //add
             while(nl < left[id]) del(nl++);
