@@ -5,7 +5,7 @@
 //min_cost_flow<int> mcf(n);
 //適宜add_edge
 //mcf.solve(始点,終点,流量)で最小費用流を計算
-template<typename CapType, typename CostType> class min_cost_flow_DAG {
+template<typename CapType, typename CostType> class MinCostFlowDAG {
 public:
     using Cat = CapType;
     using Cot = CostType;
@@ -13,12 +13,12 @@ public:
     struct edge {
         int to; Cat cap; Cot cost; int rev; bool is_for;
     };
-    int V;
-    Cot inf;
+    const int V;
+    const Cot inf;
     vector<vector<edge> > G;
-    vector<CostType> h, dist;
+    vector<Cot> h, dist;
     vector<int> deg, ord, prevv, preve;
-    min_cost_flow_DAG(int node_size) : V(node_size), inf(numeric_limits<Cot>::max() / 4),
+    MinCostFlowDAG(int node_size) : V(node_size), inf(numeric_limits<Cot>::max() / 4),
         G(V), h(V, inf), dist(V), deg(V, 0), prevv(V), preve(V){}
     void add_edge(int from, int to, Cat cap, Cot cost){
         G[from].push_back((edge){to, cap, cost, (int)G[to].size(), true});

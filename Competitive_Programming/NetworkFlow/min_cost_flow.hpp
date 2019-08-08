@@ -2,42 +2,40 @@
 
 //負の辺が存在しない場合の最小費用流(Dijkstraでポテンシャルを計算可能)
 //最小費用がint,頂点数がn
-//min_cost_flow<int> mcf(n);
+//MinCostFlow<int> mcf(n);
 //適宜add_edge
 //mcf.solve(始点,終点,流量)で最小費用流を計算
-template<typename T> class min_cost_flow {
+template<typename CapType, typename CostType> class MinCostFlow {
 public:
+    using Cat = CapType;
+    using Cot = CostType;
+    using pti = pair<Cot, int>;
     struct edge {
-        int to,cap;
-        T cost;
-        int rev;
+        int to; Cat cap; Cot cost; int rev;
     };
-    using pti = pair<T,int>;
-    int V;
-    T inf;
+    const int V;
+    const Cot inf;
     vector<vector<edge> > G;
-    vector<T> h,dist;
-    vector<int> prevv,preve;
-    min_cost_flow(int node_size) : V(node_size), inf(numeric_limits<T>::max() / 4),
+    vector<Cot> h, dist;
+    vector<int> prevv, preve;
+    MinCostFlow(int node_size) : V(node_size), inf(numeric_limits<Cot>::max() / 4),
         G(V), h(V, 0), dist(V), prevv(V), preve(V){}
-    void add_edge(int from, int to, int cap, T cost){
+    void add_edge(int from, int to, Cat cap, Cot cost){
         G[from].push_back((edge){to, cap, cost, (int)G[to].size()});
         G[to].push_back((edge){from, 0, -cost, (int)G[from].size() - 1});
     }
-    T solve(int s,int t,int f){
-        T res = 0;
+    Cot solve(int s, int t, Cat f){
+        Cot res = 0;
         while(f > 0){
             priority_queue<pti,vector<pti>,greater<pti> > que;
-            fill(dist.begin(),dist.end(),inf);
+            fill(dist.begin(), dist.end(), inf);
             dist[s] = 0;
-            que.push(pti(0,s));
+            que.push(pti(0, s));
             while(!que.empty()){
                 pti p = que.top();
                 que.pop();
                 int v = p.second;
-                if(dist[v] < p.first){
-                    continue;
-                }
+                if(dist[v] < p.first) continue;
                 for(int i = 0; i < (int)G[v].size(); i++){
                     edge& e = G[v][i];
                     if(e.cap > 0 && dist[e.to] > dist[v] + e.cost + h[v] - h[e.to]){
@@ -47,9 +45,7 @@ public:
                     }
                 }
             }
-            if(dist[t] == inf){
-                return -1;
-            }
+            if(dist[t] == inf) return -1;
             for(int i = 0; i < V; i++){
                 h[i] += dist[i];
             }
