@@ -179,17 +179,15 @@ public:
 };
 
 template<typename _Key, typename _Tp>
-class MapIterator
-    : public std::iterator<bidirectional_iterator_tag, pair<const _Key, _Tp>,
-        ptrdiff_t, pair<const _Key, _Tp>*, pair<const _Key, _Tp>&> {
+class MapIterator {
 private:
     friend Map<_Key, _Tp>;
     typename Map<_Key, _Tp>::node *map_ptr;
-    using base = std::iterator<bidirectional_iterator_tag, pair<const _Key, _Tp>,
-        ptrdiff_t, pair<const _Key, _Tp>*, pair<const _Key, _Tp>&>;
-    using value_type = typename base::value_type;
-    using pointer = typename base::pointer;
-    using reference = typename base::reference;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = pair<const _Key, _Tp>;
+    using difference_type = pair<const _Key, _Tp>;
+    using pointer = pair<const _Key, _Tp>*;
+    using reference = pair<const _Key, _Tp>&;
 
 private:
     MapIterator(typename Map<_Key, _Tp>::node *mp) noexcept : map_ptr(mp){}

@@ -75,14 +75,15 @@ public:
 };
 
 template<typename T>
-class ListIterator : public std::iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&>{
+class ListIterator {
 private:
     friend List<T>;
     typename List<T>::block *ls_ptr;
-    using base = std::iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&>;
-    using value_type = typename base::value_type;
-    using pointer = typename base::pointer;
-    using reference = typename base::reference;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = T;
+    using difference_type = T;
+    using pointer = T*;
+    using reference = T&;
 
 private:
     ListIterator(typename List<T>::block *ls) : ls_ptr(ls){}
