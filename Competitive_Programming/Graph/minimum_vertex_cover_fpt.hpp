@@ -5,188 +5,111 @@
 
 template<typename T> class ListIterator;
 
-// 常に不変なイテレーターが欲しい場合に使う
 template<typename T>
 class List {
 public:
     using iterator = ListIterator<T>;
-    
+
 private:
-    int N, sz;
-    vector<int> prev, next;
-    vector<T> container;
+    struct block {
+        block *prev, *next;
+        T data;
+        block() : prev(this), next(this){}
+        block(T _data) : prev(this), next(this), data(_data){}
+        block(block *_prev, block *_next) : prev(_prev), next(_next){}
+    };
+    int N;
+    size_t sz;
+    vector<block> container;
     friend ListIterator<T>;
-    
-public:
-    // 添字 next_index の要素の前に添字 now_index の要素を挿入
-    iterator insert(int next_index, int now_index){
-        sz++;
-        prev[now_index] = prev[next_index], next[now_index] = next_index;
-        next[prev[next_index]] = now_index, prev[next_index] = now_index;
-        return iterator(this, now_index);
+    // cur を nx の前に挿入
+    iterator insert(block* const nx, block* const cur){
+        ++sz;
+        cur->prev = nx->prev, cur->next = nx;
+        nx->prev->next = cur, nx->prev = cur;
+        return iterator(cur);
     }
-    // 添字 index の値を削除 → 次の要素の iterator を返す
-    iterator erase(int index){
-        sz--;
-        next[prev[index]] = next[index], prev[next[index]] = prev[index];
-        return iterator(this, next[index]);
+    // cur を削除
+    iterator erase(block* const cur){
+        --sz;
+        cur->prev->next = cur->next, cur->next->prev = cur->prev;
+        return iterator(cur->next);
     }
-	
+
 public:
-    friend ostream& operator<< (ostream& os, List& ls){
-        for(auto& val : ls){
-            os << val << ' ';
+    iterator insert(const iterator nx, const iterator cur){ return insert(nx.ls_ptr, cur.ls_ptr); }
+    iterator insert(const iterator nx, int cur_index){ return insert(nx.ls_ptr, &container[cur_index]); }
+    iterator insert(int next_index, int cur_index){ return iterator(&container[next_index], &container[cur_index]); }
+    iterator erase(const iterator cur){ return erase(cur.ls_ptr); }
+    iterator erase(int cur_index){ return erase(&container[cur_index]); }
+
+public:
+    List() : N(0), sz(0){}
+    List(int _N) : N(_N), sz(N), container(_N+1){}
+    List(const vector<T>& _data) : List((int)_data.size()){ build(_data); }
+    List(const List& ls) : N(ls.N), sz(ls.sz), container(ls.container){}
+    void build(const vector<T>& _data){
+        for(int i = 0; i <= N; i++){
+            container[i].prev = &container[(i+N)%(N+1)];
+            container[i].next = &container[(i+1)%(N+1)];
+            if(i < N) container[i].data = _data[i];
         }
+    }
+    void push_back(const T _data){ ++N, ++sz, container.push_back(_data); }
+    void build(){
+        container.push_back(T());
+        for(int i = 0; i <= N; i++){
+            container[i].prev = &container[(i+N)%(N+1)];
+            container[i].next = &container[(i+1)%(N+1)];
+        }
+    }
+    friend ostream& operator<< (ostream& os, List& ls){
+        for(auto& val : ls) os << val << ' ';
         return os;
     }
-    const T& operator[](size_t index) const {
-        return container[index];
-    }
-    T& operator[](size_t index){
-        return container[index];
-    }
-    size_t size(){
-        return sz;
-    }
-    bool empty(){
-        return size() == 0;
-    }
-    T& front(){
-        return container[next[N]];
-    }
-    T& back(){
-        return container[prev[N]];
-    }
-    iterator begin(){
-        return iterator(this, next[N]);
-    }
-    iterator end(){
-        return iterator(this, N);
-    }
-    iterator insert(const iterator& itr, int index){
-        return insert(itr.index, index);
-    }
-    iterator erase(const iterator& itr){
-        return erase(itr.index);
-    }
-    iterator push_back(){
-        return insert(N, prev[N]+1);
-    }
-    void pop_back(){
-        erase(prev[N]);
-    }
-    void index_clear(){
-        N = sz = 0, prev = next = {0};
-    }
-    void clear(){
-        index_clear();
-        container.clear();
-    }
-	
-public:
-    List() : N(0), sz(0), prev({0}), next({0}){}
-    List(int _N) : container(_N){
-        build();
-    }
-    List(int _N, T val) : container(_N, val){
-        build();
-    }
-    List(const List& ls):
-        N(ls.N), sz(ls.sz), prev(ls.prev), next(ls.next), container(ls.container){}
-    List(const vector<T>& vec) : container(vec){
-        build();
-    }
-    List& operator=(const List& ls){
-        container = ls.container;
-        build();
-        return *this;
-    }
-    List& operator=(const vector<T>& vec){
-        container = vec;
-        build();
-        return *this;
-    }
-    List& operator=(const List&& ls) noexcept {
-        container = ls.container;
-        build();
-        return *this;
-    }
-    List(initializer_list<T> vals) : container(vals.begin(), vals.end()){
-        build();
-    }
-    iterator push_back(T val){
-        N++, sz++;
-        prev.push_back(N-1), prev[0] = N;
-        next.back() = N, next.push_back(0);
-        container.push_back(val);
-        return iterator(this, N-1);
-    }
-	void build(){
-        N = sz = (int)container.size();
-        prev.resize(N+1), next.resize(N+1);
-        iota(prev.begin(), prev.end(), -1), iota(next.begin(), next.end(), 1);
-        prev[0] = N, next[N] = 0;
-    }
+    const T& operator[](size_t index) const { return container[index].data; }
+    T& operator[](size_t index){ return container[index].data; }
+    size_t size() const { return sz; }
+    bool empty() const { return (size() == 0); }
+    T& front(){ return container[N].next->data; }
+    T& back(){ return container[N].prev->data; }
+    iterator begin(){ return iterator(container[N].next); }
+    iterator end(){ return iterator(&container[N]); }
 };
 
 template<typename T>
-class ListIterator : public std::iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&>{
+class ListIterator {
 private:
     friend List<T>;
-    List<T>* ls_ptr;
-    int index;
+    typename List<T>::block *ls_ptr;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T*;
+    using reference = T&;
 
 private:
-    ListIterator(List<T>* ls, int _index) : ls_ptr(ls), index(_index){}
-	
+    ListIterator(typename List<T>::block *ls) : ls_ptr(ls){}
+
 public:
     ListIterator(){}
-    ListIterator(const ListIterator& itr){
-        ls_ptr = itr.ls_ptr, index = itr.index;
-    }
-    operator int() const noexcept { return index; }
-    ListIterator& operator=(const ListIterator& itr) & {
-        ls_ptr = itr.ls_ptr, index = itr.index;
-        return *this;
-    }
-    ListIterator& operator=(ListIterator&& itr) & noexcept {
-        ls_ptr = itr.ls_ptr, index = itr.index;
-        return *this;
-    }
-    T& operator*() const {
-        return ls_ptr->container[index];
-    }
-    T* operator->() const {
-        return &ls_ptr->container[index];
-    }
-    ListIterator& operator++(){
-        index = ls_ptr->next[index];
-        return *this;
-    }
+    ListIterator(const ListIterator& itr) : ls_ptr(itr.ls_ptr){}
+    ListIterator& operator=(const ListIterator& itr) & { return ls_ptr = itr.ls_ptr, *this; }
+    ListIterator& operator=(ListIterator&& itr) & { return ls_ptr = itr.ls_ptr, *this; }
+    reference operator*() const { return ls_ptr->data; }
+    pointer operator->() const { return &(ls_ptr->data); }
+    ListIterator& operator++(){ return ls_ptr = ls_ptr->next, *this; }
     ListIterator operator++(int){
         ListIterator res = *this;
-        index = ls_ptr->next[index];
-        return res;
+        return res.ls_ptr = ls_ptr->next, res;
     }
-    ListIterator& operator--(){
-        index = ls_ptr->prev[index];
-        return *this;
-    };
+    ListIterator& operator--(){ return ls_ptr = ls_ptr->prev, *this; }
     ListIterator operator--(int){
         ListIterator res = *this;
-        index = ls_ptr->prev[index];
-        return res;
+        return res.ls_ptr = ls_ptr->prev, res;
     };
-    bool operator==(const ListIterator& itr) const {
-        return !(*this != itr);
-    };
-    bool operator!=(const ListIterator& itr) const {
-        return this->ls_ptr != itr.ls_ptr || this->index != itr.index;
-    }
-    friend void swap(const ListIterator<T>& itr1, const ListIterator<T>& itr2){
-        ListIterator<T> tmp = itr1;
-        itr1 = itr2, itr2 = itr1;
-    };
+    bool operator==(const ListIterator& itr) const { return !(*this != itr); };
+    bool operator!=(const ListIterator& itr) const { return ls_ptr != itr.ls_ptr; }
 };
 
 // 多重辺はなし
@@ -196,9 +119,9 @@ private:
         int to, rev;
     };
     struct info {
-        // from から to 番目に出ている辺が(を) next の前から消えた(に入れる)
-        int from, to, next;
-        info(int ag1, int ag2, int ag3) : 
+        int from, to;
+        List<edge>::iterator next;
+        info(int ag1, int ag2, List<edge>::iterator ag3) :
             from(ag1), to(ag2), next(ag3){}
     };
     int V, rem_edge_size, fp_size;
@@ -207,13 +130,13 @@ private:
     vector<int> cand, deg;
     vector<vector<info> > edge_info;
     set<int> small_deg_ver, use_ver;
-    
+
     bool push_cand(int u, int& add_size){
         add_size++, cand.push_back(u);
         return (int)cand.size() < ans_size;
     }
-    
-    bool erase(int u, bool use, bool alr_use, int& add_size, vector<pair<int, int> >& erase_ver){
+
+    bool erase(int u, bool use, bool alr_use, int& add_size, vector<pair<int, List<int>::iterator> >& erase_ver){
         if(use && !alr_use){
             if(!push_cand(u, add_size)) return false;
         }
@@ -232,7 +155,7 @@ private:
         }
         return true;
     }
-    bool erase_rec_set(set<int>& st, bool flag, int& add_size, vector<pair<int, int> >& erase_ver){
+    bool erase_rec_set(set<int>& st, bool flag, int& add_size, vector<pair<int, List<int>::iterator> >& erase_ver){
         while(!st.empty()){
             int v = *st.begin();
             st.erase(v);
@@ -245,7 +168,7 @@ private:
         small_deg_ver.clear(), use_ver.clear();
         return false;
     }
-    bool erase_rec(int u, bool use, int& add_size, vector<pair<int, int> >& erase_ver){
+    bool erase_rec(int u, bool use, int& add_size, vector<pair<int, List<int>::iterator> >& erase_ver){
         if(!erase(u, use, false, add_size, erase_ver)) return reset();
         while(!small_deg_ver.empty() || !use_ver.empty()){
             if(!erase_rec_set(small_deg_ver, false, add_size, erase_ver)) return reset();
@@ -253,7 +176,7 @@ private:
         }
         return true;
     }
-    bool preprocessing(int K, int& add_size, vector<pair<int, int> >& erase_ver){
+    bool preprocessing(int K, int& add_size, vector<pair<int, List<int>::iterator> >& erase_ver){
         for(int u : rem_ver){
             if(deg[u] > K){
                 if(!erase_rec(u, true, add_size, erase_ver)) return false;
@@ -261,7 +184,7 @@ private:
         }
         return true;
     }
-    void postprocessing(int K, int add_size, vector<pair<int, int> >& erase_ver){
+    void postprocessing(int K, int add_size, vector<pair<int, List<int>::iterator> >& erase_ver){
         if(K == fp_size) return;
         for(int i = 0; i < add_size; i++){
             cand.pop_back();
@@ -287,7 +210,7 @@ private:
     }
     void transition(int K, int next_ver, bool use){
         int pl_add_size = 0;
-        vector<pair<int, int> > pl_erase_ver;
+        vector<pair<int, List<int>::iterator> > pl_erase_ver;
         if(!erase_rec(next_ver, use, pl_add_size, pl_erase_ver)){
             return postprocessing(K-1, pl_add_size, pl_erase_ver);
         }
@@ -304,7 +227,7 @@ private:
     }
     void judge(int K){
         int add_size = 0;
-        vector<pair<int, int> > erase_ver;
+        vector<pair<int, List<int>::iterator> > erase_ver;
         if(!preprocessing(K, add_size, erase_ver)) return postprocessing(K, add_size, erase_ver);
         if(!check()) return postprocessing(K, add_size, erase_ver);
         int next_ver = find_max_degree_ver();
@@ -318,10 +241,12 @@ private:
 public:
     vector<int> ans_set;
     int ans_size;
-    
+
     MVC(int node_size) :
         V(node_size), rem_edge_size(0), G(V), rem_ver(V), deg(V, 0), edge_info(V){
-            for(int i = 0; i < V; i++) rem_ver[i] = i;
+        vector<int> _init(V);
+        iota(_init.begin(), _init.end(), 0);
+        rem_ver.build(_init);
     }
     void add_edge(int u, int v){
         G[u].push_back((edge){v, (int)G[v].size()});
@@ -329,6 +254,7 @@ public:
         deg[u]++, deg[v]++, rem_edge_size++;
     }
     bool solve(int K){
+        for(int i = 0; i < V; ++i) G[i].build();
         fp_size = K, ans_size = fp_size + 1;
         judge(fp_size);
         return ans_size <= fp_size;
