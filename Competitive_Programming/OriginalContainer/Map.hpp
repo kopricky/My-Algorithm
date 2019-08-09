@@ -8,8 +8,8 @@ private:
     struct node {
         pair<const _Key, _Tp> data;
         node *_M_left, *_M_right, *_M_parent;
-        node(const _Key _key, const _Tp _value) noexcept
-         : data(_key, _value), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
+        node(const _Key& _key, const _Tp& _value) noexcept
+            : data(_key, _value), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
         inline bool isRoot() const noexcept { return !_M_parent; }
         void rotate(const bool right) noexcept {
             node *p = _M_parent, *g = p->_M_parent;
@@ -28,6 +28,9 @@ private:
     friend MapIterator<_Key, _Tp>;
     node *root, *_M_header, *start;
     size_t _M_node_count;
+    inline void confirm_header(){
+        if(!_M_header) root = _M_header = start = new node(_Key(), _Tp());
+    }
     node *splay(node *u) noexcept {
         while(!(u->isRoot())){
             node *p = u->_M_parent, *gp = p->_M_parent;
@@ -72,10 +75,11 @@ private:
         return ver1 ? (ver1->_M_parent = ver2) : (start = ver2);
     }
     node *_find(const _Key& _key, bool push=false) noexcept {
+        confirm_header();
         node *cur = nullptr, *nx = root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->data.first > _key) nx = cur->_M_left;
+            if(cur->data.first > _key) nx = cur->_M_left;
             else if(cur->data.first < _key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
@@ -92,6 +96,7 @@ private:
         }
     }
     node *_insert(node *ver) noexcept {
+        confirm_header();
         node *cur = nullptr, *nx = root;
         do {
             cur = nx;
@@ -108,11 +113,12 @@ private:
         }
     }
     node *_erase(node *root_ver){
+        confirm_header();
         assert(root_ver != _M_header);
         if(root_ver->_M_left) root_ver->_M_left->_M_parent = nullptr;
         if(root_ver->_M_right) root_ver->_M_right->_M_parent = nullptr;
         node *res = join(root_ver->_M_left, root_ver->_M_right, root_ver);
-        delete root_ver;
+        // delete root_ver;
         return _M_node_count--, res;
     }
     node *_erase(const _Key& _key){
@@ -120,6 +126,7 @@ private:
         return _erase(ver);
     }
     node *_lower_bound(const _Key& _key) noexcept {
+        confirm_header();
         node *cur = nullptr, *nx = root, *res = nullptr;
         do {
             cur = nx;
@@ -133,6 +140,7 @@ private:
         return res ? res : _M_header;
     }
     node *_upper_bound(const _Key& _key) noexcept {
+        confirm_header();
         node *cur = nullptr, *nx = root, *res = nullptr;
         do {
             cur = nx;
@@ -152,8 +160,8 @@ private:
     }
 
 public:
-    Map() noexcept : _M_node_count(0){ root = _M_header = start = new node(_Key(), _Tp()); }
-    ~Map() noexcept { clear_dfs(root); }
+    Map() noexcept : root(nullptr), _M_header(nullptr), start(nullptr), _M_node_count(0){}
+    // ~Map() noexcept { if(root) clear_dfs(root); }
     friend ostream& operator<< (ostream& os, Map& mp) noexcept {
         for(auto& val : mp) os << '{' << val.first << ',' << val.second << "} ";
         return os;
@@ -166,8 +174,8 @@ public:
     }
     size_t size() const noexcept { return _M_node_count; }
     bool empty() const noexcept { return size() == 0; }
-    iterator begin() const noexcept { return iterator(start); }
-    iterator end() const noexcept { return iterator(_M_header); }
+    iterator begin() noexcept { return confirm_header(), iterator(start); }
+    iterator end() noexcept { return confirm_header(), iterator(_M_header); }
     void clear() noexcept { clear_dfs(root), _M_node_count = 0, root = _M_header = start = new node(_Key(), _Tp()); }
     iterator find(const _Key& _key) noexcept { return iterator(_find(_key)); }
     iterator insert(const _Key& _key, const _Tp& _value) noexcept
@@ -176,33 +184,4 @@ public:
     iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
     iterator lower_bound(const _Key& _key) noexcept { return iterator(_lower_bound(_key)); }
     iterator upper_bound(const _Key& _key) noexcept { return iterator(_upper_bound(_key)); }
-};
-
-template<class _Key, class _Tp>
-class MapIterator {
-private:
-    friend Map<_Key, _Tp>;
-    typename Map<_Key, _Tp>::node *node_ptr;
-    using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = pair<const _Key, _Tp>;
-    using difference_type = pair<const _Key, _Tp>;
-    using pointer = pair<const _Key, _Tp>*;
-    using reference = pair<const _Key, _Tp>&;
-
-private:
-    MapIterator(typename Map<_Key, _Tp>::node *mp) noexcept : node_ptr(mp){}
-
-public:
-    MapIterator() noexcept : node_ptr(){}
-    MapIterator(const MapIterator& itr) noexcept : node_ptr(itr.node_ptr){}
-    MapIterator& operator=(const MapIterator& itr) & { return node_ptr = itr.node_ptr, *this; }
-    MapIterator& operator=(const MapIterator&& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
-    reference operator*() const { return node_ptr->data; }
-    pointer operator->() const { return &(node_ptr->data); }
-    MapIterator& operator++() noexcept { return node_ptr = Map<_Key, _Tp>::increment(node_ptr), *this; }
-    MapIterator operator++(int) noexcept { return MapIterator(Map<_Key, _Tp>::increment(this->node_ptr)); }
-    MapIterator& operator--() noexcept { return node_ptr = Map<_Key, _Tp>::decrement(node_ptr), *this; }
-    MapIterator operator--(int) noexcept { return MapIterator(Map<_Key, _Tp>::decrement(this->node_ptr)); }
-    bool operator==(const MapIterator& itr) const noexcept { return !(*this != itr); };
-    bool operator!=(const MapIterator& itr) const noexcept { return node_ptr != itr.node_ptr; }
 };

@@ -12,7 +12,7 @@ private:
         block *prev, *next;
         C data;
         block() : prev(this), next(this){}
-        block(C _data) : prev(this), next(this), data(_data){}
+        block(const C& _data) : prev(this), next(this), data(_data){}
         block(block *_prev, block *_next) : prev(_prev), next(_next){}
     };
     int N;
@@ -52,7 +52,7 @@ public:
             if(i < N) container[i].data = _data[i];
         }
     }
-    void push_back(const C _data){ ++N, ++sz, container.push_back(_data); }
+    void push_back(const C& _data){ ++N, ++sz, container.push_back(_data); }
     void build(){
         container.push_back(C());
         for(int i = 0; i <= N; i++){
