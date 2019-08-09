@@ -1,8 +1,8 @@
 #include "../header.hpp"
 
-template<typename _Key, typename _Tp> class MapIterator;
+template<class _Key, class _Tp> class MapIterator;
 
-template<typename _Key, typename _Tp> class Map {
+template<class _Key, class _Tp> class Map {
 private:
     using iterator = MapIterator<_Key, _Tp>;
     struct node {
@@ -173,16 +173,16 @@ public:
     iterator insert(const _Key& _key, const _Tp& _value) noexcept
         { return iterator(_insert(new node(_key, _value))); }
     iterator erase(const _Key& _key){ return iterator(_erase(_key)); }
-    iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.map_ptr))); }
+    iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
     iterator lower_bound(const _Key& _key) noexcept { return iterator(_lower_bound(_key)); }
     iterator upper_bound(const _Key& _key) noexcept { return iterator(_upper_bound(_key)); }
 };
 
-template<typename _Key, typename _Tp>
+template<class _Key, class _Tp>
 class MapIterator {
 private:
     friend Map<_Key, _Tp>;
-    typename Map<_Key, _Tp>::node *map_ptr;
+    typename Map<_Key, _Tp>::node *node_ptr;
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = pair<const _Key, _Tp>;
     using difference_type = pair<const _Key, _Tp>;
@@ -190,19 +190,19 @@ private:
     using reference = pair<const _Key, _Tp>&;
 
 private:
-    MapIterator(typename Map<_Key, _Tp>::node *mp) noexcept : map_ptr(mp){}
+    MapIterator(typename Map<_Key, _Tp>::node *mp) noexcept : node_ptr(mp){}
 
 public:
-    MapIterator() noexcept : map_ptr(){}
-    MapIterator(const MapIterator& itr) noexcept : map_ptr(itr.map_ptr){}
-    MapIterator& operator=(const MapIterator& itr) & { return map_ptr = itr.map_ptr, *this; }
-    MapIterator& operator=(const MapIterator&& itr) & noexcept { return map_ptr = itr.map_ptr, *this; }
-    reference operator*() const { return map_ptr->data; }
-    pointer operator->() const { return &(map_ptr->data); }
-    MapIterator& operator++() noexcept { return map_ptr = Map<_Key, _Tp>::increment(map_ptr), *this; }
-    MapIterator operator++(int) noexcept { return MapIterator(Map<_Key, _Tp>::increment(this->map_ptr)); }
-    MapIterator& operator--() noexcept { return map_ptr = Map<_Key, _Tp>::decrement(map_ptr), *this; }
-    MapIterator operator--(int) noexcept { return MapIterator(Map<_Key, _Tp>::decrement(this->map_ptr)); }
+    MapIterator() noexcept : node_ptr(){}
+    MapIterator(const MapIterator& itr) noexcept : node_ptr(itr.node_ptr){}
+    MapIterator& operator=(const MapIterator& itr) & { return node_ptr = itr.node_ptr, *this; }
+    MapIterator& operator=(const MapIterator&& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
+    reference operator*() const { return node_ptr->data; }
+    pointer operator->() const { return &(node_ptr->data); }
+    MapIterator& operator++() noexcept { return node_ptr = Map<_Key, _Tp>::increment(node_ptr), *this; }
+    MapIterator operator++(int) noexcept { return MapIterator(Map<_Key, _Tp>::increment(this->node_ptr)); }
+    MapIterator& operator--() noexcept { return node_ptr = Map<_Key, _Tp>::decrement(node_ptr), *this; }
+    MapIterator operator--(int) noexcept { return MapIterator(Map<_Key, _Tp>::decrement(this->node_ptr)); }
     bool operator==(const MapIterator& itr) const noexcept { return !(*this != itr); };
-    bool operator!=(const MapIterator& itr) const noexcept { return map_ptr != itr.map_ptr; }
+    bool operator!=(const MapIterator& itr) const noexcept { return node_ptr != itr.node_ptr; }
 };
