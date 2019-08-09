@@ -172,11 +172,11 @@ public:
         if(res == _M_header) __throw_out_of_range(__N("Map::at"));
         return res->data.second;
     }
+    void clear() noexcept { clear_dfs(root), _M_node_count = 0, root = _M_header = start = new node(_Key(), _Tp()); }
     size_t size() const noexcept { return _M_node_count; }
     bool empty() const noexcept { return size() == 0; }
     iterator begin() noexcept { return confirm_header(), iterator(start); }
     iterator end() noexcept { return confirm_header(), iterator(_M_header); }
-    void clear() noexcept { clear_dfs(root), _M_node_count = 0, root = _M_header = start = new node(_Key(), _Tp()); }
     iterator find(const _Key& _key) noexcept { return iterator(_find(_key)); }
     iterator insert(const _Key& _key, const _Tp& _value) noexcept
         { return iterator(_insert(new node(_key, _value))); }
