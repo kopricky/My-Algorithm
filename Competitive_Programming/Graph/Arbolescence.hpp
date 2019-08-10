@@ -40,7 +40,8 @@ public:
         a->add = 0;
     }
     node* meld(node* a, node* b){
-        if(!a) return b; if(!b) return a;
+        if(!a) return b;
+        if(!b) return a;
         if(a->val+a->add > b->val+b->add) swap(a, b);
         lazy(a);
         a->r = meld(a->r,b);
@@ -76,12 +77,12 @@ public:
     T solve(int r){
         used[r] = 2;
         UF uf(V);
-        rep(i,(int)es.size()){
+        for(int i = 0; i < (int)es.size(); i++){
             edge& e = es[i];
-            come[e.to] = heap.push(come[e.to], e.cost, i);
+            come[e.to] = heap.insert(come[e.to], e.cost, i);
         }
         T ans = 0;
-        rep(i,V){
+        for(int i = 0; i < V; ++i){
             if(used[i] != 0) continue;
             int cur = i;
             vector<int> path;

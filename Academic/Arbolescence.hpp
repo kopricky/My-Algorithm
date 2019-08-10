@@ -42,7 +42,8 @@ public:
         a->lazy = 0;
     }
     node* meld(node* a, node* b){
-        if(!a) return b; if(!b) return a;
+        if(!a) return b;
+        if(!b) return a;
         if(a->val+a->lazy > b->val+b->lazy) swap(a, b);
         push(a);
         a->r = meld(a->r,b);

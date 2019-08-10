@@ -14,11 +14,11 @@ public:
                 par(nullptr), prv(nullptr), nx(nullptr), mark(false){}
         node() : key(numeric_limits<KeyType>::max()), prv(this), nx(this){}
     };
-    
+
 private:
     int _size;
     node *minimum, *sentinel;
-    
+
     inline void _insert(node *_node1, node *_node2){
         _node1->prv = _node2->prv, _node1->nx = _node2;
         _node1->prv->nx = _node1, _node2->prv = _node1;
@@ -26,7 +26,7 @@ private:
     inline void _erase(node *_node){
         _node->prv->nx = _node->nx, _node->nx->prv = _node->prv;
     }
-    
+
 public:
     Fibonacci_Heap() : _size(0){
         minimum = sentinel = new node();

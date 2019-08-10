@@ -17,7 +17,8 @@ public:
         a->add = 0;
     }
     node* meld(node* a, node* b){
-        if(!a) return b; if(!b) return a;
+        if(!a) return b;
+        if(!b) return a;
         if(a->val+a->add < b->val+b->add) swap(a, b);
         lazy(a);
         a->r = meld(a->r,b);

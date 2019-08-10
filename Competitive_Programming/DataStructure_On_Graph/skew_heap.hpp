@@ -6,7 +6,8 @@ public:
     node<T>* l; node<T>* r; T val;
     node(T t) : l(nullptr), r(nullptr), val(t){}
     friend node* meld(node* a, node* b){
-        if(!a) return b; if(!b) return a;
+        if(!a) return b;
+        if(!b) return a;
         if(a->val < b->val) swap(a, b);
         a->l = meld(a->l,b);
         swap(a->l, a->r);
