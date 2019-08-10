@@ -13,7 +13,7 @@ public:
 		T cost;
 	};
 	int V;
-	vector<int> d;
+	vector<T> d;
 	vector<edge> es;
 	bellman_ford(int node_size) : V(node_size), d(V, numeric_limits<T>::max()){}
 	void add_edge(int from,int to,T cost){
