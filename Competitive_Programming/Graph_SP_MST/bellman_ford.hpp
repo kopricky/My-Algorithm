@@ -8,6 +8,7 @@
 
 template<typename T> class bellman_ford {
 public:
+<<<<<<< HEAD
 	struct edge{
 		int from,to;
 		T cost;
@@ -68,4 +69,70 @@ public:
 		}
 		return false;
 	}
+=======
+    struct edge{
+        int from,to;
+        T cost;
+    };
+    int V;
+    T inf;
+    vector<T> d;
+    vector<edge> es;
+    bellman_ford(int node_size) : V(node_size), inf(numeric_limits<T>::max()/2), d(V, inf){}
+    void add_edge(int from,int to,T cost){
+        es.push_back((edge){from,to,cost});
+    }
+    //sからの最短路長およびsからたどり着ける負の閉路の検出(trueなら負の閉路が存在する)
+    bool solve(int s){
+        int cnt = 0;
+        d[s] = 0;
+        while(cnt < V){
+            bool update = false;
+            for(auto& e : es){
+                if(d[e.from] != inf && d[e.to] > d[e.from] + e.cost){
+                    d[e.to] = d[e.from] + e.cost;
+                    update = true;
+                }
+            }
+            if(!update) break;
+            cnt++;
+        }
+        return (cnt == V);
+    }
+    //すべての負の閉路の検出(trueなら負の閉路が存在する)
+    bool find_negative_loop(){
+        fill(d.begin(),d.end(),0);
+        int cnt = 0;
+        while(cnt < V){
+            bool update = false;
+            for(auto& e : es){
+                if(d[e.to] > d[e.from] + e.cost){
+                    d[e.to] = d[e.from] + e.cost;
+                    update = true;
+                }
+            }
+            if(!update) break;
+            cnt++;
+        }
+        return (cnt == V);
+    }
+    //sからtへの最短路上に存在する負の閉路の検出(trueなら負の閉路が存在する)
+    bool find_negative_loop(int s,int t){
+        d[s] = 0;
+        for(int i = 0; i < 2*V; i++){
+            for(auto& e : es){
+                if(d[e.from] != inf && d[e.to] > d[e.from] + e.cost){
+                    d[e.to] = d[e.from] + e.cost;
+                    if(i >= V-1 && e.to == t){
+                        return true;
+                    }
+                    if(i >= V-1){
+                        d[e.to] = -inf;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+>>>>>>> 36315bc0090db6fbe7395959c0bb25c48aeb4f4b
 };
