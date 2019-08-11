@@ -62,12 +62,12 @@ public:
                 if(d[e.from] != inf && d[e.to] > d[e.from] + e.cost){
                     d[e.to] = d[e.from] + e.cost;
                     if(i >= V-1){
-						d[e.to] = -inf;
-                        if(e.to == t) break;
+                        if(e.to == t) return true;
+                        d[e.to] = -inf;
                     }
                 }
             }
         }
-        return (d[t] == -inf);
+        return false;
     }
 };
