@@ -5,8 +5,9 @@ template<class _Key, class _Tp> class MapIterator;
 template<class _Key, class _Tp> class Map {
 private:
     using iterator = MapIterator<_Key, _Tp>;
+    using data_type = pair<const _Key, _Tp>;
     struct node {
-        pair<const _Key, _Tp> data;
+        data_type data;
         node *_M_left, *_M_right, *_M_parent;
         node(const _Key& _key, const _Tp& _value) noexcept
             : data(_key, _value), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
@@ -84,21 +85,24 @@ private:
             return _M_node_count++, splay(nx);
         }
     }
-    node *_insert(node *ver) noexcept {
+    node *_insert(const data_type& data) noexcept {
         confirm_header();
         node *cur = nullptr, *nx = root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->data.first > ver->data.first) nx = cur->_M_left;
-            else nx = cur->_M_right;
+            if(cur == _M_header || cur->data.first > data.first) nx = cur->_M_left;
+            else if(cur->data.first < data.first) nx = cur->_M_right;
+            else return splay(cur);
         }while(nx);
-        if(cur == _M_header || cur->data.first > ver->data.first){
-            cur->_M_left = ver, ver->_M_parent = cur;
-            if(cur == start) start = ver;
-            return _M_node_count++, splay(ver);
+        if(cur == _M_header || cur->data.first > data.first){
+            nx = new node(data.first, data.second);
+            cur->_M_left = nx, nx->_M_parent = cur;
+            if(cur == start) start = nx;
+            return _M_node_count++, splay(nx);
         }else{
-            cur->_M_right = ver, ver->_M_parent = cur;
-            return _M_node_count++, splay(ver);
+            nx = new node(data.first, data.second);
+            cur->_M_right = nx, nx->_M_parent = cur;
+            return _M_node_count++, splay(nx);
         }
     }
     node *_erase(node *root_ver){
@@ -167,8 +171,7 @@ public:
     iterator end() noexcept { return confirm_header(), iterator(_M_header); }
     void clear() noexcept { clear_dfs(root), _M_node_count = 0, root = _M_header = start = new node(_Key(), _Tp()); }
     iterator find(const _Key& _key) noexcept { return iterator(_find(_key)); }
-    iterator insert(const _Key& _key, const _Tp& _value) noexcept
-        { return iterator(_insert(new node(_key, _value))); }
+    iterator insert(const data_type& data) noexcept { return iterator(_insert(data)); }
     iterator erase(const _Key& _key){ return iterator(_erase(_key)); }
     iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
     iterator lower_bound(const _Key& _key) noexcept { return iterator(_lower_bound(_key)); }

@@ -3,17 +3,17 @@
 // 単純グラフと仮定する
 class BSTNode {
 public:
-    int from, to, sz;
-    bool subtree_edge, subofftree_edge;
+    const int from, to;
+    int sz;
+    bool subtree_edge, subofftree_edge, exact_level;
     BSTNode *left, *right, *par;
     unordered_set<int> adjacent;
-    bool exact_level;
     BSTNode(const int _ver) noexcept :
         from(_ver), to(_ver), sz(0), subtree_edge(false), subofftree_edge(false),
-            left(nullptr), right(nullptr), par(nullptr), exact_level(false){}
+            exact_level(false), left(nullptr), right(nullptr), par(nullptr){}
     BSTNode(const int _from, const int _to, const bool _flag) noexcept :
         from(_from), to(_to), sz(0), subtree_edge(false), subofftree_edge(false),
-            left(nullptr), right(nullptr), par(nullptr), exact_level((from < to) && _flag){}
+            exact_level((from < to) && _flag), left(nullptr), right(nullptr), par(nullptr){}
     inline bool IsRoot() const noexcept { return !par; }
     inline bool IsVertex() const noexcept { return (from == to); }
     inline void eval() noexcept {
@@ -154,7 +154,9 @@ public:
         if(node1_id > node2_id) swap(node1_id, node2_id);
         auto it = edge_set.find({node1_id, node2_id});
         assert(it != edge_set.end());
-        cut((it->second).first, (it->second).second);
+        BSTNode *edge1 = (it->second).first, *edge2 = (it->second).second;
+        edge_set.erase(it);
+        cut(edge1, edge2);
     }
     bool IsConnected(const int node1_id, const int node2_id) noexcept {
         if(node1_id == node2_id) return true;
@@ -241,7 +243,7 @@ private:
         }else return replace(from, to, layer-1);
     }
 public:
-    int V, layer_count;
+    const int V, layer_count;
     EulerTourTree* et;
     unordered_map<pair<int, int>, int, EulerTourTree::pair_hash> detect_layer;
     DynamicConnectivity(int node_size) noexcept : V(node_size), layer_count(ceil(log2(V))+1){
@@ -263,9 +265,11 @@ public:
     }
     bool cut(int node1_id, int node2_id) noexcept {
         if(node1_id > node2_id) swap(node1_id, node2_id);
-        int layer = detect_layer[{node1_id, node2_id}];
+        auto it = detect_layer.find({node1_id, node2_id});
+        assert(it != detect_layer.end());
+        int layer = it->second;
+        detect_layer.erase(it);
         auto& st = et[layer].vertex_set[node1_id]->adjacent;
-        detect_layer.erase({node1_id, node2_id});
         if(st.find(node2_id) == st.end()){
             for(int i = 0; i <= layer; i++) et[i].cut(node1_id, node2_id);
             return replace(node1_id, node2_id, layer);

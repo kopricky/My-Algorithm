@@ -3,7 +3,9 @@
 //二部グラフの頂点数がそれぞれn,m
 //BM bm(n,m);
 //適宜add_edge(２つの集合間のedgeのみaddする)
-//BM.solve()で最大マッチングの数を計算
+//BM.solve() で最大マッチングの数を計算
+//allocate() で最大マッチングを復元する
+
 class BM {
 private:
     struct edge {

@@ -20,13 +20,29 @@ struct vector_hash {
     }
 };
 
+struct murmur_hash_int32 {
+    unsigned int operator()(int p) const {
+        const unsigned int m = 0x5bd1e995; p *= m;
+        unsigned int h = (p^(p>>24))*m;
+        return h = (h^(h>>13))*m, (h^(h>>15));
+    }
+};
+
+struct murmur_hash_int64 {
+    unsigned long long operator()(unsigned long long p) const {
+        const unsigned long long m = 0xc6a4a7935bd1e995; p *= m;
+        unsigned long long h = (p^(p>>47))*m;
+        return h = (h^(h>>47))*m, (h^(h>>47));
+    }
+};
+
 struct murmur_hash32 {
     const unsigned int random = random_device{}();
     unsigned int operator()(const vector<int>& p) const {
         const unsigned int m = 0x5bd1e995;
         unsigned int h = (random ^ (4 * p.size()));
         for(unsigned int k : p){
-            k *= m, k = (k^(k>>24))*m, h = (h*m)^k;
+            k *= m, h = (h*m)^((k^(k>>24))*m);
         }
         h = (h^(h>>13))*m;
         return (h^(h>>15));
@@ -39,7 +55,7 @@ struct murmur_hash64 {
         const unsigned long long m = 0xc6a4a7935bd1e995;
         unsigned long long h = (random ^ (4 * p.size()));
         for(unsigned long long k : p){
-            k *= m, k = (k^(k>>47))*m, h = (h*m)^k;
+            k *= m, h = (h*m)^((k^(k>>47))*m);
         }
         h = (h^(h>>47))*m;
         return (h^(h>>47));

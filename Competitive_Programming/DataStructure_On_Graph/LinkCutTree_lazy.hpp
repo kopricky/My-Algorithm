@@ -149,7 +149,7 @@ public:
     }
     // id1 と id2 が同じ木(連結成分)に属するか
     bool connected(int id1, int id2){ return connected(arr[id1], arr[id2]); }
-    // id1 を id2 の non-preferred edge にする
+    // id1 を id2 の non-preferred edge にする(id1 の子として id2 をつなぐ)
     void link(int id1, int id2){ return link(arr[id1], arr[id2]); }
     // id とその親の間の辺を削除する
     void cut(int id){ return cut(arr[id]); }
