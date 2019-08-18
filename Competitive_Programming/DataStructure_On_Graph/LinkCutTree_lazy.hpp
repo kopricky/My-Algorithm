@@ -1,23 +1,24 @@
 #include "../header.hpp"
 
+// 以下の実装では link, range, query などで reroot が起こるので注意
 template<typename T> class LinkCutTree {
 public:
+    static const T id1 = (T)0;
+    static const T id2 = (T)0;
+    inline static void opr1(T& arg1, const T arg2){
+        arg1 += arg2;
+    }
+    inline static T opr2(const T arg1, const T arg2){
+        return arg1 + arg2;
+    }
     struct node {
         int id, sz;
         T val, al, lazy;
         node *left, *right, *par;
         bool rev;
-        node(int num) : id(num), val(id2), al(id2), lazy(id1),
+        node(int num) : id(num), sz(1), val(id2), al(id2), lazy(id1),
             left(nullptr), right(nullptr), par(nullptr), rev(false){}
-        static const T id1 = (T)0;
-        static const T id2 = (T)0;
-        void opr1(T& arg1, const T arg2) const {
-            arg1 += arg2;
-        }
-        T opr2(const T arg1, const T arg2) const {
-            return arg1 + arg2;
-        }
-        bool isRoot(){
+        inline bool isRoot() const {
             return (!par) || (par->left != this && par->right != this);
         }
         //スプレー木を反転させる
@@ -36,8 +37,8 @@ public:
         }
         void eval(){
             sz = 1, al = val;
-            if(left) left->push(), sz += left->sz, al = opr2(left->al, al);
-            if(right) right->push(), sz += right->sz, al = opr2(al, right->al);
+            if(left) left->push(), sz += left->sz, al = (rev ? opr2(al, left->al) : opr2(left->al, al));
+            if(right) right->push(), sz += right->sz, al = (rev ? opr2(right->al, al) : opr2(al, right->al));
         }
     };
 
@@ -124,7 +125,7 @@ private:
     }
     void toRoot_range(node* u, const T x){
         access(u);
-        u->opr1(u->lazy, x), u->push();
+        opr1(u->lazy, x), u->push();
     }
     void toRoot_query(node* u){
         access(u);
@@ -132,7 +133,7 @@ private:
     }
     void range(node* u, node* v, const T x){
         evert(u), access(v);
-        v->opr1(v->lazy, x), v->push();
+        opr1(v->lazy, x), v->push();
     }
     T query(node* u, node* v){
         evert(u), access(v);
