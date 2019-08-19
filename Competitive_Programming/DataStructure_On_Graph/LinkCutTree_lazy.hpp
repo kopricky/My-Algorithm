@@ -101,15 +101,9 @@ private:
         u->left->par = nullptr, u->left = nullptr, u->eval();
     }
     void cut(node* u, node* v){
-        access(u);
-        node* prev = u;
-        for(u = u->left; u; u = u->right) prev = u;
-        if(prev == v){
-            u->left->par = nullptr, u->left = nullptr, u->eval();
-            splay(prev);
-        }else{
-            splay(prev), cut(v);
-        }
+        access(u), access(v);
+        if(u->isRoot()) u->par = nullptr;
+        else v->left->par = nullptr, v->left = nullptr, v->eval();
     }
     node* lca(node* u, node* v){
         access(u);
