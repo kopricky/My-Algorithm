@@ -258,7 +258,7 @@ public:
             st <<= 1;
         }
     }
-    // _root を根とする木を構築(親の vector を返す(reroot しなければ range や query で使える))
+    // _root を根とする木を構築(親の vector を返す)
     vector<int> build_tree(const int _root) noexcept {
         vector<int> parent(V, -1);
         vector<BSTNode<T>* > nodes;
