@@ -256,7 +256,7 @@ public:
         erase_outdegree(u, version);
         erase_indegree(u, version);
     }
-    // バージョン version の更新後における u の out_index 番目の link 先の node
+    // バージョン version の更新後における u の out_index 番目のリンクが指す先の node
     node *forward(const node *u, const unsigned int out_index, const unsigned int version) const
     {
         return _forward(u, out_index, version);

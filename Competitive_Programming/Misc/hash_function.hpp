@@ -1,5 +1,6 @@
 #include "../header.hpp"
 
+// pair に対する std::hash を用いたハッシュ関数
 struct pair_hash {
     template <class C1, class C2>
     unsigned int operator() (const pair<C1, C2>& p) const {
@@ -8,6 +9,7 @@ struct pair_hash {
     }
 };
 
+// vector に対する std::hash を用いたハッシュ関数
 struct vector_hash {
     const unsigned int random = mt19937(random_device{}())();
     template <class C>
@@ -20,6 +22,7 @@ struct vector_hash {
     }
 };
 
+// int に対する murmur hash
 struct murmur_hash_int32 {
     unsigned int operator()(int p) const {
         const unsigned int m = 0x5bd1e995; p *= m;
@@ -28,14 +31,16 @@ struct murmur_hash_int32 {
     }
 };
 
+// long long に対する murmur hash
 struct murmur_hash_int64 {
-    unsigned long long operator()(unsigned long long p) const {
+    unsigned long long operator()(long long p) const {
         const unsigned long long m = 0xc6a4a7935bd1e995; p *= m;
         unsigned long long h = (p^(p>>47))*m;
         return h = (h^(h>>47))*m, (h^(h>>47));
     }
 };
 
+// vector<int> に対する murmur hash
 struct murmur_hash32 {
     const unsigned int random = random_device{}();
     unsigned int operator()(const vector<int>& p) const {
@@ -49,6 +54,7 @@ struct murmur_hash32 {
     }
 };
 
+// vector<long long> に対する murmur hash
 struct murmur_hash64 {
     const unsigned int random = random_device{}();
     unsigned long long operator()(const vector<long long>& p) const {

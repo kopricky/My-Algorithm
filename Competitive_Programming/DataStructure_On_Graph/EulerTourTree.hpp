@@ -158,12 +158,20 @@ private:
         return join(join(res1.first,res2.first), res2.second), res;
     }
 public:
-    int V;
+    const int V;
     EulerTourTree(const vector<T>& ver_value, bool helper=false) noexcept : V((int)ver_value.size()){
         vertex_set = new BSTNode<T>*[V];
         for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode<T>(i, i, ver_value[i]);
         if(helper) G.resize(V);
     }
+    // ~EulerTourTree(){
+    //     for(auto it : edge_set){
+    //         delete (it.second).first;
+    //         delete (it.second).second;
+    //     }
+    //     for(int i = 0; i < V; ++i) delete vertex_set[i];
+    //     delete[] vertex_set;
+    // }
     // 根を node_id にする
     void reroot(const int node_id) noexcept { reroot(vertex_set[node_id]); }
     // 辺(node1_id, node2_id) を追加
@@ -176,7 +184,9 @@ public:
         if(node1_id > node2_id) swap(node1_id, node2_id);
         auto it = edge_set.find({node1_id, node2_id});
         assert(it != edge_set.end());
-        cut((it->second).first, (it->second).second);
+        BSTNode<T> *edge1 = (it->second).first, *edge2 = (it->second).second;
+        edge_set.erase(it);
+        cut(edge1, edge2);
     }
     // node1_id と node2_id が同じ木(連結成分)に属するか
     bool IsConnected(const int node1_id, const int node2_id) noexcept {
