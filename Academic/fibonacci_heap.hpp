@@ -82,7 +82,7 @@ public:
             array[deg] = _node;
             _node = nx_node;
         }
-        delete array;
+        delete[] array;
         KeyType val = sentinel->key;
         for(auto _node = sentinel->nx; _node != sentinel; _node = _node->nx){
             if(val > _node->key) val = _node->key, minimum = _node;
