@@ -633,11 +633,11 @@ public:
             return h = (h^(h>>47))*m, (h^(h>>47));
         }
     };
-    BSTNode** vertex_set;
-    UnorderedMap<unsigned long long, pair<BSTNode*, BSTNode*>, murmur_hash64> edge_set;
     inline static unsigned long long pair_to_ll(const int u, const int v){
         return ((unsigned long long)(u) << 32) | v;
     }
+    BSTNode** vertex_set;
+    UnorderedMap<unsigned long long, pair<BSTNode*, BSTNode*>, murmur_hash64> edge_set;
 private:
     BSTNode *reroot(BSTNode *ver) noexcept {
         BSTNode *res = splay(ver)->left;
