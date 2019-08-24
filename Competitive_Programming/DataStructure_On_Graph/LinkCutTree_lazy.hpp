@@ -1,27 +1,20 @@
 #include "../header.hpp"
 
-// 以下の実装では link, range, query などで reroot が起こるので注意
+// 以下の実装では link, range, query などで reroot が起こる.
 template<typename T> class LinkCutTree {
 public:
-    static const T id1 = (T)0;
-    static const T id2 = (T)0;
-    inline static void opr1(T& arg1, const T arg2){
-        arg1 += arg2;
-    }
-    inline static T opr2(const T arg1, const T arg2){
-        return arg1 + arg2;
-    }
     struct node {
-        int id, sz;
+        int sz;
         T val, al, lazy;
         node *left, *right, *par;
         bool rev;
-        node(int num) : id(num), sz(1), val(id2), al(id2), lazy(id1),
+        node() : sz(1), val(id2), al(id2), lazy(id1),
+            left(nullptr), right(nullptr), par(nullptr), rev(false){}
+        node(T _val) : sz(1), val(_val), al(_val), lazy(id1),
             left(nullptr), right(nullptr), par(nullptr), rev(false){}
         inline bool isRoot() const {
             return (!par) || (par->left != this && par->right != this);
         }
-        //スプレー木を反転させる
         void push(){
             if(lazy != id1){
                 opr1(val, lazy), al += lazy * sz;
@@ -41,6 +34,14 @@ public:
             if(right) right->push(), sz += right->sz, al = (rev ? opr2(right->al, al) : opr2(al, right->al));
         }
     };
+    static const T id1 = (T)0;
+    static const T id2 = (T)0;
+    inline static void opr1(T& arg1, const T arg2){
+        arg1 += arg2;
+    }
+    inline static T opr2(const T arg1, const T arg2){
+        return arg1 + arg2;
+    }
 
 private:
     // 回転
@@ -91,7 +92,7 @@ private:
     }
     bool connected(node* u, node* v){
         access(u), access(v);
-        return u->par;
+        return u == v || u->par;
     }
     void link(node* u, node* v){
         evert(u), u->par = v;
@@ -135,23 +136,31 @@ private:
     }
 
 public:
+    const int V;
     node** arr;
-    LinkCutTree(int node_size){
-        arr = new node*[node_size];
-        for(int i = 0; i < node_size; i++){
-            arr[i] = new node(i);
+    LinkCutTree(const vector<T>& init_node_value)
+     : V((int)init_node_value.size()){
+        arr = new node*[V];
+        for(int i = 0; i < V; ++i){
+            arr[i] = new node(init_node_value[i]);
         }
     }
+    // ~LinkCutTree(){
+    //     for(int i = 0; i < V; ++i){
+    //         delete arr[i];
+    //     }
+    //     delete[] ar
+    // }
     // id1 と id2 が同じ木(連結成分)に属するか
     bool connected(int id1, int id2){ return connected(arr[id1], arr[id2]); }
-    // id1 を id2 の non-preferred edge にする(id1 の子として id2 をつなぐ)
+    // id1 を id2 の non-preferred edge にする
     void link(int id1, int id2){ return link(arr[id1], arr[id2]); }
     // id とその親の間の辺を削除する
     void cut(int id){ return cut(arr[id]); }
     // id と id2 の間の辺を削除する
     void cut(int id1, int id2){ return cut(arr[id1], arr[id2]); }
     // id1 と id2 の LCA を求める
-    int lca(int id1, int id2){ return lca(arr[id1], arr[id2])->id; }
+    int lca(int id1, int id2){ return static_cast<size_t>(lca(arr[id1], arr[id2]) - arr[0]); }
     // 元の木の根を id にする
     void evert(int id){ return evert(arr[id]); }
     // id の深さを求める

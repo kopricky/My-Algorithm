@@ -131,7 +131,7 @@ private:
             if(edge2->right) edge2->right->par = nullptr;
             join(edge1->left, edge2->right);
         }
-        delete edge1; delete edge2;
+        // delete edge1; delete edge2;
     }
     bool IsConnected(BSTNode *ver1, BSTNode *ver2) noexcept {
         splay(ver1), splay(ver2);
@@ -258,6 +258,9 @@ public:
         et = new EulerTourTree[layer_count];
         for(int i = 0; i < layer_count; i++) et[i].resize(V);
     }
+    // ~DynamicConnectivity(){
+    //     delete[] et;
+    // }
     bool link(int node1_id, int node2_id) noexcept {
         if(node1_id > node2_id) swap(node1_id, node2_id);
         detect_layer[{node1_id, node2_id}] = 0;

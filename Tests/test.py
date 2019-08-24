@@ -9,8 +9,8 @@ import sys
 def main():
     args = sys.argv
     code_path, problem_url = args[1], args[2]
-    abs_path = '/home/meip-users/my_algorithm/Tests'
-    exec_check = subprocess.call('g++ -std=c++14 -O3 -o {}/exec ./{}'.format(abs_path, code_path).split())
+    abs_path = '/home/masataka/my_algorithm/Tests'
+    exec_check = subprocess.call('g++ -O3 -o {}/exec ./{}'.format(abs_path, code_path).split())
     if exec_check == 1:
         print('コンパイル失敗')
         return

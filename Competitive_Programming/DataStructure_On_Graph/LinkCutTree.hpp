@@ -1,11 +1,10 @@
 #include "../header.hpp"
 
-template<typename T> class LinkCutTree {
+class LinkCutTree {
 public:
     struct node {
-        int id;
         node *left, *right, *par;
-        node(int num) : id(num), left(nullptr), right(nullptr), par(nullptr){}
+        node() : left(nullptr), right(nullptr), par(nullptr){}
         bool isRoot(){
             return (!par) || (par->left != this && par->right != this);
         }
@@ -70,19 +69,26 @@ private:
     }
 
 public:
+    const int V;
     node** arr;
-    LinkCutTree(int node_size){
-        arr = new node*[node_size];
-        for(int i = 0; i < node_size; i++){
-            arr[i] = new node(i);
+    LinkCutTree(const int node_size) : V(node_size){
+        arr = new node*[V];
+        for(int i = 0; i < V; i++){
+            arr[i] = new node();
         }
     }
+    // ~LinkCutTree(){
+    //     for(int i = 0; i < V; i++){
+    //         delete arr[i];
+    //     }
+    //     delete[] arr;
+    // }
     // id1 と id2 が同じ木(連結成分)に属するか
     bool connected(int id1, int id2){ return connected(arr[id1], arr[id2]); }
-    // id1 と id2 をつなぐ(id1 が木の根であることを仮定している)
+    // id1 を id2 の non-preferred edge にする(id1 が木の根であることを仮定している)
     void link(int id1, int id2){ return link(arr[id1], arr[id2]); }
     // id とその親の間の辺を削除する
     void cut(int id){ return cut(arr[id]); }
     // id1 と id2 の LCA を求める
-    int lca(int id1, int id2){ return lca(arr[id1], arr[id2])->id; }
+    int lca(int id1, int id2){ return static_cast<size_t>(lca(arr[id1], arr[id2])-arr[0]); }
 };
