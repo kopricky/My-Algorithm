@@ -141,6 +141,14 @@ private:
 public:
     int V;
     EulerTourTree(){}
+    // ~EulerTourTree(){
+    //     for(auto it : edge_set){
+    //         delete (it.second).first;
+    //         delete (it.second).second;
+    //     }
+    //     for(int i = 0; i < V; ++i) delete vertex_set[i];
+    //     delete[] vertex_set;
+    // }
     void resize(const int node_size) noexcept {
         V = node_size, vertex_set = new BSTNode*[V];
         for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode(i);
