@@ -20,6 +20,7 @@ public:
         node(const _Key& key, _Tp&& data) : _data(key, move(data)),
             _child(0), _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
         inline const _Key& get_key() const noexcept { return _data.first; }
+        inline _Tp& get_data() noexcept { return _data.second; }
         void insert(node *cur){
             if(_ch_last) insert_impl(cur, _ch_last);
             else _ch_last = cur, _ch_last->_prev = _ch_last->_next = _ch_last;
@@ -210,8 +211,8 @@ public:
         }
         int sz = 1;
         for(node *next = cur->_ch_last->_next; ; next = next->_next){
-            if(print) cout << depth << ": " << next->_data.first << " " <<
-                        next->_data.second << " " << next->_mark << endl;
+            if(print) cout << depth << ": " << next->get_key() << " " <<
+                        next->get_data() << " " << next->_mark << endl;
             sz += dfs(next, print, depth + 1);
             if(next == cur->_ch_last) break;
         }
@@ -224,8 +225,8 @@ public:
         }
         size_t sz = 0;
         for(node *cur = _minimum->_next; ; cur = cur->_next){
-            if(print) cout << "0: " << cur->_data.first << " " <<
-                        cur->_data.second << endl;
+            if(print) cout << "0: " << cur->get_key() << " " <<
+                        cur->get_data() << endl;
             sz += dfs(cur, print, 1);
             if(cur == _minimum) break;
         }
@@ -279,7 +280,7 @@ public:
 				kp[id] = fh.push(0, id);
 			}
             for(int j = 0; j < i-1; ++j){
-                int cur = fh.top().second;
+                int cur = fh.top().get_data();
                 fh.pop();
                 visited[cur] = true, new_ord[j] = cur;
 				for(edge& e : G[cur]){
@@ -297,8 +298,8 @@ public:
                 visited[ver] = false;
             }
             visited[last_ver] = true;
-            if(ans > -fh.top().first){
-                ans = -fh.top().first;
+            if(ans > -fh.top().get_key()){
+                ans = -fh.top().get_key();
                 ans_set.clear();
                 for(int cur = last_ver;;){
                     ans_set.push_back(cur);

@@ -206,7 +206,7 @@ public:
         int sz = 1;
         for(node *next = cur->_ch_last->_next; ; next = next->_next){
             if(print) cout << depth << ": " << next->_data.first << " " <<
-                        next->_data.second << " " << next->_mark << endl;
+                        next->_data.second<< " " << next->_mark << endl;
             sz += dfs(next, print, depth + 1);
             if(next == cur->_ch_last) break;
         }
@@ -219,8 +219,8 @@ public:
         }
         size_t sz = 0;
         for(node *cur = _minimum->_next; ; cur = cur->_next){
-            if(print) cout << "0: " << cur->_data.first << " " <<
-                        cur->_data.second << endl;
+            if(print) cout << "0: " << cur->next->_data.first << " " <<
+                        cur->next->_data.second << endl;
             sz += dfs(cur, print, 1);
             if(cur == _minimum) break;
         }

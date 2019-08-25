@@ -88,11 +88,11 @@ public:
         if(rank.size() <= max_rank) rank.resize(max_rank + 1);
         for(node*& cur : rank) cur = nullptr;
         for(node *cur = next_minimum; cur != _minimum;){
-            if(cur->get_key() < next_minimum->get_key()) next_minimum = cur;
+            if(cur->_key < next_minimum->_key) next_minimum = cur;
             node *next = cur->_next;
             unsigned int deg = cur->_child;
             while(rank[deg]){
-                if(cur->get_key() < rank[deg]->get_key() || cur == next_minimum){
+                if(cur->_key < rank[deg]->_key || cur == next_minimum){
                     root_erase(rank[deg]), cur->insert(rank[deg]);
                 }else{
                     root_erase(cur), rank[deg]->insert(cur);
