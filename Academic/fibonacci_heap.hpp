@@ -183,16 +183,16 @@ public:
             fh2->~Fibonacci_Heap();
             return fh1;
         }
-        if(fh1->size == 0){
+        if(fh1->_size == 0){
             fh1->~Fibonacci_Heap();
             return fh2;
         }
-        fh1->__minimum->_prev->_next = fh2->__minimum->_next;
-        fh2->__minimum->_next->_prev = fh1->__minimum->_prev;
-        fh2->__minimum->_next = fh1->__minimum;
-        fh1->__minimum->_prev = fh2->__minimum;
+        fh1->_minimum->_prev->_next = fh2->_minimum->_next;
+        fh2->_minimum->_next->_prev = fh1->_minimum->_prev;
+        fh2->_minimum->_next = fh1->_minimum;
+        fh1->_minimum->_prev = fh2->_minimum;
         fh1->_size += fh2->_size;
-        if(fh1->__minimum->get_key() > fh2->__minimum->get_key()) fh1->__minimum = fh2->__minimum;
+        if(fh1->_minimum->get_key() > fh2->_minimum->get_key()) fh1->_minimum = fh2->_minimum;
         fh2->~Fibonacci_Heap();
         return fh1;
     }
