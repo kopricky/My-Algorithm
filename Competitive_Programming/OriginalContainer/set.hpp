@@ -5,12 +5,11 @@ template<class _Key> class SetIterator;
 template<class _Key> class Set {
 private:
     using iterator = SetIterator<_Key>;
-    using data_type = const _Key;
     struct node {
-        data_type _key;
+        const _Key _M_key;
         node *_M_left, *_M_right, *_M_parent;
-        node(const data_type& key) noexcept
-            : _key(key), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
+        node(_Key&& key) noexcept
+            : _M_key(move(key)), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
         inline bool isRoot() const noexcept { return !_M_parent; }
         void rotate(const bool right) noexcept {
             node *p = _M_parent, *g = p->_M_parent;
@@ -27,8 +26,8 @@ private:
         }
     };
     friend SetIterator<_Key>;
-    node *root, *_M_header, *start;
     size_t _M_node_count;
+    node *_M_root, *_M_header, *_M_start;
     node *splay(node *u) noexcept {
         while(!(u->isRoot())){
             node *p = u->_M_parent, *gp = p->_M_parent;
@@ -43,7 +42,7 @@ private:
                 }
             }
         }
-        return root = u;
+        return _M_root = u;
     }
     static node *increment(node *ver) noexcept {
         if(ver->_M_right){
@@ -70,33 +69,36 @@ private:
     node *join(node *ver1, node *ver2, const node *ver) noexcept {
         while(ver2->_M_left) ver2 = ver2->_M_left;
         splay(ver2)->_M_left = ver1;
-        return ver1 ? (ver1->_M_parent = ver2) : (start = ver2);
+        return ver1 ? (ver1->_M_parent = ver2) : (_M_start = ver2);
     }
-    node *_find(const data_type& key) noexcept {
-        node *cur = nullptr, *nx = root;
+    node *_find(const _Key& key) noexcept {
+        node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->_key > key) nx = cur->_M_left;
-            else if(cur->_key < key) nx = cur->_M_right;
+            if(cur == _M_header || cur->_M_key > key) nx = cur->_M_left;
+            else if(cur->_M_key < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
         return _M_header;
     }
-    node *_insert(const data_type& key) noexcept {
-        node *cur = nullptr, *nx = root;
+    template<typename Key>
+    node *_insert(Key&& key) noexcept {
+        node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->_key > key) nx = cur->_M_left;
-            else if(cur->_key < key) nx = cur->_M_right;
+            if(cur == _M_header || cur->_M_key > key) nx = cur->_M_left;
+            else if(cur->_M_key < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
-        if(cur == _M_header || cur->_key > key){
-            nx = new node(key);
+        if(cur == _M_header || cur->_M_key > key){
+            _Key new_key = forward<Key>(key);
+            nx = new node(move(new_key));
             cur->_M_left = nx, nx->_M_parent = cur;
-            if(cur == start) start = nx;
+            if(cur == _M_start) _M_start = nx;
             return _M_node_count++, splay(nx);
         }else{
-            nx = new node(key);
+            _Key new_key = forward<Key>(key);
+            nx = new node(move(new_key));
             cur->_M_right = nx, nx->_M_parent = cur;
             return _M_node_count++, splay(nx);
         }
@@ -109,31 +111,31 @@ private:
         delete root_ver;
         return _M_node_count--, res;
     }
-    node *_erase(const data_type& key){
+    node *_erase(const _Key& key){
         node *ver = _find(key);
         return _erase(ver);
     }
-    node *_lower_bound(const data_type& key) noexcept {
-        node *cur = nullptr, *nx = root, *res = nullptr;
+    node *_lower_bound(const _Key& key) noexcept {
+        node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->_key >= key){
+            else if(cur->_M_key >= key){
                 nx = cur->_M_left;
-                if(!res || cur->_key <= res->_key) res = cur;
+                if(!res || cur->_M_key <= res->_M_key) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);
         return res ? res : _M_header;
     }
-    node *_upper_bound(const data_type& key) noexcept {
-        node *cur = nullptr, *nx = root, *res = nullptr;
+    node *_upper_bound(const _Key& key) noexcept {
+        node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->_key > key){
+            else if(cur->_M_key > key){
                 nx = cur->_M_left;
-                if(!res || cur->_key <= res->_key) res = cur;
+                if(!res || cur->_M_key <= res->_key) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);
@@ -146,24 +148,31 @@ private:
     }
 
 public:
-    Set() noexcept : _M_node_count(0){ root = _M_header = start = new node(_Key()); }
-    // ~Set() noexcept { if(root) clear_dfs(root); }
+    Set() noexcept : _M_node_count(0){
+        _Key new_key = _Key();
+        _M_root = _M_header = _M_start = new node(move(new_key));
+    }
+    // ~Set() noexcept { if(_M_root) clear_dfs(_M_root); }
     friend ostream& operator<< (ostream& os, Set& st) noexcept {
         for(auto& val : st) os << val << " ";
         return os;
     }
     size_t size() const noexcept { return _M_node_count; }
     bool empty() const noexcept { return size() == 0; }
-    iterator begin() const noexcept { return iterator(start); }
+    iterator begin() const noexcept { return iterator(_M_start); }
     iterator end() const noexcept { return iterator(_M_header); }
-    void clear() noexcept { clear_dfs(root), _M_node_count = 0, root = _M_header = start = new node(_Key()); }
-    iterator find(const data_type& key) noexcept { return iterator(_find(key)); }
+    void clear() noexcept {
+        clear_dfs(_M_root), _M_node_count = 0;
+        _Key new_key = _Key();
+        _M_root = _M_header = _M_start = new node(move(new_key));
+    }
+    iterator find(const _Key& key) noexcept { return iterator(_find(key)); }
     size_t count(const _Key& key){ return (_find(key) != _M_header); }
-    iterator insert(const data_type& key) noexcept { return iterator(_insert(key)); }
-    iterator erase(const data_type& key){ return iterator(_erase(key)); }
+    iterator insert(const _Key& key) noexcept { return iterator(_insert(key)); }
+    iterator erase(const _Key& key){ return iterator(_erase(key)); }
     iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
-    iterator lower_bound(const data_type& key) noexcept { return iterator(_lower_bound(key)); }
-    iterator upper_bound(const data_type& key) noexcept { return iterator(_upper_bound(key)); }
+    iterator lower_bound(const _Key& key) noexcept { return iterator(_lower_bound(key)); }
+    iterator upper_bound(const _Key& key) noexcept { return iterator(_upper_bound(key)); }
 };
 
 template<class _Key>
@@ -185,8 +194,8 @@ public:
     SetIterator(const SetIterator& itr) noexcept : node_ptr(itr.node_ptr){}
     SetIterator& operator=(const SetIterator& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
     SetIterator& operator=(const SetIterator&& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
-    reference operator*() const { return node_ptr->_key; }
-    pointer operator->() const { return &(node_ptr->_key); }
+    reference operator*() const { return node_ptr->_M_key; }
+    pointer operator->() const { return &(node_ptr->_M_key); }
     SetIterator& operator++() noexcept { return node_ptr = Set<_Key>::increment(node_ptr), *this; }
     SetIterator operator++(int) const noexcept { return SetIterator(Set<_Key>::increment(this->node_ptr)); }
     SetIterator& operator--() noexcept { return node_ptr = Set<_Key>::decrement(node_ptr), *this; }

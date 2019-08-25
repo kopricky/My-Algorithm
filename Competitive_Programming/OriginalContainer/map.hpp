@@ -7,12 +7,15 @@ private:
     using iterator = MapIterator<_Key, _Tp>;
     using data_type = pair<const _Key, _Tp>;
     struct node {
-        data_type data;
+        data_type _M_data;
         node *_M_left, *_M_right, *_M_parent;
-        node(const _Key& _key, const _Tp& _value) noexcept
-            : data(_key, _value), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
+        node(data_type&& data) noexcept
+            : _M_data(move(data)), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
+        inline const _Key& get_key() const noexcept { return _M_data.first; }
+        inline _Tp& get_data() noexcept { return _M_data.second; }
+        inline const _Tp& get_data() const noexcept { return _M_data.second; }
         inline bool isRoot() const noexcept { return !_M_parent; }
-        void rotate(const bool right) noexcept {
+        void rotate(const bool right){
             node *p = _M_parent, *g = p->_M_parent;
             if(right){
                 if((p->_M_left = _M_right)) _M_right->_M_parent = p;
@@ -27,12 +30,15 @@ private:
         }
     };
     friend MapIterator<_Key, _Tp>;
-    node *root, *_M_header, *start;
     size_t _M_node_count;
+    node *_M_root, *_M_header, *_M_start;
     inline void confirm_header(){
-        if(!_M_header) root = _M_header = start = new node(_Key(), _Tp());
+        if(!_M_header){
+            data_type new_data;
+            _M_root = _M_header = _M_start = new node(move(new_data));
+        }
     }
-    node *splay(node *u) noexcept {
+    node *splay(node *u){
         while(!(u->isRoot())){
             node *p = u->_M_parent, *gp = p->_M_parent;
             if(p->isRoot()){
@@ -46,9 +52,9 @@ private:
                 }
             }
         }
-        return root = u;
+        return _M_root = u;
     }
-    static node *increment(node *ver) noexcept {
+    static node *increment(node *ver){
         if(ver->_M_right){
             ver = ver->_M_right;
             while(ver->_M_left) ver = ver->_M_left;
@@ -59,48 +65,55 @@ private:
         }
         return ver;
     }
-    node *join(node *ver1, node *ver2, const node *ver) noexcept {
+    node *join(node *ver1, node *ver2, const node *ver){
         while(ver2->_M_left) ver2 = ver2->_M_left;
         splay(ver2)->_M_left = ver1;
-        return ver1 ? (ver1->_M_parent = ver2) : (start = ver2);
+        return ver1 ? (ver1->_M_parent = ver2) : (_M_start = ver2);
     }
-    node *_find(const _Key& _key, bool push=false) noexcept {
+    template<typename Key>
+    node *_find(Key&& key, bool push = false){
         confirm_header();
-        node *cur = nullptr, *nx = root;
+        node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->data.first > _key) nx = cur->_M_left;
-            else if(cur->data.first < _key) nx = cur->_M_right;
+            if(cur == _M_header || cur->get_key() > key) nx = cur->_M_left;
+            else if(cur->get_key() < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
         if(!push) return _M_header;
-        if(cur == _M_header || cur->data.first > _key){
-            nx = new node(_key, _Tp());
+        if(cur == _M_header || cur->get_key() > key){
+            data_type new_data(forward<Key>(key), _Tp());
+            nx = new node(move(new_data));
             cur->_M_left = nx, nx->_M_parent = cur;
-            if(cur == start) start = nx;
+            if(cur == _M_start) _M_start = nx;
             return _M_node_count++, splay(nx);
         }else{
-            nx = new node(_key, _Tp());
+            data_type new_data(forward<Key>(key), _Tp());
+            nx = new node(move(new_data));
             cur->_M_right = nx, nx->_M_parent = cur;
             return _M_node_count++, splay(nx);
         }
     }
-    node *_insert(const data_type& data) noexcept {
+    template<typename Data>
+    node *_insert(Data&& data){
         confirm_header();
-        node *cur = nullptr, *nx = root;
+        const _Key& key = data.first;
+        node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->data.first > data.first) nx = cur->_M_left;
-            else if(cur->data.first < data.first) nx = cur->_M_right;
+            if(cur == _M_header || cur->get_key() > key) nx = cur->_M_left;
+            else if(cur->get_key() < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
-        if(cur == _M_header || cur->data.first > data.first){
-            nx = new node(data.first, data.second);
+        if(cur == _M_header || cur->get_key() > key){
+            data_type new_data = forward<Data>(data);
+            nx = new node(move(new_data));
             cur->_M_left = nx, nx->_M_parent = cur;
-            if(cur == start) start = nx;
+            if(cur == _M_start) _M_start = nx;
             return _M_node_count++, splay(nx);
         }else{
-            nx = new node(data.first, data.second);
+            data_type new_data = forward<Data>(data);
+            nx = new node(move(new_data));
             cur->_M_right = nx, nx->_M_parent = cur;
             return _M_node_count++, splay(nx);
         }
@@ -114,68 +127,86 @@ private:
         delete root_ver;
         return _M_node_count--, res;
     }
-    node *_erase(const _Key& _key){
-        node *ver = _find(_key);
+    node *_erase(const _Key& key){
+        node *ver = _find(key);
         return _erase(ver);
     }
-    node *_lower_bound(const _Key& _key) noexcept {
+    node *_lower_bound(const _Key& key){
         confirm_header();
-        node *cur = nullptr, *nx = root, *res = nullptr;
+        node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->data.first >= _key){
+            else if(cur->get_key() >= key){
                 nx = cur->_M_left;
-                if(!res || cur->data.first <= res->data.first) res = cur;
+                if(!res || cur->get_key() <= res->get_key()) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);
         return res ? res : _M_header;
     }
-    node *_upper_bound(const _Key& _key) noexcept {
+    node *_upper_bound(const _Key& key){
         confirm_header();
-        node *cur = nullptr, *nx = root, *res = nullptr;
+        node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->data.first > _key){
+            else if(cur->get_key() > key){
                 nx = cur->_M_left;
-                if(!res || cur->data.first <= res->data.first) res = cur;
+                if(!res || cur->get_key() <= res->get_key()) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);
         return res ? res : _M_header;
     }
-    void clear_dfs(node *cur) noexcept {
+    void clear_dfs(node *cur){
         if(cur->_M_left) clear_dfs(cur->_M_left);
         if(cur->_M_right) clear_dfs(cur->_M_right);
         delete cur;
     }
 
 public:
-    Map() noexcept : root(nullptr), _M_header(nullptr), start(nullptr), _M_node_count(0){}
-    // ~Map() noexcept { if(root) clear_dfs(root); }
+    Map() noexcept : _M_node_count(0), _M_root(nullptr), _M_header(nullptr), _M_start(nullptr){}
+    Map(const Map&) = delete;
+    Map(Map&& another) : _M_node_count(move(another._M_node_count)){
+        _M_root = another._M_root, _M_header = another._M_header, _M_start = another._M_start;
+        another._M_root = nullptr, another._M_header = nullptr, another._M_start = nullptr;
+    }
+    Map& operator=(const Map&) = delete;
+    Map& operator=(Map&& another){
+        this->~Map();
+        _M_node_count = another._M_node_count;
+        _M_root = another._M_root, _M_header = another._M_header, _M_start = another._M_start;
+        another._M_root = nullptr, another._M_header = nullptr, another._M_start = nullptr;
+    }
+    // ~Map() noexcept { if(_M_root) clear_dfs(_M_root); }
     friend ostream& operator<< (ostream& os, Map& mp) noexcept {
         for(auto& val : mp) os << '{' << val.first << ',' << val.second << "} ";
         return os;
     }
-    _Tp& operator[](const _Key& _key) noexcept { return _find(_key, true)->data.second; }
-    const _Tp& at(const _Key& _key){
-        node *res = _find(_key);
+    _Tp& operator[](const _Key& key){ return _find(key, true)->get_data(); }
+    _Tp& operator[](_Key&& key){ return _find(move(key), true)->get_data(); }
+    const _Tp& at(const _Key& key){
+        node *res = _find(key);
         if(res == _M_header) __throw_out_of_range(__N("Map::at"));
-        return res->data.second;
+        return res->get_data();
     }
     size_t size() const noexcept { return _M_node_count; }
     bool empty() const noexcept { return size() == 0; }
-    iterator begin() noexcept { return confirm_header(), iterator(start); }
+    iterator begin() noexcept { return confirm_header(), iterator(_M_start); }
     iterator end() noexcept { return confirm_header(), iterator(_M_header); }
-    void clear() noexcept { clear_dfs(root), _M_node_count = 0, root = _M_header = start = new node(_Key(), _Tp()); }
-    iterator find(const _Key& _key) noexcept { return iterator(_find(_key)); }
+    void clear() noexcept {
+        clear_dfs(_M_root), _M_node_count = 0;
+        data_type new_data;
+        _M_root = _M_header = _M_start = new node(move(new_data));
+    }
+    iterator find(const _Key& key) noexcept { return iterator(_find(key)); }
     iterator insert(const data_type& data) noexcept { return iterator(_insert(data)); }
-    iterator erase(const _Key& _key){ return iterator(_erase(_key)); }
+    iterator insert(data_type&& data) noexcept { return iterator(_insert(move(data))); }
+    iterator erase(const _Key& key){ return iterator(_erase(key)); }
     iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
-    iterator lower_bound(const _Key& _key) noexcept { return iterator(_lower_bound(_key)); }
-    iterator upper_bound(const _Key& _key) noexcept { return iterator(_upper_bound(_key)); }
+    iterator lower_bound(const _Key& key) noexcept { return iterator(_lower_bound(key)); }
+    iterator upper_bound(const _Key& key) noexcept { return iterator(_upper_bound(key)); }
 };
 
 template<class _Key, class _Tp>
@@ -197,8 +228,8 @@ public:
     MapIterator(const MapIterator& itr) noexcept : node_ptr(itr.node_ptr){}
     MapIterator& operator=(const MapIterator& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
     MapIterator& operator=(const MapIterator&& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
-    reference operator*() const { return node_ptr->data; }
-    pointer operator->() const { return &(node_ptr->data); }
+    reference operator*() const { return node_ptr->_M_data; }
+    pointer operator->() const { return &(node_ptr->_M_data); }
     MapIterator& operator++() noexcept { return node_ptr = Map<_Key, _Tp>::increment(node_ptr), *this; }
     MapIterator operator++(int) const noexcept { return MapIterator(Map<_Key, _Tp>::increment(this->node_ptr)); }
     bool operator==(const MapIterator& itr) const noexcept { return !(*this != itr); };

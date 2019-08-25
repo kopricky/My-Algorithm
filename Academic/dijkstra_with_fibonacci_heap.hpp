@@ -162,12 +162,12 @@ public:
     Fibonacci_Heap(const Fibonacci_Heap&) = delete;
     Fibonacci_Heap(Fibonacci_Heap&& another)
         : _size(move(another._size)), rank(move(another.rank)){
-        _clear(), _minimum = another._minimum;
+        _minimum = another._minimum, another._minimum = nullptr;
     }
     Fibonacci_Heap& operator=(const Fibonacci_Heap&) = delete;
     Fibonacci_Heap& operator=(Fibonacci_Heap&& another){
         _size = move(another._size), rank = move(another.rank);
-        _clear(), _minimum = another._minimum;
+        _clear(), _minimum = another._minimum, another._minimum = nullptr;
     }
     // ~Fibonacci_Heap(){ _clear(); }
     inline bool empty() const noexcept { return (_size == 0); }
