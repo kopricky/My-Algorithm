@@ -24,7 +24,7 @@ public:
 	BIT(){}
 	//初期値がすべて0の場合
 	BIT(int sz) : n(sz+1), bit(n, 0){}
-	BIT(vector<T>& v) : n((int)v.size()+1), bit(n, 0){
+	BIT(const vector<T>& v) : n((int)v.size()+1), bit(n, 0){
 		for(int i = 0; i < n-1; i++){
 			add(i,v[i]);
 		}
@@ -44,32 +44,35 @@ public:
 	}
 };
 
-//u を昇順にソートするのに必要な交換回数(転倒数) (u は (0~n-1の並び替え))
-long long inv_count(vector<int>& u)
+// u を昇順にソートするのに必要な交換回数(転倒数) (u は {0,..., n-1} からなる重複を許した長さ n の数列)
+long long inv_count(const vector<int>& u)
 {
-	int n = (int)(u.size());
+	int n = (int)u.size();
 	BIT<int> bt(n);
 	long long ans = 0;
 	for(int i = 0; i < n; i++){
-		ans += i-bt.sum(u[i]);
-		bt.add(u[i],1);
+		ans += i - bt.sum(u[i]);
+		bt.add(u[i], 1);
 	}
 	return ans;
 }
 
-//u を v に変換するのに必要な交換回数 (u, v は (0~n-1の並び替え))
-long long inv_count(vector<int>& u,vector<int>& v)
+// u を v に変換するのに必要な交換回数(転倒数)
+// (u, v は {0,..., n-1} からなる重複を許した長さ n の数列. ただし u, v 全体で各数字の個数は一致するものとする)
+long long inv_count(const vector<int>& u, const vector<int>& v)
 {
-	int n = (int)(u.size());
-	vector<int> p(n);
-	BIT<int> bt(n);
-	long long ans = 0;
-	for(int i = 0; i < n; i++){
-		p[v[i]] = i;
-	}
-	for(int i = 0; i < n; i++){
-		ans += i-bt.sum(p[u[i]]);
-		bt.add(p[u[i]],1);
-	}
-	return ans;
+    int n = (int)u.size();
+    vector<vector<int> > p(n);
+    BIT<int> bt(n);
+    for(int i = n-1; i >= 0; --i){
+        p[u[i]].push_back(i);
+    }
+    long long ans = 0;
+    for(int i = 0; i < n; ++i){
+        int pos = p[v[i]].back();
+        p[v[i]].pop_back();
+        ans += pos - bt.sum(pos);
+        bt.add(pos, 1);
+    }
+    return ans;
 }

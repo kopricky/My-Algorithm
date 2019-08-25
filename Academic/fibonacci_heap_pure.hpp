@@ -1,25 +1,19 @@
-#include "header.hpp"
+#include "./header.hpp"
 
-// 無向グラフの最小カット(n回max_flowを回すより高速)
-// Nagamochi and Ibaraki 1992 Stoer and Wagner 1997 を参照
-// 計算量はO(mn + n^2 log n)
-// ans_set が最小カットを構成する頂点集合(S s.t (S, V-S) が最小カット)
-
-template<typename _Key, typename _Tp> class Fibonacci_Heap
+template<typename _Key> class Fibonacci_Heap
 {
 public:
     class node
     {
     public:
-        pair<_Key, _Tp> _data;
+        _Key _key;
         unsigned short int _child;
         bool _mark;
         node *_par, *_prev, *_next, *_ch_last;
-        node(const _Key& key, const _Tp& data) : _data(key, data),
-            _child(0), _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
-        node(const _Key& key, _Tp&& data) : _data(key, move(data)),
-            _child(0), _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
-        inline const _Key& get_key() const noexcept { return _data.first; }
+        node(const _Key& _key) : _key(_key), _child(0),
+                _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
+        node(_Key&& _key) : _key(move(_key)), _child(0),
+                _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
         void insert(node *cur){
             if(_ch_last) insert_impl(cur, _ch_last);
             else _ch_last = cur, _ch_last->_prev = _ch_last->_next = _ch_last;
@@ -36,8 +30,8 @@ public:
         }
     };
 
-private:
-    static constexpr float FACTOR = 1.0f / log2((1.0f + sqrt(5.0f)) / 2.0f);
+public:
+    static constexpr float FACTOR = 1.0f/log2((1.0f+sqrt(5.0f))/2.0f);
     size_t _size;
     node *_minimum;
     vector<node*> rank;
@@ -55,23 +49,22 @@ private:
     void root_insert(node *cur){
         if(_minimum){
             insert_impl(cur, _minimum);
-            if(cur->get_key() < _minimum->get_key()) _minimum = cur;
+            if(cur->_key < _minimum->_key) _minimum = cur;
         }else{
             _minimum = cur, _minimum->_prev = _minimum->_next = _minimum;
         }
     }
     void root_erase(node *cur){
-        if(cur == cur->_prev) _minimum = nullptr;
+        if(cur == cur->_next) _minimum = nullptr;
         else erase_impl(cur);
     }
     void _delete(node *cur){
         root_erase(cur);
         delete cur;
     }
-    template<typename Data>
-    node *_push(const _Key& key, Data&& data){
+    node *_push(const _Key& key){
         ++_size;
-        node* new_node = new node(key, forward<Data>(data));
+        node* new_node = new node(key);
         root_insert(new_node);
         return new_node;
     }
@@ -115,8 +108,8 @@ private:
     }
     void _update(node *cur, const _Key& key){
         assert(key >= (_Key)0);
-        node *change = ((cur->_data.first -= key) < _minimum->get_key()) ? cur : nullptr;
-        if(!cur->_par || cur->_par->get_key() <= cur->get_key()){
+        node *change = ((cur->_key -= key) < _minimum->_key) ? cur : nullptr;
+        if(!cur->_par || cur->_par->_key <= cur->_key){
             if(change) _minimum = change;
             return;
         }
@@ -177,9 +170,8 @@ public:
     // ~Fibonacci_Heap(){ _clear(); }
     inline bool empty() const noexcept { return (_size == 0); }
     inline size_t size() const noexcept { return _size; }
-    inline const pair<_Key, _Tp>& top() const noexcept { return _minimum->_data; }
-    node *push(const _Key& key, const _Tp& data){ return _push(key, data); }
-    node *push(const _Key& key, _Tp&& data){ return _push(key, move(data)); }
+    inline const _Key& top() const noexcept { return _minimum->_key; }
+    node *push(const _Key& key){ return _push(key); }
     void pop(){ _pop(); }
     void update(node *cur, const _Key& key){ _update(cur, key); }
     void clear(){ _clear(); _size = 0; rank.~vector<node*>(); }
@@ -197,7 +189,7 @@ public:
         fh2->__minimum->_next = fh1->__minimum;
         fh1->__minimum->_prev = fh2->__minimum;
         fh1->_size += fh2->_size;
-        if(fh1->__minimum->get_key() > fh2->__minimum->get_key()) fh1->__minimum = fh2->__minimum;
+        if(fh1->__minimum->_key > fh2->__minimum->_key) fh1->__minimum = fh2->__minimum;
         fh2->~Fibonacci_Heap();
         return fh1;
     }
@@ -210,8 +202,7 @@ public:
         }
         int sz = 1;
         for(node *next = cur->_ch_last->_next; ; next = next->_next){
-            if(print) cout << depth << ": " << next->_data.first << " " <<
-                        next->_data.second << " " << next->_mark << endl;
+            if(print) cout << depth << ": " << next->_key << " " << next->_mark << endl;
             sz += dfs(next, print, depth + 1);
             if(next == cur->_ch_last) break;
         }
@@ -224,91 +215,11 @@ public:
         }
         size_t sz = 0;
         for(node *cur = _minimum->_next; ; cur = cur->_next){
-            if(print) cout << "0: " << cur->_data.first << " " <<
-                        cur->_data.second << endl;
+            if(print) cout << "0: " << cur->_key << endl;
             sz += dfs(cur, print, 1);
             if(cur == _minimum) break;
         }
         cout << endl;
         assert(sz == _size);
-    }
-};
-
-class SimpleMergeSet
-{
-public:
-    vector<int> next;
-    SimpleMergeSet(const int node_size)
-        : next((int)node_size){
-        iota(next.begin(), next.end(), 0);
-    }
-    void unite(const int u, const int v){
-        swap(next[u], next[v]);
-    }
-};
-
-template<typename T> class UndirectedMinCut
-{
-private:
-    struct edge{
-        int to; T cost; int rev;
-        edge(int _to, T _cost, int _rev)
-        : to(_to), cost(_cost), rev(_rev){}
-    };
-    const int V;
-    SimpleMergeSet ms;
-    vector<vector<edge> > G;
-
-public:
-    vector<int> ans_set;
-    UndirectedMinCut(const int node_size) : V(node_size), ms(V), G(V){}
-    void add_edge(int u, int v, T cost){
-		G[u].emplace_back(v, cost, (int)G[v].size());
-        G[v].emplace_back(u, cost, (int)G[u].size() - 1);
-    }
-    T solve(){
-        T ans = numeric_limits<T>::max();
-		vector<typename Fibonacci_Heap<T, int>::node*> kp(V, nullptr);
-		vector<int> ord(V);
-		bool *visited = new bool[V]();
-		iota(ord.begin(), ord.end(), 0);
-        for(int i = V; i > 1; --i){
-            Fibonacci_Heap<T, int> fh;
-			vector<int> new_ord(i-1);
-            for(int id : ord){
-				kp[id] = fh.push(0, id);
-			}
-            for(int j = 0; j < i-1; ++j){
-                int cur = fh.top().second;
-                fh.pop();
-                visited[cur] = true, new_ord[j] = cur;
-				for(edge& e : G[cur]){
-					if(!visited[e.to]) fh.update(kp[e.to], e.cost);
-				}
-            }
-            int last_ver = fh.top().second, nx_last = new_ord[i-2];
-			for(edge& e : G[last_ver]){
-                if(e.to == nx_last) continue;
-				G[nx_last].emplace_back(e.to, e.cost, e.rev);
-                edge& reve = G[e.to][e.rev];
-				reve.to = nx_last, reve.rev = (int)G[nx_last].size() - 1;
-			}
-			for(int ver : new_ord){
-                visited[ver] = false;
-            }
-            visited[last_ver] = true;
-            if(ans > -fh.top().first){
-                ans = -fh.top().first;
-                ans_set.clear();
-                for(int cur = last_ver;;){
-                    ans_set.push_back(cur);
-                    if((cur = ms.next[cur]) == last_ver) break;
-                }
-            }
-            ms.unite(nx_last, last_ver);
-            swap(ord, new_ord);
-        }
-        delete[] visited;
-        return ans;
     }
 };

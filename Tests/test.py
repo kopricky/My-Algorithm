@@ -8,7 +8,7 @@ import sys
 
 def main():
     args = sys.argv
-    code_path, problem_url = args[1], args[2]
+    code_path, problem_id = args[1], args[2]
     abs_path = '/home/masataka/my_algorithm/Tests'
     exec_check = subprocess.call('g++ -O3 -o {}/exec ./{}'.format(abs_path, code_path).split())
     if exec_check == 1:
@@ -16,8 +16,6 @@ def main():
         return
     else:
         print('コンパイル成功')
-    parsed_url = urllib.parse.urlparse(problem_url)
-    problem_id = parsed_url.query[3:]
     url = 'https://judgedat.u-aizu.ac.jp/testcases/{}/header'.format(problem_id)
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'
     req = urllib.request.Request(url, method='GET', headers={'User-Agent':user_agent})
