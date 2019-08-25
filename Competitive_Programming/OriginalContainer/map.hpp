@@ -76,22 +76,22 @@ private:
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->get_key() > key) nx = cur->_M_left;
+            if(cur == _M_header || key < cur->get_key()) nx = cur->_M_left;
             else if(cur->get_key() < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
         if(!push) return _M_header;
-        if(cur == _M_header || cur->get_key() > key){
+        if(cur == _M_header || key < cur->get_key()){
             data_type new_data(forward<Key>(key), _Tp());
             nx = new node(move(new_data));
             cur->_M_left = nx, nx->_M_parent = cur;
             if(cur == _M_start) _M_start = nx;
-            return _M_node_count++, splay(nx);
+            return ++_M_node_count, splay(nx);
         }else{
             data_type new_data(forward<Key>(key), _Tp());
             nx = new node(move(new_data));
             cur->_M_right = nx, nx->_M_parent = cur;
-            return _M_node_count++, splay(nx);
+            return ++_M_node_count, splay(nx);
         }
     }
     template<typename Data>
@@ -101,21 +101,21 @@ private:
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->get_key() > key) nx = cur->_M_left;
+            if(cur == _M_header || key < cur->get_key()) nx = cur->_M_left;
             else if(cur->get_key() < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
-        if(cur == _M_header || cur->get_key() > key){
+        if(cur == _M_header || key < cur->get_key()){
             data_type new_data = forward<Data>(data);
             nx = new node(move(new_data));
             cur->_M_left = nx, nx->_M_parent = cur;
             if(cur == _M_start) _M_start = nx;
-            return _M_node_count++, splay(nx);
+            return ++_M_node_count, splay(nx);
         }else{
             data_type new_data = forward<Data>(data);
             nx = new node(move(new_data));
             cur->_M_right = nx, nx->_M_parent = cur;
-            return _M_node_count++, splay(nx);
+            return ++_M_node_count, splay(nx);
         }
     }
     node *_erase(node *root_ver){
@@ -125,7 +125,7 @@ private:
         if(root_ver->_M_right) root_ver->_M_right->_M_parent = nullptr;
         node *res = join(root_ver->_M_left, root_ver->_M_right, root_ver);
         delete root_ver;
-        return _M_node_count--, res;
+        return --_M_node_count, res;
     }
     node *_erase(const _Key& key){
         node *ver = _find(key);
@@ -137,9 +137,9 @@ private:
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->get_key() >= key){
+            else if(!(cur->get_key() < key)){
                 nx = cur->_M_left;
-                if(!res || cur->get_key() <= res->get_key()) res = cur;
+                if(!res || !(res->get_key() < cur->get_key())) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);
@@ -151,9 +151,9 @@ private:
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->get_key() > key){
+            else if(key < cur->get_key()){
                 nx = cur->_M_left;
-                if(!res || cur->get_key() <= res->get_key()) res = cur;
+                if(!res || !(res->get_key() < cur->get_key())) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);

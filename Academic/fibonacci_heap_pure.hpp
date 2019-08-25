@@ -10,8 +10,6 @@ public:
         unsigned short int _child;
         bool _mark;
         node *_par, *_prev, *_next, *_ch_last;
-        node(const _Key& _key) : _key(_key), _child(0),
-                _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
         node(_Key&& _key) : _key(move(_key)), _child(0),
                 _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
         void insert(node *cur){
@@ -62,9 +60,11 @@ public:
         root_erase(cur);
         delete cur;
     }
-    node *_push(const _Key& key){
+    template<typename Key>
+    node *_push(Key&& key){
         ++_size;
-        node* new_node = new node(key);
+        _Key new_key = forward<Key>(key);
+        node* new_node = new node(move(new_key));
         root_insert(new_node);
         return new_node;
     }
@@ -107,9 +107,9 @@ public:
         _minimum = next_minimum;
     }
     void _update(node *cur, const _Key& key){
-        assert(key >= (_Key)0);
+        assert(!(key < (_Key)0));
         node *change = ((cur->_key -= key) < _minimum->_key) ? cur : nullptr;
-        if(!cur->_par || cur->_par->_key <= cur->_key){
+        if(!cur->_par || !(cur->_key < cur->_par->_key)){
             if(change) _minimum = change;
             return;
         }
@@ -172,6 +172,7 @@ public:
     inline size_t size() const noexcept { return _size; }
     inline const _Key& top() const noexcept { return _minimum->_key; }
     node *push(const _Key& key){ return _push(key); }
+    node *push(_Key&& key){ return _push(move(key)); }
     void pop(){ _pop(); }
     void update(node *cur, const _Key& key){ _update(cur, key); }
     void clear(){ _clear(); _size = 0; rank.~vector<node*>(); }
@@ -189,7 +190,7 @@ public:
         fh2->_minimum->_next = fh1->_minimum;
         fh1->_minimum->_prev = fh2->_minimum;
         fh1->_size += fh2->_size;
-        if(fh1->_minimum->_key > fh2->_minimum->_key) fh1->_minimum = fh2->_minimum;
+        if(fh2->_minimum->_key < fh1->_minimum->_key) fh1->_minimum = fh2->_minimum;
         fh2->~Fibonacci_Heap();
         return fh1;
     }

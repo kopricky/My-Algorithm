@@ -75,7 +75,7 @@ private:
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->_M_key > key) nx = cur->_M_left;
+            if(cur == _M_header || key < cur->_M_key) nx = cur->_M_left;
             else if(cur->_M_key < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
@@ -86,21 +86,21 @@ private:
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
-            if(cur == _M_header || cur->_M_key > key) nx = cur->_M_left;
+            if(cur == _M_header || key < cur->_M_key) nx = cur->_M_left;
             else if(cur->_M_key < key) nx = cur->_M_right;
             else return splay(cur);
         }while(nx);
-        if(cur == _M_header || cur->_M_key > key){
+        if(cur == _M_header || key < cur->_M_key){
             _Key new_key = forward<Key>(key);
             nx = new node(move(new_key));
             cur->_M_left = nx, nx->_M_parent = cur;
             if(cur == _M_start) _M_start = nx;
-            return _M_node_count++, splay(nx);
+            return ++_M_node_count, splay(nx);
         }else{
             _Key new_key = forward<Key>(key);
             nx = new node(move(new_key));
             cur->_M_right = nx, nx->_M_parent = cur;
-            return _M_node_count++, splay(nx);
+            return ++_M_node_count, splay(nx);
         }
     }
     node *_erase(node *root_ver){
@@ -109,7 +109,7 @@ private:
         if(root_ver->_M_right) root_ver->_M_right->_M_parent = nullptr;
         node *res = join(root_ver->_M_left, root_ver->_M_right, root_ver);
         delete root_ver;
-        return _M_node_count--, res;
+        return --_M_node_count, res;
     }
     node *_erase(const _Key& key){
         node *ver = _find(key);
@@ -120,9 +120,9 @@ private:
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->_M_key >= key){
+            else if(!(cur->_M_key < key)){
                 nx = cur->_M_left;
-                if(!res || cur->_M_key <= res->_M_key) res = cur;
+                if(!res || !(res->_M_key < cur->_M_key)) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);
@@ -133,9 +133,9 @@ private:
         do {
             cur = nx;
             if(cur == _M_header){ nx = cur->_M_left; continue; }
-            else if(cur->_M_key > key){
+            else if(key < cur->_M_key){
                 nx = cur->_M_left;
-                if(!res || cur->_M_key <= res->_key) res = cur;
+                if(!res || !(res->_key < cur->_M_key)) res = cur;
             }else nx = cur->_M_right;
         }while(nx);
         splay(cur);
