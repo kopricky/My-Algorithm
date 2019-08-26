@@ -21,7 +21,7 @@ public:
     vector<int> ans;
 
     Mo(const int n) : width((int)sqrt(n)){}
-    //クエリ[l,r)
+    // クエリ[l,r)
     void insert(const int l, const int r){
         left.push_back(l), right.push_back(r);
     }
