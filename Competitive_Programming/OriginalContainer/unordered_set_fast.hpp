@@ -196,10 +196,10 @@ public:
     size_t size() const noexcept { return _data_count; }
     size_t bucket_count() const noexcept { return _bucket_count; }
     bool empty() const noexcept { return (_data_count == 0); }
-    iterator begin() const noexcept {
+    iterator begin() noexcept {
         return _buckets->empty() ? iterator(increment(_buckets)) : iterator(_buckets);
     }
-    iterator end() const noexcept { return iterator(_buckets + _bucket_count); }
+    iterator end() noexcept { return iterator(_buckets + _bucket_count); }
     iterator find(const _Key& key) const { return iterator(_find(key)); }
     size_t count(const _Key& key) const { return (_find(key) != _buckets + _bucket_count); }
     iterator insert(const _Key& key){ return iterator(find_insert(key)); }

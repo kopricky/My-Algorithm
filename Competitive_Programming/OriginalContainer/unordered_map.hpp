@@ -235,10 +235,10 @@ public:
     inline size_t size() const noexcept { return _data_count; }
     inline size_t bucket_count() const noexcept { return _bucket_count; }
     inline bool empty() const noexcept { return (_data_count == 0u); }
-    iterator begin() const noexcept {
+    iterator begin() noexcept {
         return _buckets->empty() ? iterator(increment(_buckets)) : iterator(_buckets);
     }
-    iterator end() const noexcept { return iterator(_buckets + _bucket_count); }
+    iterator end() noexcept { return iterator(_buckets + _bucket_count); }
     iterator find(const _Key& key){ return iterator(_find(key)); }
     iterator insert(const data_type& data){ return iterator(find_insert(data)); }
     iterator insert(data_type&& data){ return iterator(find_insert(move(data))); }
