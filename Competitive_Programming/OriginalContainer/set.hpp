@@ -105,8 +105,7 @@ private:
     }
     template<typename... Args>
     node *_emplace(Args&&... args){
-        _Key new_key(forward<Args>(args)...);
-        return _insert(move(new_key));
+        return _insert(_Key(forward<Args>(args)...));
     }
     node *_erase(node *root_ver){
         assert(root_ver != _M_header);

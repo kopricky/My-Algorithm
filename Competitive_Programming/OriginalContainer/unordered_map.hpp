@@ -109,6 +109,10 @@ private:
         data_type new_data = forward<Data>(data);
         return insert(cur, hash, dist, move(new_data));
     }
+    template<typename... Args>
+    bucket *emplace(Args&&... args){
+        return find_insert(data_type(forward<Args>(args)...));
+    }
     bucket *backward_shift(bucket *cur, bool next_ret){
         bucket *next = next_bucket(cur), *ret = cur;
         if(next->_dist < 1) return next_ret ? increment(cur) : cur;
@@ -238,6 +242,8 @@ public:
     iterator find(const _Key& key){ return iterator(_find(key)); }
     iterator insert(const data_type& data){ return iterator(find_insert(data)); }
     iterator insert(data_type&& data){ return iterator(find_insert(move(data))); }
+    template<typename... Args>
+    iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
     iterator erase(const _Key& key){ return iterator(erase_key(key)); }
     iterator erase(const iterator& itr){ return iterator(erase_itr(itr.bucket_ptr)); }
     void simple_erase(const _Key& key){ erase_key(key, false); }

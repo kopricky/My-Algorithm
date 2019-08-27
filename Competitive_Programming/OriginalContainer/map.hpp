@@ -120,8 +120,7 @@ private:
     }
     template<typename... Args>
     node *_emplace(Args&&... args){
-        data_type new_data(forward<Args>(args)...);
-        return _insert(move(new_data));
+        return _insert(data_type(forward<Args>(args)...));
     }
     node *_erase(node *root_ver){
         confirm_header();

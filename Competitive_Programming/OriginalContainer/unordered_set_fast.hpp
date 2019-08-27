@@ -80,6 +80,10 @@ private:
         _Key new_key = forward<Key>(key);
         return insert(cur, dist, move(new_key));
     }
+    template<typename... Args>
+    bucket *emplace(Args&&... args){
+        return find_insert(_Key(forward<Args>(args)...));
+    }
     bucket *backward_shift(bucket *cur, bool next_ret){
         bucket *next = next_bucket(cur), *ret = cur;
         if(next->_dist < 1) return next_ret ? increment(cur) : cur;
@@ -200,6 +204,8 @@ public:
     size_t count(const _Key& key) const { return (_find(key) != _buckets + _bucket_count); }
     iterator insert(const _Key& key){ return iterator(find_insert(key)); }
     iterator insert(_Key&& key){ return iterator(find_insert(move(key))); }
+    template<typename... Args>
+    iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
     iterator erase(const _Key& key){ return iterator(erase_key(key)); }
     iterator erase(const iterator& itr){ return iterator(erase_itr(itr.bucket_ptr)); }
     void simple_erase(const _Key& key){ erase_key(key, false); }
