@@ -149,7 +149,7 @@ public:
     //     for(int i = 0; i < V; ++i){
     //         delete arr[i];
     //     }
-    //     delete[] ar
+    //     delete[] arr;
     // }
     // id1 と id2 が同じ木(連結成分)に属するか
     bool connected(int id1, int id2){ return connected(arr[id1], arr[id2]); }

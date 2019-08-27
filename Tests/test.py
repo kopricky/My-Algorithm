@@ -1,3 +1,5 @@
+# コンパイル方法 python3 test.py test.cpp (problem_id)
+
 import subprocess
 import urllib.parse
 import urllib.request

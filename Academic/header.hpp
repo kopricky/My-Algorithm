@@ -16,5 +16,6 @@
 #include <unordered_map>
 #include <memory>
 #include <forward_list>
+#include <cstring>
 
 using namespace std;
