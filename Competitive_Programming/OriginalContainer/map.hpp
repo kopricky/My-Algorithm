@@ -118,6 +118,11 @@ private:
             return ++_M_node_count, splay(nx);
         }
     }
+    template<typename... Args>
+    node *_emplace(Args&&... args){
+        data_type new_data(forward<Args>(args)...);
+        return _insert(move(new_data));
+    }
     node *_erase(node *root_ver){
         confirm_header();
         assert(root_ver != _M_header);
@@ -179,7 +184,7 @@ public:
         _M_root = another._M_root, _M_header = another._M_header, _M_start = another._M_start;
         another._M_root = nullptr, another._M_header = nullptr, another._M_start = nullptr;
     }
-    // ~Map() noexcept { if(_M_root) clear_dfs(_M_root); }
+    // ~Map(){ if(_M_root) clear_dfs(_M_root); }
     friend ostream& operator<< (ostream& os, Map& mp) noexcept {
         for(auto& val : mp) os << '{' << val.first << ',' << val.second << "} ";
         return os;
@@ -195,43 +200,18 @@ public:
     bool empty() const noexcept { return size() == 0; }
     iterator begin() noexcept { return confirm_header(), iterator(_M_start); }
     iterator end() noexcept { return confirm_header(), iterator(_M_header); }
-    void clear() noexcept {
+    void clear(){
         clear_dfs(_M_root), _M_node_count = 0;
         data_type new_data;
         _M_root = _M_header = _M_start = new node(move(new_data));
     }
-    iterator find(const _Key& key) noexcept { return iterator(_find(key)); }
-    iterator insert(const data_type& data) noexcept { return iterator(_insert(data)); }
-    iterator insert(data_type&& data) noexcept { return iterator(_insert(move(data))); }
+    iterator find(const _Key& key){ return iterator(_find(key)); }
+    iterator insert(const data_type& data){ return iterator(_insert(data)); }
+    iterator insert(data_type&& data){ return iterator(_insert(move(data))); }
+    template<typename... Args>
+    iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
     iterator erase(const _Key& key){ return iterator(_erase(key)); }
     iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
-    iterator lower_bound(const _Key& key) noexcept { return iterator(_lower_bound(key)); }
-    iterator upper_bound(const _Key& key) noexcept { return iterator(_upper_bound(key)); }
-};
-
-template<class _Key, class _Tp>
-class MapIterator {
-private:
-    friend Map<_Key, _Tp>;
-    typename Map<_Key, _Tp>::node *node_ptr;
-    using iterator_category = forward_iterator_tag;
-    using value_type = pair<const _Key, _Tp>;
-    using difference_type = pair<const _Key, _Tp>;
-    using pointer = pair<const _Key, _Tp>*;
-    using reference = pair<const _Key, _Tp>&;
-
-private:
-    MapIterator(typename Map<_Key, _Tp>::node *mp) noexcept : node_ptr(mp){}
-
-public:
-    MapIterator() noexcept : node_ptr(){}
-    MapIterator(const MapIterator& itr) noexcept : node_ptr(itr.node_ptr){}
-    MapIterator& operator=(const MapIterator& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
-    MapIterator& operator=(const MapIterator&& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
-    reference operator*() const { return node_ptr->_M_data; }
-    pointer operator->() const { return &(node_ptr->_M_data); }
-    MapIterator& operator++() noexcept { return node_ptr = Map<_Key, _Tp>::increment(node_ptr), *this; }
-    MapIterator operator++(int) const noexcept { return MapIterator(Map<_Key, _Tp>::increment(this->node_ptr)); }
-    bool operator==(const MapIterator& itr) const noexcept { return !(*this != itr); };
-    bool operator!=(const MapIterator& itr) const noexcept { return node_ptr != itr.node_ptr; }
+    iterator lower_bound(const _Key& key){ return iterator(_lower_bound(key)); }
+    iterator upper_bound(const _Key& key){ return iterator(_upper_bound(key)); }
 };

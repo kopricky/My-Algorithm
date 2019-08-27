@@ -11,7 +11,7 @@ private:
         node(_Key&& key) noexcept
             : _M_key(move(key)), _M_left(nullptr), _M_right(nullptr), _M_parent(nullptr){}
         inline bool isRoot() const noexcept { return !_M_parent; }
-        void rotate(const bool right) noexcept {
+        void rotate(const bool right){
             node *p = _M_parent, *g = p->_M_parent;
             if(right){
                 if((p->_M_left = _M_right)) _M_right->_M_parent = p;
@@ -28,7 +28,7 @@ private:
     friend SetIterator<_Key>;
     size_t _M_node_count;
     node *_M_root, *_M_header, *_M_start;
-    node *splay(node *u) noexcept {
+    node *splay(node *u){
         while(!(u->isRoot())){
             node *p = u->_M_parent, *gp = p->_M_parent;
             if(p->isRoot()){
@@ -44,7 +44,7 @@ private:
         }
         return _M_root = u;
     }
-    static node *increment(node *ver) noexcept {
+    static node *increment(node *ver){
         if(ver->_M_right){
             ver = ver->_M_right;
             while(ver->_M_left) ver = ver->_M_left;
@@ -55,7 +55,7 @@ private:
         }
         return ver;
     }
-    static node *decrement(node *ver) noexcept {
+    static node *decrement(node *ver){
         if(ver->_M_left){
             ver = ver->_M_left;
             while(ver->_M_right) ver = ver->_M_right;
@@ -66,12 +66,12 @@ private:
         }
         return ver;
     }
-    node *join(node *ver1, node *ver2, const node *ver) noexcept {
+    node *join(node *ver1, node *ver2, const node *ver){
         while(ver2->_M_left) ver2 = ver2->_M_left;
         splay(ver2)->_M_left = ver1;
         return ver1 ? (ver1->_M_parent = ver2) : (_M_start = ver2);
     }
-    node *_find(const _Key& key) noexcept {
+    node *_find(const _Key& key){
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
@@ -82,7 +82,7 @@ private:
         return _M_header;
     }
     template<typename Key>
-    node *_insert(Key&& key) noexcept {
+    node *_insert(Key&& key){
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
@@ -103,6 +103,11 @@ private:
             return ++_M_node_count, splay(nx);
         }
     }
+    template<typename... Args>
+    node *_emplace(Args&&... args){
+        _Key new_key(forward<Args>(args)...);
+        return _insert(move(new_key));
+    }
     node *_erase(node *root_ver){
         assert(root_ver != _M_header);
         if(root_ver->_M_left) root_ver->_M_left->_M_parent = nullptr;
@@ -115,7 +120,7 @@ private:
         node *ver = _find(key);
         return _erase(ver);
     }
-    node *_lower_bound(const _Key& key) noexcept {
+    node *_lower_bound(const _Key& key){
         node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
@@ -128,7 +133,7 @@ private:
         splay(cur);
         return res ? res : _M_header;
     }
-    node *_upper_bound(const _Key& key) noexcept {
+    node *_upper_bound(const _Key& key){
         node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
@@ -152,7 +157,7 @@ public:
         _Key new_key = _Key();
         _M_root = _M_header = _M_start = new node(move(new_key));
     }
-    // ~Set() noexcept { if(_M_root) clear_dfs(_M_root); }
+    // ~Set(){ if(_M_root) clear_dfs(_M_root); }
     friend ostream& operator<< (ostream& os, Set& st) noexcept {
         for(auto& val : st) os << val << " ";
         return os;
@@ -161,18 +166,21 @@ public:
     bool empty() const noexcept { return size() == 0; }
     iterator begin() const noexcept { return iterator(_M_start); }
     iterator end() const noexcept { return iterator(_M_header); }
-    void clear() noexcept {
+    void clear(){
         clear_dfs(_M_root), _M_node_count = 0;
         _Key new_key = _Key();
         _M_root = _M_header = _M_start = new node(move(new_key));
     }
-    iterator find(const _Key& key) noexcept { return iterator(_find(key)); }
+    iterator find(const _Key& key){ return iterator(_find(key)); }
     size_t count(const _Key& key){ return (_find(key) != _M_header); }
-    iterator insert(const _Key& key) noexcept { return iterator(_insert(key)); }
+    iterator insert(const _Key& key){ return iterator(_insert(key)); }
+    iterator insert(_Key&& key){ return iterator(_insert(move(key))); }
+    template<typename... Args>
+    iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
     iterator erase(const _Key& key){ return iterator(_erase(key)); }
     iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
-    iterator lower_bound(const _Key& key) noexcept { return iterator(_lower_bound(key)); }
-    iterator upper_bound(const _Key& key) noexcept { return iterator(_upper_bound(key)); }
+    iterator lower_bound(const _Key& key){ return iterator(_lower_bound(key)); }
+    iterator upper_bound(const _Key& key){ return iterator(_upper_bound(key)); }
 };
 
 template<class _Key>
