@@ -6,8 +6,8 @@
 class vanEmdeBoasTree
 {
 private:
-    const size_t LENGTH;
-    size_t _size;
+    const uint32_t LENGTH;
+    uint32_t _size;
     struct layer {
         static const uint32_t THRESHOULD = 64;
         uint32_t length, num_blocks, quo, rem;
@@ -201,7 +201,7 @@ private:
     };
     layer base_layer;
 public:
-    vanEmdeBoasTree(const size_t length) : LENGTH(length), _size(0), base_layer(length){}
+    vanEmdeBoasTree(const uint32_t length) : LENGTH(length), _size(0), base_layer(length){}
     vanEmdeBoasTree(const vanEmdeBoasTree&) = default;
     vanEmdeBoasTree(vanEmdeBoasTree&&) = default;
     vanEmdeBoasTree& operator=(const vanEmdeBoasTree&) = default;
@@ -212,13 +212,13 @@ public:
         return os;
     }
     bool empty() const noexcept { return (_size == 0); }
-    size_t size() const noexcept { return _size; }
-    size_t max_size() const noexcept { return LENGTH; }
+    uint32_t size() const noexcept { return _size; }
+    uint32_t max_size() const noexcept { return LENGTH; }
     bool find(const uint32_t value) const noexcept {
         if(value >= LENGTH) return false;
         return base_layer.find(value);
     }
-    size_t count(const uint32_t value) const noexcept {
+    uint32_t count(const uint32_t value) const noexcept {
         return find(value);
     }
     int32_t max() const noexcept { return base_layer.max(); }
