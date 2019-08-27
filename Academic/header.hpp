@@ -17,5 +17,6 @@
 #include <memory>
 #include <forward_list>
 #include <cstring>
+#include <cstdint>
 
 using namespace std;
