@@ -1,4 +1,4 @@
-#include "header.hpp"
+#include "./header.hpp"
 
 template<typename _Key, typename _Tp> class Fibonacci_Heap
 {
@@ -227,4 +227,45 @@ public:
         cout << endl;
         assert(sz == _size);
     }
+};
+
+template<typename T> class Prim {
+public:
+	struct edge{
+		int to;
+		T cost;
+	};
+	const int V;
+    const T inf = numeric_limits<T>::max();
+	vector<vector<edge> > G;
+	vector<T> d;
+    Fibonacci_Heap<T, int> fheap;
+    vector<typename Fibonacci_Heap<T, int>::node*> nodes;
+	Prim(int node_size)
+        : V(node_size), G(V), d(V, inf), fheap(), nodes(V, nullptr){}
+	void add_edge(int u, int v, T val){
+		G[u].push_back((edge){v, val}), G[v].push_back((edge){u, val});
+	}
+	T solve(){
+		T res = 0;
+		d[0] = 0;
+        nodes[0] = fheap.push(0, 0);
+		while(!fheap.empty()){
+			const int v = fheap.top().second;
+            res += fheap.top().first;
+			fheap.pop();
+            d[v] = -1;
+			for(auto& e : G[v]){
+				if(d[e.to] >= 0 && d[e.to] > e.cost){
+                    if(d[e.to] == inf){
+                        nodes[e.to] = fheap.push(e.cost, e.to);
+                    }else{
+                        fheap.update(nodes[e.to], d[e.to] - e.cost);
+                    }
+                    d[e.to] = e.cost;
+				}
+			}
+		}
+		return res;
+	}
 };

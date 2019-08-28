@@ -90,9 +90,9 @@ private:
                 cur = next;
             }
         }
-        unsigned int max_rank = ceil(ceil2(_size) * FACTOR);
         node *next_minimum = _minimum->_next;
-        if(rank.size() <= max_rank) rank.resize(max_rank + 1);
+        const unsigned int max_rank = ceil(ceil2(_size) * FACTOR);
+        rank.resize(max_rank + 1);
         for(node*& cur : rank) cur = nullptr;
         for(node *cur = next_minimum; cur != _minimum;){
             if(cur->get_key() < next_minimum->get_key()) next_minimum = cur;

@@ -85,9 +85,9 @@ private:
                 cur = next;
             }
         }
-        unsigned int max_rank = ceil(ceil2(_size) * FACTOR);
         node *next_minimum = _minimum->_next;
-        if(rank.size() <= max_rank) rank.resize(max_rank + 1);
+        const unsigned int max_rank = ceil(ceil2(_size) * FACTOR);
+        rank.resize(max_rank + 1);
         for(node*& cur : rank) cur = nullptr;
         for(node *cur = next_minimum; cur != _minimum;){
             if(cur->get_key() < next_minimum->get_key()) next_minimum = cur;
@@ -237,7 +237,6 @@ public:
     const int V;
 	vector<vector<edge> > G;
 	vector<T> d;
-	using pti = pair<T,int>;
     Fibonacci_Heap<T, int> fheap;
     typename Fibonacci_Heap<T, int>::node** keep;
 	Dijkstra(int node_size) : V(node_size), G(V), d(V, numeric_limits<T>::max()),
@@ -253,9 +252,8 @@ public:
 		d[s] = 0;
 		keep[s] = fheap.push(0, s);
 		while(!fheap.empty()){
-			int v = fheap.top().second, val = fheap.top().first;
-			fheap.pop();
-			if(d[v] < val) continue;
+            int v = fheap.top().second;
+            fheap.pop();
 			for(auto& w : G[v]){
 				if(d[w.to] > d[v] + w.cost){
                     if(d[w.to] == numeric_limits<T>::max()){
