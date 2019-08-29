@@ -1,7 +1,7 @@
 #include "./header.hpp"
 
 // 負の有向閉路が存在する場合の最小費用流問題を解くアルゴリズム.
-// 計算量 O(min(m^2 n^2 log(n cap_min), m^3 n^2 log n)
+// 計算量 O(min(m^2 n^2 log(n |cost_min|), m^3 n^2 log n)
 
 template<class edge> class Dinic {
 private:
@@ -91,10 +91,12 @@ private:
         }
         if(*min_element(dp[V].begin(), dp[V].end()) == inf) return make_pair(-1, -1);
         int start = -1;
-        Cot tnum = inf / V, tden = 1;
+        Cot tnum = inf / V;
+        int tden = 1;
         for(int i = 0; i < V; ++i){
             if(dp[V][i] == inf) continue;
-            Cot num = -inf / V, den = 1;
+            Cot num = -inf / V;
+            int den = 1;
             for(int k = 0; k < V; ++k){
                 if(dp[k][i] == inf) continue;
                 if(num * (V-k) <= den * (dp[V][i] - dp[k][i])){
@@ -108,7 +110,7 @@ private:
                 }
             }
         }
-        return (tnum < 0) ? make_pair(start, (int)tden) : make_pair(-1, -1);
+        return (tnum < 0) ? make_pair(start, tden) : make_pair(-1, -1);
     }
     bool update(Cot& res){
         int level = V, start, length;
