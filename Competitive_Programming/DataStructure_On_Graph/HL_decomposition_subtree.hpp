@@ -4,7 +4,7 @@
 // 部分木:O(log(n)), パス:O(log^2(n))
 
 class HLdecomposition{
-public:
+private:
     int V;
     vector<vector<int> > G;
     vector<int> stsize, parent, pathtop, in, out;

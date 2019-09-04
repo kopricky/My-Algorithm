@@ -28,6 +28,12 @@ private:
     friend SetIterator<_Key>;
     size_t _M_node_count;
     node *_M_root, *_M_header, *_M_start;
+    inline void confirm_header(){
+        if(!_M_header){
+            _Key new_key;
+            _M_root = _M_header = _M_start = new node(move(new_key));
+        }
+    }
     node *splay(node *u){
         while(!(u->isRoot())){
             node *p = u->_M_parent, *gp = p->_M_parent;
@@ -72,6 +78,7 @@ private:
         return ver1 ? (ver1->_M_parent = ver2) : (_M_start = ver2);
     }
     node *_find(const _Key& key){
+        confirm_header();
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
@@ -83,6 +90,7 @@ private:
     }
     template<typename Key>
     node *_insert(Key&& key){
+        confirm_header();
         node *cur = nullptr, *nx = _M_root;
         do {
             cur = nx;
@@ -108,6 +116,7 @@ private:
         return _insert(_Key(forward<Args>(args)...));
     }
     node *_erase(node *root_ver){
+        confirm_header();
         assert(root_ver != _M_header);
         if(root_ver->_M_left) root_ver->_M_left->_M_parent = nullptr;
         if(root_ver->_M_right) root_ver->_M_right->_M_parent = nullptr;
@@ -120,6 +129,7 @@ private:
         return _erase(ver);
     }
     node *_lower_bound(const _Key& key){
+        confirm_header();
         node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
@@ -133,6 +143,7 @@ private:
         return res ? res : _M_header;
     }
     node *_upper_bound(const _Key& key){
+        confirm_header();
         node *cur = nullptr, *nx = _M_root, *res = nullptr;
         do {
             cur = nx;
@@ -152,9 +163,18 @@ private:
     }
 
 public:
-    Set() noexcept : _M_node_count(0){
-        _Key new_key = _Key();
-        _M_root = _M_header = _M_start = new node(move(new_key));
+    Set() noexcept : _M_node_count(0), _M_root(nullptr), _M_header(nullptr), _M_start(nullptr){}
+    Set(const Set&) = delete;
+    Set(Set&& another) : _M_node_count(move(another._M_node_count)){
+        _M_root = another._M_root, _M_header = another._M_header, _M_start = another._M_start;
+        another._M_root = nullptr, another._M_header = nullptr, another._M_start = nullptr;
+    }
+    Set& operator=(const Set&) = delete;
+    Set& operator=(Set&& another){
+        this->~Set();
+        _M_node_count = another._M_node_count;
+        _M_root = another._M_root, _M_header = another._M_header, _M_start = another._M_start;
+        another._M_root = nullptr, another._M_header = nullptr, another._M_start = nullptr;
     }
     // ~Set(){ if(_M_root) clear_dfs(_M_root); }
     friend ostream& operator<< (ostream& os, Set& st) noexcept {
@@ -163,8 +183,8 @@ public:
     }
     size_t size() const noexcept { return _M_node_count; }
     bool empty() const noexcept { return size() == 0; }
-    iterator begin() noexcept { return iterator(_M_start); }
-    iterator end() noexcept { return iterator(_M_header); }
+    iterator begin() noexcept { return confirm_header(), iterator(_M_start); }
+    iterator end() noexcept { return confirm_header(), iterator(_M_header); }
     void clear(){
         clear_dfs(_M_root), _M_node_count = 0;
         _Key new_key = _Key();

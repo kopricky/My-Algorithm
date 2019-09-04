@@ -30,8 +30,8 @@ public:
         }
         void eval(){
             sz = 1, al = val;
-            if(left) left->push(), sz += left->sz, al = (rev ? opr2(al, left->al) : opr2(left->al, al));
-            if(right) right->push(), sz += right->sz, al = (rev ? opr2(right->al, al) : opr2(al, right->al));
+            if(left) left->push(), sz += left->sz, al = opr2(left->al, al);
+            if(right) right->push(), sz += right->sz, al = opr2(al, right->al);
         }
     };
     static const T id1 = (T)0;

@@ -214,3 +214,30 @@ public:
     iterator lower_bound(const _Key& key){ return iterator(_lower_bound(key)); }
     iterator upper_bound(const _Key& key){ return iterator(_upper_bound(key)); }
 };
+
+template<class _Key, class _Tp>
+class MapIterator {
+private:
+    friend Map<_Key, _Tp>;
+    typename Map<_Key, _Tp>::node *node_ptr;
+    using iterator_category = forward_iterator_tag;
+    using value_type = pair<const _Key, _Tp>;
+    using difference_type = pair<const _Key, _Tp>;
+    using pointer = pair<const _Key, _Tp>*;
+    using reference = pair<const _Key, _Tp>&;
+
+private:
+    MapIterator(typename Map<_Key, _Tp>::node *mp) noexcept : node_ptr(mp){}
+
+public:
+    MapIterator() noexcept : node_ptr(){}
+    MapIterator(const MapIterator& itr) noexcept : node_ptr(itr.node_ptr){}
+    MapIterator& operator=(const MapIterator& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
+    MapIterator& operator=(const MapIterator&& itr) & noexcept { return node_ptr = itr.node_ptr, *this; }
+    reference operator*() const { return node_ptr->_M_data; }
+    pointer operator->() const { return &(node_ptr->_M_data); }
+    MapIterator& operator++() noexcept { return node_ptr = Map<_Key, _Tp>::increment(node_ptr), *this; }
+    MapIterator operator++(int) const noexcept { return MapIterator(Map<_Key, _Tp>::increment(this->node_ptr)); }
+    bool operator==(const MapIterator& itr) const noexcept { return !(*this != itr); };
+    bool operator!=(const MapIterator& itr) const noexcept { return node_ptr != itr.node_ptr; }
+};
