@@ -36,7 +36,9 @@ public:
     }
     void build(){
         int tm = 0;
-        BuildStsize(0, -1), BuildPath(0, -1, tm);
+        BuildStsize(0, -1);
+        pathtop[0] = 0;
+        BuildPath(0, -1, tm);
     }
     inline int get(int a){
         return in[a];
