@@ -37,9 +37,9 @@ public:
     void build(int _root){
         root = _root;
         int tm = 0;
-        BuildStsize(0, -1);
-        pathtop[0] = 0;
-        BuildPath(0, -1, tm);
+        BuildStsize(root, -1);
+        pathtop[root] = root;
+        BuildPath(root, -1, tm);
     }
     //元の頂点のインデックスの配列上でのidを返す
     inline int get(int a){
