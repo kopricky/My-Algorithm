@@ -13,7 +13,7 @@ private:
                 dfs(v, u, k, i);
                 low[u] = min(low[u], low[v]);
                 if(ord[u] < low[v]){
-                    bridge.push_back(P(u, v));
+                    bridge.emplace_back(u, v);
                     check[u][i].second = 1;
                     check[v][check[u][i].first].second = 1;
                 }
@@ -55,21 +55,21 @@ private:
         }
     }
 public:
-	using P = pair<int, int>;
 	int V, kind;
 	vector<vector<int> > G, tree;
-	vector<vector<P> > check;
-    vector<P> bridge;
+	vector<vector<pair<int, int> > > check;
+    vector<pair<int, int> > bridge;
 	vector<int> ord, low, cmp;
     bool *visit;
-	biconnected(int node_size) : V(node_size), kind(0), G(V), check(V), ord(V), low(V)
-									,cmp(V), visit(new bool[V]()){}
+	biconnected(int node_size)
+        : V(node_size), kind(0), G(V), check(V), ord(V), low(V)
+			,cmp(V), visit(new bool[V]()){}
     // ~biconnected(){ delete[] visit; }
     void add_edge(int u, int v)
     {
         G[u].push_back(v), G[v].push_back(u);
-        check[u].push_back(P((int)check[v].size(), 0));
-        check[v].push_back(P((int)check[u].size()-1, 0));
+        check[u].emplace_back((int)check[v].size(), 0);
+        check[v].emplace_back((int)check[u].size()-1, 0);
     }
     // 橋を検出する.
 	void detect_bridge(){
