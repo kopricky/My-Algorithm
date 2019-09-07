@@ -7,7 +7,8 @@ class Hungarian
 private:
     int V, matching_size;
     vector<vector<int> > graph;
-    vector<int> potential, allocate, reverse_alloc;
+    vector<T> potential;
+    vector<int> allocate, reverse_alloc;
     T total_cost;
     inline T diff(const vector<vector<T> >& cost, int _i, int _j){
         return cost[_i][_j-V] - potential[_i] - potential[_j];
