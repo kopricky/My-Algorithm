@@ -1,7 +1,7 @@
 // math さんのブログを参照
 // http://math314.hateblo.jp/entry/2015/05/07/014908
 
-#include "../header.hpp"
+#include "./header.hpp"
 
 #define MOD 1000000007
 

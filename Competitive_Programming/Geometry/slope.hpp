@@ -1,6 +1,6 @@
-//mapやsetにつめて傾きでソートしたいときに誤差死しないために...
+// map や set につめて傾きでソートしたいときに誤差死しないために...
 struct slope{
-    int x,y;
+    int x, y;
     slope(){}
     slope(int a,int b) : x(a), y(b){}
     bool operator< (const slope& another) const {

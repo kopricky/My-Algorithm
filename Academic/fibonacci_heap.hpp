@@ -1,6 +1,6 @@
 #include "header.hpp"
 
-template<typename _Key, typename _Tp> class Fibonacci_Heap
+template<typename _Key, typename _Tp> class FibonacciHeap
 {
 public:
     using data_type = pair<_Key, _Tp>;
@@ -108,7 +108,7 @@ private:
         _delete(_minimum);
         _minimum = next_minimum;
     }
-    void _update(node *cur, const _Key& key){
+    void _decrease_key(node *cur, const _Key& key){
         assert(!(key < (_Key)0));
         node *change = ((cur->_data.first -= key) < _minimum->get_key()) ? cur : nullptr;
         if(!cur->_par || !(cur->get_key() < cur->_par->get_key())){
@@ -158,33 +158,33 @@ private:
     }
 
 public:
-    Fibonacci_Heap() noexcept : _size(0u), _minimum(nullptr){}
-    Fibonacci_Heap(const Fibonacci_Heap&) = delete;
-    Fibonacci_Heap(Fibonacci_Heap&& another)
+    FibonacciHeap() noexcept : _size(0u), _minimum(nullptr){}
+    FibonacciHeap(const FibonacciHeap&) = delete;
+    FibonacciHeap(FibonacciHeap&& another)
         : _size(move(another._size)), rank(move(another.rank)){
         _minimum = another._minimum, another._minimum = nullptr;
     }
-    Fibonacci_Heap& operator=(const Fibonacci_Heap&) = delete;
-    Fibonacci_Heap& operator=(Fibonacci_Heap&& another){
+    FibonacciHeap& operator=(const FibonacciHeap&) = delete;
+    FibonacciHeap& operator=(FibonacciHeap&& another){
         _size = move(another._size), rank = move(another.rank);
         _clear(), _minimum = another._minimum, another._minimum = nullptr;
     }
-    // ~Fibonacci_Heap(){ _clear(); }
+    // ~FibonacciHeap(){ _clear(); }
     inline bool empty() const noexcept { return (_size == 0); }
     inline size_t size() const noexcept { return _size; }
     inline const data_type& top() const noexcept { return _minimum->_data; }
     template<typename Key, typename Data>
     node *push(Key&& key, Data&& data){ return _push(forward<Key>(key), forward<Data>(data)); }
     void pop(){ _pop(); }
-    void update(node *cur, const _Key& key){ _update(cur, key); }
+    void decrease_key(node *cur, const _Key& key){ _decrease_key(cur, key); }
     void clear(){ _clear(); _size = 0; rank.~vector<node*>(); }
-    friend Fibonacci_Heap *unite(Fibonacci_Heap *fh1, Fibonacci_Heap *fh2){
+    friend FibonacciHeap *meld(FibonacciHeap *fh1, FibonacciHeap *fh2){
         if(fh2->_size == 0){
-            fh2->~Fibonacci_Heap();
+            fh2->~FibonacciHeap();
             return fh1;
         }
         if(fh1->_size == 0){
-            fh1->~Fibonacci_Heap();
+            fh1->~FibonacciHeap();
             return fh2;
         }
         fh1->_minimum->_prev->_next = fh2->_minimum->_next;
@@ -193,7 +193,7 @@ public:
         fh1->_minimum->_prev = fh2->_minimum;
         fh1->_size += fh2->_size;
         if(fh2->_minimum->get_key() < fh1->_minimum->get_key()) fh1->_minimum = fh2->_minimum;
-        fh2->~Fibonacci_Heap();
+        fh2->~FibonacciHeap();
         return fh1;
     }
 

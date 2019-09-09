@@ -1,4 +1,4 @@
-#include "../header.hpp"
+#include "./header.hpp"
 
 //接尾辞配列および最長共通接頭辞の配列(lcp)を求める(O(n))
 //lcp(高さ配列)も計算するときはコメントアウトをはずす

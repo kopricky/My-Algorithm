@@ -1,4 +1,4 @@
-#include "SA_IS.hpp"
+#include "./SA_IS.hpp"
 
 //criが連続部分文字列として含まれるかをチェック
 bool contain(SA_IS& ag,string& cri){

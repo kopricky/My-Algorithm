@@ -8,7 +8,7 @@ private:
     byte mask[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
     #define tget(i) !!(t[(i)>>3]&mask[(i)&7])
     #define tset(i, b) t[(i)>>3]=(b) ? (mask[(i)&7]|t[(i)>>3]) : ((~mask[(i)&7])&t[(i)>>3])
-    #define chr(i) (cs==sizeof(int)?((int*)s)[i]:((byte *)s)[i])
+    #define chr(i) (cs==sizeof(int)?((int*)s)[i]:((byte*)s)[i])
     #define isLMS(i) (i>0 && tget(i) && !tget(i-1))
     void getBuckets(byte *s, int *bkt, int n, int K, int cs, bool end=true){
         fill(bkt, bkt + K + 1, 0);
@@ -38,7 +38,9 @@ private:
     }
     void make_sa(byte *s, int n, int K=128, int cs=1){
         byte t[(n >> 3)+1];
-        int bkt[K+1], n1 = 0, name = 0;
+        memset(t, 0, sizeof(t));
+        int bkt[K+1] = {};
+        int n1 = 0, name = 0;
         tset(n-2, 0), tset(n-1, 1);
         for(int i = n - 3; i >=0; i--){
             tset(i, (chr(i)<chr(i+1) || (chr(i)==chr(i+1) && tget(i+1))));
@@ -100,8 +102,8 @@ private:
         induceSAs(t, s, bkt, n, K, cs);
     }
     void make_lcp(){
-        lcp = new int[sz+1];
-        rnk = new int[sz+1];
+        lcp = new int[sz+1]();
+        rnk = new int[sz+1]();
         for(int i = 0; i <= sz; i++) rnk[sa[i]] = i;
         lcp[0] = 0;
         for(int i = 0, h = 0; i < sz; i++){
@@ -133,13 +135,13 @@ public:
     SA_IS(string& arg){
         CS = arg;
         sz = (int)arg.size();
-        sa = new int[sz+1];
+        sa = new int[sz+1]();
         S = (byte*)arg.c_str();
         make_sa(S, sz+1);
         make_lcp();
     }
-    ~SA_IS(){
-        delete[] sa;
-        // delete[] lcp; delete[] rnk;
-    }
+    // ~SA_IS(){
+    //     delete[] sa;
+    //     delete[] lcp; delete[] rnk;
+    // }
 };
