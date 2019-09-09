@@ -1,6 +1,5 @@
 #include "./header.hpp"
 
-//接尾辞配列および最長共通接頭辞の配列(lcp)を求める(O(n))
 //lcp(高さ配列)も計算するときはコメントアウトをはずす
 class SA_IS
 {
@@ -9,7 +8,7 @@ private:
     byte mask[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
     #define tget(i) !!(t[(i)>>3]&mask[(i)&7])
     #define tset(i, b) t[(i)>>3]=(b) ? (mask[(i)&7]|t[(i)>>3]) : ((~mask[(i)&7])&t[(i)>>3])
-    #define chr(i) (cs==sizeof(int)?((int*)s)[i]:((byte *)s)[i])
+    #define chr(i) (cs==sizeof(int)?((int*)s)[i]:((byte*)s)[i])
     #define isLMS(i) (i>0 && tget(i) && !tget(i-1))
     void getBuckets(byte *s, int *bkt, int n, int K, int cs, bool end=true){
         fill(bkt, bkt + K + 1, 0);
@@ -101,17 +100,16 @@ private:
         induceSAs(t, s, bkt, n, K, cs);
     }
     void make_lcp(){
-        lcp = new int[sz+1];
-        rnk = new int[sz+1];
-        for(int i = 0; i < sz; i++){
-            rnk[sa[i]] = i;
-        }
+        lcp = new int[sz+1]();
+        rnk = new int[sz+1]();
+        for(int i = 0; i <= sz; i++) rnk[sa[i]] = i;
         for(int i = 0, h = 0; i < sz; i++){
-            if(rnk[i] < sz - 1){
-                for(int j = sa[rnk[i]+1]; CS[i+h] == CS[j+h]; h++);
-                lcp[rnk[i]] = h;
-                if(h > 0) --h;
+            int j = sa[rnk[i]-1];
+            if(h > 0) h--;
+            for(;j+h<sz&&i+h<sz;h++){
+                if(CS[j+h] != CS[i+h]) break;
             }
+            lcp[rnk[i]-1] = h;
         }
     }
 public:
@@ -134,13 +132,13 @@ public:
     SA_IS(string& arg){
         CS = arg;
         sz = (int)arg.size();
-        sa = new int[sz+1];
+        sa = new int[sz+1]();
         S = (byte*)arg.c_str();
         make_sa(S, sz+1);
-        make_lcp();
+        // make_lcp();
     }
-    ~SA_IS(){
-        delete[] sa;
-        // delete[] lcp; delete[] rnk;
-    }
+    // ~SA_IS(){
+    //     delete[] sa;
+    //     delete[] lcp; delete[] rnk;
+    // }
 };

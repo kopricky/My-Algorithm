@@ -1,6 +1,6 @@
 #include "./header.hpp"
 
-// 高速ではあるが自作 unordered_set, unordered_map が少し不安なので通常版(こちらもかなり高速)の方がいいかも
+// 高速ではあるが自作の unordered_set, unordered_map が少し不安なので通常版の dynamic_connectivity.hpp(こちらもかなり高速)の方がいいかも
 template<class _Key, class _Hash, bool DOWNSIZE> class UnorderedSetIterator;
 
 template<class _Key, class _Hash = hash<_Key>, bool DOWNSIZE = false>
