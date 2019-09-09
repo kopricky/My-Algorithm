@@ -36,13 +36,13 @@ ll pollard(ll n){
     ll x, ys;
     do {
         x = y;
-        rep(i, r){
+        for(int i = 0; i < r; ++i){
             y = func(y, n, c);
         }
         ll k = 0;
         do {
             ys = y;
-            rep(i, min(m, r-k)){
+            for(int i = 0; i < min(m, r-k); ++i){
                 y = func(y, n, c);
                 q = (__int128)q * abs(x-y) % n;
             }
@@ -78,7 +78,7 @@ vector<pair<ll,int> > prime_factorize(ll n)
     const int LOOP = 10000;
     while(n > 1){
         ll d;
-        rep(itr, LOOP){
+        for(int itr = 0; itr < LOOP; ++itr){
             d = pollard(n);
             if(d >= 0) break;
         }
