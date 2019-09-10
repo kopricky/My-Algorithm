@@ -34,7 +34,7 @@ public:
         while(a != b){
             if(a % 2) cmn(res1, node[a++]);
             if(b % 2) cmn(res2, node[--b]);
-            a >>= 1, b>>= 1;
+            a >>= 1, b >>= 1;
         }
         return min(res1, res2);
     }

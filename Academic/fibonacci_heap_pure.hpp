@@ -10,7 +10,7 @@ public:
         unsigned short int _child;
         bool _mark;
         node *_par, *_prev, *_next, *_ch_last;
-        node(_Key&& _key) : _key(move(_key)), _child(0),
+        node(_Key&& _key) : _key(move(_key)), _child(0), _mark(false),
                 _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
         void insert(node *cur){
             if(_ch_last) insert_impl(cur, _ch_last);

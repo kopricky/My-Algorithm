@@ -1,129 +1,341 @@
 #include "header.hpp"
 
-// 最小全域有向木(O(mlogn))
-// joisinoさんのブログを参照
-// http://joisino.hatenablog.com/entry/2017/01/11/230141
-// Tarjan 1977
-class UnionFind {
+template<typename _Tp>
+class LazyUnionFind {
 private:
-    int sz; vector<int> par;
+    const int sz;
+    vector<_Tp> diff, lazy;
+    vector<int> par, nrank;
+    pair<int, _Tp> _find(int x){
+        if(par[x] == x) return {x, (_Tp)0};
+        auto res = _find(par[x]);
+        par[x] = res.first, diff[x] += res.second;
+        return {res.first, res.second + lazy[x]};
+    }
 public:
-    UnionFind(){}
-    UnionFind(int node_size) : sz(node_size), par(sz){
-        iota(par.begin(),par.end(),0);
+    LazyUnionFind(const int node_size)
+        : sz(node_size), diff(sz, (_Tp)0), lazy(sz, (_Tp)0), par(sz), nrank(sz, 0){
+        iota(par.begin(), par.end(), 0);
     }
-    int find(int x){
-        if(par[x] == x) return x;
-        else return par[x] = find(par[x]);
+    int find(int x){ return _find(x).first; }
+    _Tp find_value(int x){
+        _find(x);
+        return (par[x] == x) ? diff[x] : (diff[x] + lazy[par[x]]);
     }
-    void unite(int x,int y){
+    void change_value(_Tp value, int x){
+        diff[x] += value, lazy[x] += value;
+    }
+    int unite(int x, int y){
         x = find(x), y = find(y);
-        if(x == y) return;
-    	par[x] = y;
-    }
-    bool same(int x,int y){
-        return find(x) == find(y);
-    }
-};
-
-//マージ可能なヒープ(skew heap)
-template<typename T> class LazyHeap {
-public:
-    struct node{
-        node *l, *r;
-        T val, lazy;
-        int id;
-        node(T t, int i) : l(nullptr), r(nullptr), val(t), lazy(0), id(i){}
-    };
-    void push(node* a){
-        if(a->l) a->l->lazy += a->lazy;
-        if(a->r) a->r->lazy += a->lazy;
-        a->val += a->lazy;
-        a->lazy = 0;
-    }
-    node* meld(node* a, node* b){
-        if(!a) return b;
-        if(!b) return a;
-        if(a->val+a->lazy > b->val+b->lazy) swap(a, b);
-        push(a);
-        a->r = meld(a->r,b);
-        swap(a->l, a->r);
-        return a;
-    }
-    node* insert(node* org, T val, int i){
-        node* p = new node(val, i);
-        return meld(org, p);
-    }
-    node* erase(node* p){
-        push(p);
-        return meld(p->l, p->r);
+        if(x == y) return -1;
+    	if(nrank[x] < nrank[y]) swap(x,y);
+        par[y] = x, diff[y] -= lazy[x], lazy[y] -= lazy[x];
+        if(nrank[x] == nrank[y]) nrank[x]++;
+        return x;
     }
 };
 
-template<typename T> class Arborescence {
+template<class edge, typename _Tp>
+class FibonacciHeap
+{
 public:
-    // ここでの edge の cost は枝の重みというよりは枝を取り替えたときの差分を持っている
-    struct edge{
-        int from, to;
-        T cost;
-    };
-    int V;
-    LazyHeap<T> heap;
-    vector<edge> es;
-    vector<int> used, from, from_cost;
-    // 各頂点ごとに入ってくる辺を skew heap で管理
-    vector<typename LazyHeap<T>::node*> come;
-    Arborescence(int node_size) : V(node_size), used(V, 0),
-        from(V), from_cost(V), come(V, nullptr){}
-    void add_edge(int u, int v, T cost){
-        es.push_back((edge){u,v,cost});
-    }
-    //rを根とする最小全域有向木のコストを計算
-    T solve(int r){
-        used[r] = 2;
-        UnionFind uf(V);
-        for(int i = 0; i < (int)es.size(); i++){
-            edge& e = es[i];
-            come[e.to] = heap.insert(come[e.to], e.cost, i);
+    using data_type = const edge*;
+    class node
+    {
+    public:
+        data_type _data;
+        unsigned short int _child;
+        bool _mark;
+        node *_par, *_prev, *_next, *_ch_last;
+        node(data_type data) : _data(data), _child(0), _mark(false),
+            _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
+        void insert(node *cur){
+            if(_ch_last) insert_impl(cur, _ch_last);
+            else _ch_last = cur, _ch_last->_prev = _ch_last->_next = _ch_last;
+            ++_child, cur->_par = this;
         }
-        T ans = 0;
-        for(int i = 0; i < V; i++){
-            // i に入ってくる辺がすでに存在する場合
-            if(used[i] != 0) continue;
-            int cur = i;
-            vector<int> path;
-            while(used[cur] != 2){
-                used[cur] = 1;
-                path.push_back(cur);
-                //全域有向木が存在しない場合
-                if(!come[cur]) return numeric_limits<T>::max();
-                from[cur] = uf.find(es[come[cur]->id].from);
-                from_cost[cur] = come[cur]->val + come[cur]->lazy;
-                come[cur] = heap.erase(come[cur]);
-                // 自己ループの場合
-                if(from[cur] == cur) continue;
-                ans += from_cost[cur];
-                // サイクルをたどって１つの頂点に圧縮する
-                if(used[from[cur]] == 1){
-                    int p = cur;
-                    do{
-                        if(come[p]){
-                            come[p]->lazy -= from_cost[p];
-                        }
-                        if(p != cur){
-                            uf.unite(p,cur);
-                            come[cur] = heap.meld(come[cur],come[p]);
-                        }
-                        p = uf.find(from[p]);
-                    }while(p != cur);
+        void erase(node *cur){
+            if(cur == cur->_prev){
+                _ch_last = nullptr;
+            }else{
+                erase_impl(cur);
+                if(cur == _ch_last) _ch_last = cur->_prev;
+            }
+            --_child, cur->_par = nullptr;
+        }
+    };
+
+private:
+    node *_minimum;
+    vector<node*> rank;
+    LazyUnionFind<_Tp>& uf;
+    vector<FibonacciHeap*>& fh;
+    vector<int>& heap;
+
+    static void insert_impl(node *cur, node *next){
+        cur->_prev = next->_prev, cur->_next = next;
+        cur->_prev->_next = cur, next->_prev = cur;
+    }
+    static void erase_impl(node *cur){
+        cur->_prev->_next = cur->_next, cur->_next->_prev = cur->_prev;
+    }
+    inline const _Tp get_key(node *cur) const noexcept {
+        return cur->_data->cost + uf.find_value(cur->_data->to);
+    }
+    inline FibonacciHeap *home_heap(node *cur) const noexcept {
+        return fh[uf.find(heap[uf.find(cur->_data->from)])];
+    }
+    void root_insert(node *cur){
+        if(_minimum){
+            insert_impl(cur, _minimum);
+        }else{
+            _minimum = cur, _minimum->_prev = _minimum->_next = _minimum;
+        }
+    }
+    void root_erase(node *cur){
+        if(cur == cur->_prev) _minimum = nullptr;
+        else{
+            if(cur == _minimum) _minimum = cur->_prev;
+            erase_impl(cur);
+        }
+    }
+    void _delete(node *cur){
+        root_erase(cur);
+        delete cur;
+    }
+    node *_push(data_type e){
+        node *new_node = new node(e);
+        root_insert(new_node);
+        return new_node;
+    }
+    void detect_minimum(){
+        node *cand = nullptr;
+        _Tp _min = numeric_limits<_Tp>::max();
+        for(node *cur = _minimum->_next;;cur = cur->_next){
+            _Tp value = get_key(cur);
+            if(_min > value) cand = cur, _min = value;
+            if(cur == _minimum) break;
+        }
+        _minimum = cand;
+    }
+    data_type _pop(node *given_minimum = nullptr){
+        if(!_minimum) return nullptr;
+        if(given_minimum) _minimum = given_minimum;
+        else detect_minimum();
+        data_type res = _minimum->_data;
+        if(_minimum->_ch_last){
+            for(node *cur = _minimum->_ch_last->_next;;){
+                node *next = cur->_next;
+                _minimum->erase(cur);
+                home_heap(cur)->root_insert(cur);
+                if(!_minimum->_ch_last) break;
+                cur = next;
+            }
+        }
+        node *next_minimum = _minimum->_next;
+        if(next_minimum == _minimum){
+            _delete(_minimum);
+            return res;
+        }
+        for(node*& cur : rank) cur = nullptr;
+        for(node *cur = next_minimum; cur != _minimum;){
+            if(get_key(cur) < get_key(next_minimum)) next_minimum = cur;
+            node *next = cur->_next;
+            unsigned int deg = cur->_child;
+            if(rank.size() <= deg) rank.resize(deg + 1, nullptr);
+            while(rank[deg]){
+                if(get_key(cur) < get_key(rank[deg]) || cur == next_minimum){
+                    root_erase(rank[deg]), cur->insert(rank[deg]);
                 }else{
-                    cur = from[cur];
+                    root_erase(cur), rank[deg]->insert(cur);
+                    cur = rank[deg];
                 }
+                rank[deg++] = nullptr;
+                if(rank.size() <= deg) rank.resize(deg + 1, nullptr);
             }
-            // 頂点を確定済みにする
-            for(int v : path){
-                used[v] = 2;
+            rank[deg] = cur;
+            cur = next;
+        }
+        _delete(_minimum);
+        _minimum = next_minimum;
+        return res;
+    }
+    void _to_root(node *cur){
+        if(!cur->_par) return;
+        while(true){
+            node *next = cur->_par;
+            next->erase(cur);
+            home_heap(cur)->root_insert(cur);
+            cur->_mark = false, cur = next;
+            if(!cur->_par) break;
+            if(!cur->_mark){
+                cur->_mark = true;
+                break;
             }
+        }
+    }
+    void _delete_node(node *cur){
+        _to_root(cur), home_heap(cur)->_pop(cur);
+    }
+
+public:
+    FibonacciHeap(LazyUnionFind<_Tp>& _uf, vector<FibonacciHeap*>& _fh, vector<int>& _heap)
+        noexcept : _minimum(nullptr), uf(_uf), fh(_fh), heap(_heap){}
+    node *push(data_type e){ return _push(e); }
+    data_type pop(){ return _pop(); }
+    void to_root(node *cur){ _to_root(cur); }
+    void delete_node(node *cur){ _delete_node(cur); }
+    friend void move_node(FibonacciHeap *fh1, FibonacciHeap::node *cur, FibonacciHeap *fh2){
+        if(!cur->_par){
+            fh1->root_erase(cur), fh2->root_insert(cur);
+            return;
+        }
+        bool _first = true;
+        while(true){
+            node *next = cur->_par;
+            next->erase(cur);
+            if(_first) fh2->root_insert(cur), _first = false;
+            else fh1->home_heap(cur)->root_insert(cur);
+            cur->_mark = false, cur = next;
+            if(!cur->_par) break;
+            if(!cur->_mark){
+                cur->_mark = true;
+                break;
+            }
+        }
+    }
+    friend FibonacciHeap *meld(FibonacciHeap *fh1, FibonacciHeap *fh2){
+        if(!fh2->_minimum){
+            return delete fh2, fh1;
+        }
+        if(!fh1->_minimum){
+            return delete fh1, fh2;
+        }
+        fh1->_minimum->_prev->_next = fh2->_minimum->_next;
+        fh2->_minimum->_next->_prev = fh1->_minimum->_prev;
+        fh2->_minimum->_next = fh1->_minimum;
+        fh1->_minimum->_prev = fh2->_minimum;
+        return delete fh2, fh1;
+    }
+};
+
+template<typename _Tp>
+class Arborescence {
+private:
+    struct edge {
+        const int from, to;
+        const _Tp cost;
+        edge(int _from, int _to, _Tp _cost)
+            : from(_from), to(_to), cost(_cost){}
+    };
+    struct info {
+        const edge* e;
+        typename list<info>::iterator itr;
+        info(const edge* _e) : e(_e){}
+        info(const edge* _e, typename list<info>::iterator _itr) : e(_e), itr(_itr){}
+    };
+    const int V;
+    vector<vector<edge> > revG;
+    vector<list<info> > _exit, passive;
+    vector<int> used, heap;
+    LazyUnionFind<_Tp> uf;
+    vector<FibonacciHeap<edge, _Tp>*> fh;
+    vector<typename FibonacciHeap<edge, _Tp>::node*> nodes;
+public:
+    _Tp ans;
+    vector<int> parent;
+    Arborescence(int node_size)
+        : V(node_size), revG(V), _exit(V), passive(V), used(V, -1), heap(V, -1), uf(V),
+            fh(V, nullptr), nodes(V, nullptr), ans((_Tp)0), parent(V, -1){}
+    // ~Arborescence(){
+        // for(int i = 0; i < V; ++i) if(nodes[i]) delete nodes[i];
+        // for(int i = 0; i < V; ++i) if(fh[i]) delete fh[i];
+    // }
+    void add_edge(int from, int to, _Tp cost){
+        revG[to].emplace_back(from, to, cost);
+    }
+    void _move_node(int prev, int vertex, int next, const edge *e){
+        move_node(fh[prev], nodes[vertex], fh[next]);
+        heap[vertex] = next, nodes[vertex]->_data = e;
+    }
+    void grow_path(int cur, forward_list<int>& path, forward_list<int>& visit){
+        path.push_front(cur), visit.push_front(cur);
+        while(!_exit[cur].empty()){
+            const info& res = _exit[cur].front();
+            passive[uf.find(res.e->to)].erase(res.itr);
+            _exit[cur].pop_front();
+        }
+        fh[cur] = new FibonacciHeap<edge, _Tp>(uf, fh, heap);
+        for(const edge& e : revG[cur]){
+            const int from = uf.find(e.from);
+            if(cur == from) continue;
+            if(heap[from] < 0){
+                heap[from] = cur, nodes[from] = fh[cur]->push(&e);
+            }else if(heap[from] == cur){
+                if(e.cost < nodes[from]->_data->cost){
+                    nodes[from]->_data = &e;
+                    fh[cur]->to_root(nodes[from]);
+                }
+            }else{
+                const int hfrom = uf.find(heap[from]);
+                passive[hfrom].emplace_front(nodes[from]->_data);
+                _exit[from].emplace_front(nodes[from]->_data, passive[hfrom].begin());
+                passive[hfrom].front().itr = _exit[from].begin();
+                _move_node(hfrom, from, cur, &e);
+            }
+        }
+    }
+    int contract_cycle(int cur, forward_list<int>& path){
+        for(const int v : path){
+            while(!passive[v].empty()){
+                const info& res1 = passive[v].front();
+                const int from = uf.find(res1.e->from);
+                if(nodes[from] &&
+                    nodes[from]->_data->cost + uf.find_value(nodes[from]->_data->to) >
+                        res1.e->cost + uf.find_value(res1.e->to)){
+                    _move_node(uf.find(heap[from]), from, v, res1.e);
+                }
+                _exit[from].erase(res1.itr), passive[v].pop_front();
+            }
+            if(v == cur) break;
+        }
+        int ver = -1;
+        while(true){
+            const int v = *path.begin();
+            if(heap[v] >= 0) fh[v]->delete_node(nodes[v]), heap[v] = -1, nodes[v] = nullptr;
+            if(ver >= 0){
+                if(uf.unite(ver, v) == ver) fh[ver] = meld(fh[ver], fh[v]), fh[v] = nullptr;
+                else fh[v] = meld(fh[ver], fh[v]), fh[ver] = nullptr, ver = v;
+            }else ver = v;
+            path.pop_front();
+            if(v == cur) break;
+        }
+        path.push_front(ver);
+        return ver;
+    }
+    _Tp solve(const int root){
+        used[root] = 1;
+        for(int i = 0; i < V; ++i){
+            if(used[i] != -1) continue;
+            int cur = i;
+            forward_list<int> path, visit;
+            while(used[cur] != 1){
+                if(used[cur] == -1){
+                    grow_path(cur, path, visit);
+                    used[cur] = 0;
+                }else{
+                    cur = contract_cycle(cur, path);
+                }
+                const edge* e = fh[cur]->pop();
+                if(!e) return numeric_limits<_Tp>::max();
+                const int next = uf.find(e->from);
+                heap[next] = -1, nodes[next] = nullptr;
+                ans += e->cost + uf.find_value(e->to);
+                uf.change_value(-e->cost - uf.find_value(e->to), cur);
+                parent[e->to] = e->from;
+                cur = next;
+            }
+            for(const int ver : visit) used[ver] = 1;
         }
         return ans;
     }

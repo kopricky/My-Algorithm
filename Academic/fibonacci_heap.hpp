@@ -11,8 +11,8 @@ public:
         unsigned short int _child;
         bool _mark;
         node *_par, *_prev, *_next, *_ch_last;
-        node(data_type&& data) : _data(move(data)),
-            _child(0), _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
+        node(data_type&& data) : _data(move(data)), _child(0),  _mark(false),
+            _par(nullptr), _prev(nullptr), _next(nullptr), _ch_last(nullptr){}
         inline const _Key& get_key() const noexcept { return _data.first; }
         void insert(node *cur){
             if(_ch_last) insert_impl(cur, _ch_last);
