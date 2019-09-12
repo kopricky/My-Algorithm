@@ -5,7 +5,7 @@ class LazyUnionFind {
 private:
     const int sz;
     vector<_Tp> diff, lazy;
-    vector<int> par, nrank;
+    vector<int> par;
     pair<int, _Tp> _find(int x){
         if(par[x] == x) return {x, (_Tp)0};
         auto res = _find(par[x]);
@@ -14,7 +14,7 @@ private:
     }
 public:
     LazyUnionFind(const int node_size)
-        : sz(node_size), diff(sz, (_Tp)0), lazy(sz, (_Tp)0), par(sz), nrank(sz, 0){
+        : sz(node_size), diff(sz, (_Tp)0), lazy(sz, (_Tp)0), par(sz){
         iota(par.begin(), par.end(), 0);
     }
     int find(int x){ return _find(x).first; }
@@ -25,13 +25,8 @@ public:
     void change_value(_Tp value, int x){
         diff[x] += value, lazy[x] += value;
     }
-    int unite(int x, int y){
-        x = find(x), y = find(y);
-        if(x == y) return -1;
-    	if(nrank[x] < nrank[y]) swap(x,y);
+    void unite(int x, int y){
         par[y] = x, diff[y] -= lazy[x], lazy[y] -= lazy[x];
-        if(nrank[x] == nrank[y]) nrank[x]++;
-        return x;
     }
 };
 
@@ -235,10 +230,10 @@ private:
         info(const edge *_e, typename list<info>::iterator _itr) : e(_e), itr(_itr){}
     };
     struct cycle_edge {
-        int from, super_from, super_to;
+        int from;
         const edge *e;
-        cycle_edge(int _from, int _super_from, int _super_to, const edge *_e)
-            : from(_from), super_from(_super_from), super_to(_super_to), e(_e){}
+        cycle_edge(int _from, const edge *_e)
+            : from(_from), e(_e){}
     };
     const int V;
     int super_id;
@@ -253,15 +248,15 @@ private:
 public:
     _Tp ans;
     vector<int> parent;
-    Arborescence(int node_size)
-        : V(node_size), super_id(V), revG(V), cycle(2*V), _exit(V), passive(V),
-            used(V, -1), heap(V, -1), par(2*V), uf(V), fh(V, nullptr), nodes(V, nullptr),
+    Arborescence(const int node_size)
+        : V(node_size), super_id(V), revG(V), cycle(2*V-2), _exit(2*V-2), passive(2*V-2),
+            used(2*V-1, -1), heap(2*V-2, -1), par(2*V-2), uf(2*V-2), fh(2*V-2, nullptr), nodes(2*V-2, nullptr),
                 ans((_Tp)0), parent(V, -1){
         iota(par.begin(), par.end(), 0);
     }
     // ~Arborescence(){
-    //     for(int i = 0; i < V; ++i) if(nodes[i]) delete nodes[i];
-    //     for(int i = 0; i < V; ++i) if(fh[i]) delete fh[i];
+    //     for(int i = 0; i < 2*V-2; ++i) if(nodes[i]) delete nodes[i];
+    //     for(int i = 0; i < 2*V-2; ++i) if(fh[i]) delete fh[i];
     // }
     void add_edge(int from, int to, _Tp cost){
         revG[to].emplace_back(from, to, cost);
@@ -270,8 +265,7 @@ public:
         move_node(fh[prev], nodes[vertex], fh[next]);
         heap[vertex] = next, nodes[vertex]->_data = e;
     }
-    void grow_path(int cur, forward_list<int>& visit){
-        visit.push_front(cur);
+    void grow_path(int cur){
         while(!_exit[cur].empty()){
             const info& res = _exit[cur].front();
             passive[uf.find(res.e->to)].erase(res.itr);
@@ -297,8 +291,7 @@ public:
             }
         }
     }
-    int contract_cycle(int cur, forward_list<cycle_edge>&& cur_path){
-        int modify = -1;
+    void contract_cycle(int cur, forward_list<cycle_edge>&& cur_path){
         for(auto it = next(cur_path.begin(), 1);; ++it){
             const int v = (it == cur_path.end()) ? cur : it->from;
             while(!passive[v].empty()){
@@ -311,19 +304,15 @@ public:
                 }
                 _exit[from].erase(res1.itr), passive[v].pop_front();
             }
+            par[v] = super_id;
             if(v == cur) break;
-            par[it->super_from] = super_id;
-            modify = it->super_to;
         }
-        par[cur_path.begin()->super_from = modify] = super_id;
-        int ver = -1;
         for(auto it = next(cur_path.begin(), 1);; ++it){
             const int v = (it == cur_path.end()) ? cur : it->from;
             if(heap[v] >= 0) fh[v]->delete_node(nodes[v]), heap[v] = -1, nodes[v] = nullptr;
-            if(ver >= 0){
-                if(uf.unite(ver, v) == ver) fh[ver] = meld(fh[ver], fh[v]), fh[v] = nullptr;
-                else fh[v] = meld(fh[ver], fh[v]), fh[ver] = nullptr, ver = v;
-            }else ver = v;
+            if(fh[super_id]) fh[super_id] = meld(fh[super_id], fh[v]);
+            else fh[super_id] = fh[v];
+            uf.unite(super_id, v), fh[v] = nullptr;
             if(v == cur){
                 cycle[super_id].push_front(cur_path.front()), cur_path.pop_front();
                 cycle[super_id].splice_after(cycle[super_id].begin(), move(cur_path),
@@ -331,20 +320,21 @@ public:
                 break;
             }
         }
-        if(!cur_path.empty()) cur_path.begin()->from = ver, cur_path.begin()->super_from = super_id;
-        return ver;
+        if(!cur_path.empty()) cur_path.begin()->from = super_id;
     }
     void cycle_dfs(int u, int par_cycle){
         while(u != par[u] && par[u] != par_cycle){
             const int p = par[u];
             for(auto it = cycle[p].begin(); it != cycle[p].end(); ++it){
-                int v = it->super_from;
+                int v = it->from;
                 if(v == u){
-                    while(u != it->super_to){
-                        const int w = it->e->to;
-                        parent[w] = it->e->from;
-                        if(p != par[w]) cycle_dfs(w, p);
+                    auto memo = it;
+                    while(true){
+                        const int x = it->e->from, y = it->e->to;
                         if(++it == cycle[p].end()) it = cycle[p].begin();
+                        if(memo == it) break;
+                        parent[y] = x;
+                        if(p != par[y]) cycle_dfs(y, p);
                     }
                     break;
                 }
@@ -355,7 +345,7 @@ public:
     void identify_tree(){
         for(forward_list<cycle_edge>& cur_path : path){
             while(!cur_path.empty()){
-                int v = cur_path.begin()->e->to;
+                const int v = cur_path.begin()->e->to;
                 parent[v] = cur_path.begin()->e->from;
                 cur_path.pop_front();
                 cycle_dfs(v, -1);
@@ -366,24 +356,24 @@ public:
         used[root] = 1;
         for(int i = 0; i < V; ++i){
             if(used[i] != -1) continue;
-            int cur = i, super_cur;
+            int cur = i;
             forward_list<cycle_edge> cur_path;
             forward_list<int> visit;
             while(used[cur] != 1){
                 if(used[cur] == -1){
-                    grow_path(cur, visit);
-                    used[super_cur = cur] = 0;
+                    grow_path(cur);
                 }else{
-                    cur = contract_cycle(cur, move(cur_path));
-                    super_cur = super_id++;
+                    contract_cycle(cur, move(cur_path));
+                    cur = super_id++;
                 }
+                used[cur] = 0, visit.push_front(cur);
                 const edge *e = fh[cur]->pop();
                 if(!e) return numeric_limits<_Tp>::max();
                 ans += e->cost + uf.find_value(e->to);
                 uf.change_value(-e->cost - uf.find_value(e->to), cur);
                 cur = uf.find(e->from);
                 heap[cur] = -1, nodes[cur] = nullptr;
-                cur_path.emplace_front(cur, e->from, super_cur, e);
+                cur_path.emplace_front(cur, e);
             }
             path.push_front(move(cur_path));
             for(const int ver : visit) used[ver] = 1;
