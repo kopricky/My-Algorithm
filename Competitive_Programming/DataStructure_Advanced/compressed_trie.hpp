@@ -23,7 +23,8 @@ private:
             return cur ? lsb(cur) : CHARACTER_SIZE;
         }
         inline static unsigned int end(){ return CHARACTER_SIZE; }
-        inline bool exist(const unsigned int v) const { return adj >> v & 1u; }
+        inline bool isExist(const unsigned int v) const { return adj >> v & 1u; }
+        inline bool isFinal() const { return !s; }
         void direct_push(string&& _s, unsigned int index){
             if(!s) s = new string[CHARACTER_SIZE](), to = new node*[CHARACTER_SIZE]();
             s[index] = move(_s), to[index] = new node(), ++sub, adj |= (1u << index);
@@ -49,7 +50,7 @@ private:
         unsigned int index = 0u, prefix;
         while(true){
             const unsigned int num = news[index] - START_CHARACTER;
-            if(cur->exist(num)){
+            if(cur->isExist(num)){
                 ++cur->sub;
                 string& orgs = cur->s[num];
                 const unsigned int ls = orgs.size();
@@ -85,22 +86,20 @@ public:
     void add(const string& s){ push(root, s); }
     void add(string&& s){ push(root, move(s)); }
     //何らかのクエリ
-    int recur_query(node *cur, unsigned int d, const string& s){
+    int recur_query(node *cur, unsigned int d, int *index, const string& s){
         int res = 0;
         while(true){
-            // !cur->s が true ならそのノードは終点ノード
-            if(d >= s.size() || !cur->s) break;
+            if(cur->isFinal()) break;
             const unsigned int next = s[d] - START_CHARACTER;
-            // cur から出る存在する辺のみを以下の for 文でなめることができる.
             for(unsigned int i = cur->begin(); i != cur->end(); i = cur->next(i)){
-                // 例えば cur->s[i] は cur から出る i 番目の文字から始まる文字列
+                if(index[i] < index[next]) res += cur->to[i]->sub;
             }
             d += cur->s[next].size();
             cur = cur->to[next];
         }
         return res;
     }
-    int query(const string& s){
-        return recur_query(root, 0u, s);
+    int query(int *index, const string& s){
+        return recur_query(root, 0u, index, s);
     }
 };
