@@ -23,6 +23,7 @@ private:
             return cur ? lsb(cur) : CHARACTER_SIZE;
         }
         inline static unsigned int end(){ return CHARACTER_SIZE; }
+        inline bool exist(const unsigned int v) const { return adj >> v & 1u; }
         inline bool isExist(const unsigned int v) const { return adj >> v & 1u; }
         inline bool isFinal() const { return !s; }
         void direct_push(string&& _s, unsigned int index){
@@ -86,20 +87,22 @@ public:
     void add(const string& s){ push(root, s); }
     void add(string&& s){ push(root, move(s)); }
     //何らかのクエリ
-    int recur_query(node *cur, unsigned int d, int *index, const string& s){
+    int recur_query(node *cur, unsigned int d, const string& s){
         int res = 0;
         while(true){
+            // !cur->s が true ならそのノードは終点ノード
             if(cur->isFinal()) break;
             const unsigned int next = s[d] - START_CHARACTER;
+            // cur から出る存在する辺のみを以下の for 文でなめることができる.
             for(unsigned int i = cur->begin(); i != cur->end(); i = cur->next(i)){
-                if(index[i] < index[next]) res += cur->to[i]->sub;
+                // 例えば cur->s[i] は cur から出る i 番目の文字から始まる文字列
             }
             d += cur->s[next].size();
             cur = cur->to[next];
         }
         return res;
     }
-    int query(int *index, const string& s){
-        return recur_query(root, 0u, index, s);
+    int query(const string& s){
+        return recur_query(root, 0u, s);
     }
 };
