@@ -29,32 +29,46 @@ private:
             s[index] = move(_s), to[index] = new node(), ++sub, adj |= (1u << index);
         }
     };
-    void make_node(string& orgs, const string& news, unsigned int start, unsigned int newend, node*& to){
+    void make_node(string& orgs, unsigned int start, node*& to){
         string tmp = orgs.substr(0, start);
         orgs.erase(orgs.begin(), orgs.begin() + start);
         to = new node(move(orgs), to, orgs[0] - START_CHARACTER, to->sub);
         orgs = move(tmp);
-        if(start == newend) return;
-        to->direct_push(news.substr(start, newend - start), news[start] - START_CHARACTER);
+    }
+    void new_push(const string& s, unsigned int index, node *to){
+        string _s(s.substr(index, s.size() - index));
+        to->direct_push(move(_s), s[index] - START_CHARACTER);
+    }
+    void new_push(string&& s, unsigned int index, node *to){
+        s.erase(s.begin(), s.begin() + index);
+        to->direct_push(move(s), s[0] - START_CHARACTER);
     }
     template<typename String>
-    void push(node *cur, String&& _s){
-        string news = forward<String>(_s);
+    void push(node *cur, String&& news){
+        const unsigned int _ls = news.size();
+        unsigned int index = 0u, prefix;
         while(true){
-            const unsigned int num = news[0] - START_CHARACTER;
+            const unsigned int num = news[index] - START_CHARACTER;
             if(cur->exist(num)){
                 ++cur->sub;
                 string& orgs = cur->s[num];
-                const unsigned int ls = orgs.size(), _ls = news.size();
-                for(unsigned int i = 0u; i < min(ls, _ls); ++i){
-                    if(orgs[i] == news[i]) continue;
-                    return make_node(orgs, news, i, _ls, cur->to[num]);
+                const unsigned int ls = orgs.size();
+                for(prefix = 0u; prefix < ls && index < _ls; ++prefix, ++index){
+                    if(orgs[prefix] == news[index]) continue;
+                    make_node(orgs, prefix, cur->to[num]);
+                    new_push(forward<String>(news), index, cur->to[num]);
+                    return;
                 }
-                if(ls > _ls) return make_node(orgs, news, _ls, _ls, cur->to[num]);
-                else if(ls < _ls) cur = cur->to[num], news.erase(news.begin(), news.begin() + ls);
-                else return;
+                if(index == _ls){
+                    if(prefix == ls) return;
+                    make_node(orgs, prefix, cur->to[num]);
+                    return;
+                }else{
+                    cur = cur->to[num];
+                }
             }else{
-                return cur->direct_push(move(news), num);
+                new_push(forward<String>(news), index, cur);
+                return;
             }
         }
     }
