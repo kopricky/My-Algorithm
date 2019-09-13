@@ -90,7 +90,7 @@ public:
     int recur_query(node *cur, unsigned int d, const string& s){
         int res = 0;
         while(true){
-            // !cur->s が true ならそのノードは終点ノード
+            // 終点ノードなら break
             if(cur->isFinal()) break;
             const unsigned int next = s[d] - START_CHARACTER;
             // cur から出る存在する辺のみを以下の for 文でなめることができる.
