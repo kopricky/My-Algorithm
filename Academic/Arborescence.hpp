@@ -228,12 +228,6 @@ private:
         edge(int _from, int _to, _Tp _cost)
             : from(_from), to(_to), cost(_cost){}
     };
-    struct info {
-        const edge *e;
-        typename list<info>::iterator itr;
-        info(const edge *_e) : e(_e){}
-        info(const edge *_e, typename list<info>::iterator _itr) : e(_e), itr(_itr){}
-    };
     struct cycle_edge {
         int from, super_from, super_to;
         const edge *e;
@@ -245,7 +239,7 @@ private:
     vector<vector<edge> > revG;
     vector<forward_list<cycle_edge> > cycle;
     forward_list<forward_list<cycle_edge> > path;
-    vector<list<info> > _exit, passive;
+    vector<forward_list<const edge*> > passive;
     vector<int> used, heap, par;
     LazyUnionFind<_Tp> uf;
     vector<FibonacciHeap<edge, _Tp>*> fh;
@@ -254,7 +248,7 @@ public:
     _Tp ans;
     vector<int> parent;
     Arborescence(int node_size)
-        : V(node_size), super_id(V), revG(V), cycle(2*V), _exit(V), passive(V),
+        : V(node_size), super_id(V), revG(V), cycle(2*V), passive(V),
             used(V, -1), heap(V, -1), par(2*V), uf(V), fh(V, nullptr), nodes(V, nullptr),
                 ans((_Tp)0), parent(V, -1){
         iota(par.begin(), par.end(), 0);
@@ -272,11 +266,6 @@ public:
     }
     void grow_path(int cur, forward_list<int>& visit){
         visit.push_front(cur);
-        while(!_exit[cur].empty()){
-            const info& res = _exit[cur].front();
-            passive[uf.find(res.e->to)].erase(res.itr);
-            _exit[cur].pop_front();
-        }
         fh[cur] = new FibonacciHeap<edge, _Tp>(uf, fh, heap);
         for(const edge& e : revG[cur]){
             const int from = uf.find(e.from);
@@ -291,8 +280,6 @@ public:
             }else{
                 const int hfrom = uf.find(heap[from]);
                 passive[hfrom].emplace_front(nodes[from]->_data);
-                _exit[from].emplace_front(nodes[from]->_data, passive[hfrom].begin());
-                passive[hfrom].front().itr = _exit[from].begin();
                 _move_node(hfrom, from, cur, &e);
             }
         }
@@ -302,14 +289,14 @@ public:
         for(auto it = next(cur_path.begin(), 1);; ++it){
             const int v = (it == cur_path.end()) ? cur : it->from;
             while(!passive[v].empty()){
-                const info& res1 = passive[v].front();
-                const int from = uf.find(res1.e->from);
+                const edge *e = passive[v].front();
+                const int from = uf.find(e->from);
                 if(nodes[from] &&
                     nodes[from]->_data->cost + uf.find_value(nodes[from]->_data->to) >
-                        res1.e->cost + uf.find_value(res1.e->to)){
-                    _move_node(uf.find(heap[from]), from, v, res1.e);
+                        e->cost + uf.find_value(e->to)){
+                    _move_node(uf.find(heap[from]), from, v, e);
                 }
-                _exit[from].erase(res1.itr), passive[v].pop_front();
+                passive[v].pop_front();
             }
             if(v == cur) break;
             par[it->super_from] = super_id;
