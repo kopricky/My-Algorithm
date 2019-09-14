@@ -325,16 +325,10 @@ public:
         while(u != par[u] && par[u] != par_cycle){
             const int p = par[u];
             for(auto it = cycle[p].begin(); it != cycle[p].end(); ++it){
-                int v = it->super_from;
-                if(v == u){
-                    while(u != it->super_to){
-                        const int w = it->e->to;
-                        parent[w] = it->e->from;
-                        if(p != par[w]) cycle_dfs(w, p);
-                        if(++it == cycle[p].end()) it = cycle[p].begin();
-                    }
-                    break;
-                }
+                if(u == it->super_to) continue;
+                const int w = it->e->to;
+                parent[w] = it->e->from;
+                if(p != par[w]) cycle_dfs(w, p);
             }
             u = p;
         }
