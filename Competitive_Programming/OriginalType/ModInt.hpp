@@ -1,13 +1,13 @@
 #include "../header.hpp"
 
-template <uint mod>
+template <unsigned int mod>
 class ModInt {
 private:
-    uint v;
-    static uint norm(const uint& x){ return x < mod ? x : x - mod; }
-	static ModInt make(const uint& x){ ModInt m; return m.v = x, m; }
+    unsigned int v;
+    static unsigned int norm(const unsigned int& x){ return x < mod ? x : x - mod; }
+	static ModInt make(const unsigned int& x){ ModInt m; return m.v = x, m; }
     static ModInt inv(const ModInt& x){ return make(inverse(x.v, mod)); }
-    static uint inverse(int a, int m){
+    static unsigned int inverse(int a, int m){
         int u[] = {a, 1, 0}, v[] = {m, 0, 1}, t;
         while(*v){
             t = *u / *v;
@@ -46,7 +46,7 @@ public:
     bool operator!=(const ModInt& val) const { return !(*this == val); }
     bool operator==(const long long val) const { return v == norm(val % mod + mod); }
     bool operator!=(const long long val) const { return !(*this == val); }
-    uint operator()() const { return v; }
+    unsigned int operator()() const { return v; }
     friend ModInt operator+(const long long val, const ModInt& n) { return n + val; }
     friend ModInt operator-(const long long val, const ModInt& n) { return ModInt{val - n()}; }
     friend ModInt operator*(const long long val, const ModInt& n) { return n * val; }
@@ -54,7 +54,7 @@ public:
     friend bool operator==(const long long val, const ModInt& n) { return n == val; }
     friend bool operator!=(const long long val, const ModInt& n) { return !(val == n); }
     friend istream& operator>>(istream& is, ModInt& n){
-        uint v;
+        unsigned int v;
         return is >> v, n = v, is;
     }
     friend ostream& operator<<(ostream& os, const ModInt& n){ return (os << n()); }

@@ -11,10 +11,9 @@ struct pair_hash {
 
 // vector に対する std::hash を用いたハッシュ関数
 struct vector_hash {
-    const unsigned int random = mt19937(random_device{}())();
     template <class C>
     unsigned int operator()(const vector<C>& p) const {
-        unsigned int h = (random ^ p.size());
+        unsigned int h = p.size();
         for(const C& k : p){
             h ^= hash<C>()(k)+0x9e3779b9+(h<<6)+(h>>2);
         }
@@ -42,10 +41,9 @@ struct murmur_hash_int64 {
 
 // vector<int> に対する murmur hash
 struct murmur_hash32 {
-    const unsigned int random = random_device{}();
     unsigned int operator()(const vector<int>& p) const {
         const unsigned int m = 0x5bd1e995;
-        unsigned int h = (random ^ (4 * p.size()));
+        unsigned int h = p.size();
         for(unsigned int k : p){
             k *= m, h = (h*m)^((k^(k>>24))*m);
         }
@@ -56,10 +54,9 @@ struct murmur_hash32 {
 
 // vector<long long> に対する murmur hash
 struct murmur_hash64 {
-    const unsigned int random = random_device{}();
     unsigned long long operator()(const vector<long long>& p) const {
         const unsigned long long m = 0xc6a4a7935bd1e995;
-        unsigned long long h = (random ^ (4 * p.size()));
+        unsigned long long h = p.size();
         for(unsigned long long k : p){
             k *= m, h = (h*m)^((k^(k>>47))*m);
         }
