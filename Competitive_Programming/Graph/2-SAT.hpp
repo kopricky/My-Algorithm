@@ -1,78 +1,53 @@
 #include "../header.hpp"
 
-//頂点数がMAX_N
-//SAT st(MAX_N);
-//st.ok(vec) 充足可能性判定
-//vecには節 aV¬bなら(0,MAX_N+1), ¬bVcなら(MAX_N+1,2)のようにペアをもたせる
-//st.restore(vec) 解構築
-class SAT {
+class TwoSAT {
 private:
-	int V;	//頂点数
-	vector<vector<int> > G,rG;
-	vector<int> post_order; //帰りがけ順の並び
-	vector<bool> used; //すでに調べたかどうか
-	vector<int> cmp;	//属する強連結成分のトポロジカル順序
-	void _add_edge(int from,int to){
-		G[from].push_back(to);
-		rG[to].push_back(from);
+	const int V;
+	vector<vector<int> > G, rG;
+	vector<int> ps, cmp;
+	void add_edge(int from, int to){
+		G[from].push_back(to), rG[to].push_back(from);
 	}
-	void _dfs(int u){
-		used[u] = true;
-		for(int v : G[u]){
-			if(!used[v]){
-				_dfs(v);
-			}
+	void dfs(int u){
+        cmp[u] = 0;
+        for(int v : G[u]){
+			if(cmp[v] == -1) dfs(v);
 		}
-		post_order.push_back(u);
+		ps.push_back(u);
 	}
-	void _rdfs(int u,int k){
-		used[u] = true;
+	void rdfs(int u, int k){
 		cmp[u] = k;
 		for(int v : rG[u]){
-			if(!used[v]){
-				_rdfs(v,k);
-			}
+			if(cmp[v] == -1) rdfs(v, k);
 		}
 	}
-	int _scc(){
-		fill(used.begin(),used.end(),false);
-		post_order.clear();
-		for(int v=0;v<2*V;v++){
-			if(!used[v]){
-				_dfs(v);
-			}
+	int scc(){
+		for(int i = 0; i < 2 * V; ++i){
+			if(cmp[i] == -1) dfs(i);
 		}
-		fill(used.begin(),used.end(),false);
-		int k=0;
-		for(int i=2*V-1;i>=0;i--){
-			if(!used[post_order[i]]){
-				_rdfs(post_order[i],k++);
-			}
+		fill(cmp.begin(), cmp.end(), -1);
+		int k = 0;
+		for(int i = 2 * V - 1; i >= 0; --i){
+			if(cmp[ps[i]] == -1) rdfs(ps[i], k++);
 		}
 		return k;
 	}
 
 public:
-	SAT(int node_size) : V(node_size), G(2*V), rG(2*V), used(2*V), cmp(2*V){}
-	//充足可能性判定
-	bool ok(vector<pair<int, int> >& vec){
-		for(pair<int, int> p : vec){
-			_add_edge((p.first+V)%(2*V),p.second);
-			_add_edge((p.second+V)%(2*V),p.first);
-		}
-		_scc();
+	vector<int> ans;
+	TwoSAT(const int literal_count)
+	 	: V(literal_count), G(2 * V), rG(2 * V), cmp(2 * V, -1), ans(V){}
+	void add_closure(int x, int y){
+		add_edge((x + V) % (2 * V), y), add_edge((y + V) % (2 * V), x);
+	}
+	// 充足可能性判定
+	// 真のものは 1,偽のものは 0 が ans に格納される(解の構成)
+	bool satisfy(){
+		scc();
 		for(int i = 0; i < V; i++){
-			if(cmp[i] == cmp[V+i]){
-				return false;
-			}
+			if(cmp[i] == cmp[V + i]) return false;
+			ans[i] = (cmp[i] > cmp[V + i]);
 		}
 		return true;
-	}
-	//真のものは1,偽のものは0を返す(解の構成)
-	void restore(vector<int>& ans){
-		ans.resize(V);
-		for(int i = 0; i < V; i++){
-			ans[i] = (cmp[i] > cmp[V+i]);
-		}
 	}
 };
