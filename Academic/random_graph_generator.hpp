@@ -1,4 +1,4 @@
-#include "../header.hpp"
+#include "./header.hpp"
 
 // 次数列 d とグラフ G (vector<vecotr<int> >型で予め頂点数分の配列を確保する), 連結であるべきかを与える.
 // TIME は適宜設定する. (計算量 o(m^2))
@@ -302,5 +302,31 @@ void random_tree(const int node_size, const int edge_size, vector<vector<int> >&
     for(int i = 1; i < node_size; i++){
         int u = mt() % i;
         graph[ver[u]].push_back(ver[i]), graph[ver[i]].push_back(ver[u]);
+    }
+}
+
+// 一様ランダムな木 (計算量 O(n log n))
+void uniformly_random_tree(const int node_size, vector<vector<int> >& graph){
+    random_device rnd;
+    mt19937 mt(rnd());
+    uniform_int_distribution<> _rand(0, node_size - 1);
+    vector<int> prufer_code(node_size - 2);
+    vector<int> used(node_size, 0);
+    set<int> unused;
+    for(int i = 0; i < node_size - 2; ++i){
+        prufer_code[i] = _rand(mt);
+        ++used[prufer_code[i]];
+    }
+    for(int i = 0; i < node_size; ++i){
+        if(!used[i]) unused.insert(i);
+    }
+    for(int i = 0; i < node_size - 2; ++i){
+        const int ver = *unused.begin();
+        graph[prufer_code[i]].push_back(ver);
+        graph[ver].push_back(prufer_code[i]);
+        unused.erase(unused.begin());
+        if(--used[prufer_code[i]] == 0){
+            unused.insert(prufer_code[i]);
+        }
     }
 }
