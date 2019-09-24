@@ -20,8 +20,8 @@
 class MPI : public vector<int> {
 private:
 
-    static constexpr int root = 5;
-    static constexpr int MOD_ = 924844033;
+    static constexpr int root = 3;
+    static constexpr int MOD_ = 998244353; // 2^23 * 119 + 1 (2^22 桁以下の数の積を計算可能)
 
     bool sign;
 
