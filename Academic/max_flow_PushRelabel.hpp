@@ -14,8 +14,7 @@ public:
     inline void clear(){ iota(node.begin() + N, node.end(), N); }
 };
 
-class List
-{
+class List {
 public:
     struct node {
         int prev, next;
@@ -40,8 +39,7 @@ public:
     }
 };
 
-template <typename T> class PushRelabel
-{
+template <typename T> class PushRelabel {
 public:
     struct edge {
         const int to, rev;

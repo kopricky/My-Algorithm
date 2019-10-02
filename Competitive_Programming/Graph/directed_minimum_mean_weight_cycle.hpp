@@ -26,7 +26,7 @@ public:
                 dp[k+1][i] = inf;
             }
             for(int i = 0; i < V; ++i){
-                for(edge& e : G[i]){
+                for(const edge& e : G[i]){
                     if(e.cap > 0 && dp[k+1][e.to] > dp[k][i] + e.cost){
                         dp[k+1][e.to] = dp[k][i] + e.cost;
                         prev[k+1][e.to] = &e;

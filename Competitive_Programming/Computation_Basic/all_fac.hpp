@@ -2,7 +2,7 @@
 
 #define MAX_N 100000
 
-//2〜MAX_N-1のすべての数の素因数分解を計算(O(MAX_Nlog(MAX_N)))
+//2〜MAX_N-1のすべての数の素因数分解を計算(O(MAX_N log(MAX_N)))
 vector<int> pr[MAX_N],id[MAX_N];
 bool is_prime[MAX_N];
 
