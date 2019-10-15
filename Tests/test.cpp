@@ -46,295 +46,418 @@ typedef vector<string> vs;
 
 const int MAX_N = 100005;
 
-// predecessor の verify もする
-// msb define でも良いか？
-// vanEmdeBoasTree も move 対抗などする.
-// max_size を入れる
-class vanEmdeBoasTree
+template<typename RandomAccessIterator, class UnaryPredicate>
+class ParallelPartitionSolver
 {
 private:
-    static const size_t LENGTH = 1073741824;
-    size_t _size;
-    #define msb(u) (63 - __builtin_clzll(u))
-    #define lsb(u) (__builtin_ctzll(u))
-    struct first_layer;
-    struct middle_layer;
-    struct last_layer;
-    struct first_layer {
-        unsigned long long *data;
-        middle_layer *summary;
-        int _max, _min;
-        first_layer() : _max(-1), _min(1073741824){
-            data = new unsigned long long[16777216](), summary = new middle_layer();
+    const RandomAccessIterator first, last;
+    const UnaryPredicate func;
+    const unsigned length;
+    const unsigned THRESHOLD;
+
+    class BlockCounter
+    {
+    private:
+        const unsigned leftBlock = 1 << 16;
+        const unsigned rightBlock = 1;
+        const unsigned mask = leftBlock - 1;
+        const unsigned min_blockSize = 1024;
+        const unsigned max_blockCount = (1 << 15) - 1;
+
+    public:
+        const unsigned block_size, block_count;
+        std::atomic<unsigned> counter;
+        BlockCounter(unsigned length)
+            : block_size(std::max((length - 1) / max_blockCount + 1, min_blockSize)),
+                block_count(length / block_size), counter(0){}
+        bool get_left_block(int& left)
+        {
+            int ignore;
+            return get_block(leftBlock, left, ignore);
         }
-        inline bool empty() const noexcept { return (_max == -1); }
-        inline bool isOne() const noexcept { return (_max == _min); }
-        inline int max() const noexcept { return _max; }
-        inline int min() const noexcept { return _min; }
-        bool find(const int value) const noexcept {
-            return (value == _min) || ((data[value >> 6] >> (value & 63)) & 1ULL);
+        bool get_right_block(int& right)
+        {
+            int ignore;
+            return get_block(rightBlock, ignore, right);
         }
-        bool insert(int value) noexcept {
-            if(value == _min) return false;
-            else if(_max == -1) return _max = _min = value, true;
-            else if(value < _min) swap(value, _min);
-            else if(value > _max) _max = value;
-            const int id = (value >> 6);
-            if((data[id] >> (value & 63)) & 1ULL) return false;
-            else{
-                if(data[id] == 0) summary->insert(id);
-                data[id] ^= (1ULL << (value & 63));
-                return true;
-            }
-        }
-        void erase(int value) noexcept {
-            if(_max == _min){
-                _max = -1, _min = 1073741824;
-                return;
-            }else if(value == _min){
-                const int id = summary->min();
-                 _min = value = (id << 6) + lsb(data[id]);
-            }
-            const int id = (value >> 6);
-            data[id] ^= (1ULL << (value & 63));
-            if(data[id] == 0) summary->erase(id);
-            if(value == _max){
-                if(summary->empty()) _max = _min;
-                else{
-                    const int id = summary->max();
-                    _max = (id << 6) + msb(data[id]);
-                }
-            }
-        }
-        int predecessor(const int value) const noexcept {
-            if(_min >= value) return -1;
-            else if(value > _max) return _max;
-            const int id = (value >> 6), sm = (id << 6);
-            if(value > sm + lsb(data[id]))
-                return sm + msb(data[id] & ((1ULL << (value & 63)) - 1ULL));
-            else{
-                const int id2 = summary->predecessor(id);
-                return (id2 << 6) + msb(data[id2]);
-            }
-        }
-        int successor(const int value) const noexcept {
-            if(value < _min) return _min;
-            else if(value >= _max) return 1073741824;
-            const int id = (value >> 6), sm = (id << 6);
-            if(value < sm + msb(data[id]))
-                return sm + lsb(data[id] & ~((1ULL << ((value & 63) + 1)) - 1ULL));
-            else{
-                const int id2 = summary->successor(id);
-                return (id2 << 6) + lsb(data[id2]);
-            }
+        bool get_block(const unsigned block, int& left, int& right)
+        {
+            const unsigned value = counter.fetch_add(block, std::memory_order_acq_rel) + block;
+            left = (value >> 16);
+            right = (value & mask);
+            return left-- + right-- <= (int)block_count;
         }
     };
-    struct middle_layer{
-        last_layer *sublayers, *summary;
-        int _max, _min;
-        middle_layer() : _max(-1), _min(16777216){
-            sublayers = new last_layer[4096](), summary = new last_layer();
-        }
-        inline bool empty() const noexcept { return (_max == -1); }
-        inline bool isOne() const noexcept { return (_max == _min); }
-        inline int max() const noexcept { return _max; }
-        inline int min() const noexcept { return _min; }
-        bool find(const int value) const noexcept {
-            return (value == _min) || sublayers[value >> 12].find(value & 4095);
-        }
-        bool insert(int value) noexcept {
-            if(value == _min) return false;
-            else if(_max == -1) return _max = _min = value, true;
-            else if(value < _min) swap(value, _min);
-            else if(value > _max) _max = value;
-            const int id = (value >> 12);
-            if(sublayers[id].insert(value & 4095)){
-                if(sublayers[id].isOne()) summary->insert(id);
-                return true;
-            }else return false;
-        }
-        void erase(int value){
-            if(_max == _min){
-                _max = -1, _min = 4096;
-                return;
-            }else if(value == _min){
-                const int id = summary->min();
-                 _min = value = (id << 12) + sublayers[id].min();
-            }
-            const int id = (value >> 12);
-            sublayers[id].erase(value & 4095);
-            if(sublayers[id].empty()) summary->erase(id);
-            if(value == _max){
-                if(summary->empty()) _max = _min;
-                else{
-                    const int id = summary->max();
-                    _max = (id << 12) + sublayers[id].max();
-                }
-            }
-        }
-        int predecessor(const int value) const noexcept {
-            if(_min >= value) return -1;
-            else if(value > _max) return _max;
-            const int id = (value >> 12), sm = (id << 12);
-            if(value > sm + sublayers[id].min()){
-                return sm + sublayers[id].predecessor(value & 4095);
-            }else{
-                const int id2 = summary->predecessor(id);
-                return (id2 << 12) + sublayers[id2].max();
-            }
-        }
-        int successor(const int value) const noexcept {
-            if(value < _min) return _min;
-            else if(value >= _max) return 4096;
-            const int id = (value >> 12), sm = (id << 12);
-            if(value < sm + sublayers[id].max()){
-                return sm + sublayers[id].successor(value & 4095);
-            }else{
-                const int id2 = summary->successor(id);
-                return (id2 << 12) + sublayers[id2].min();
-            }
-        }
+
+    class ChunkResult
+    {
+    public:
+        int left_remain, right_remain, leftMost_blocks, rightMost_blocks;
+        ChunkResult() : left_remain(std::numeric_limits<int>::max()), right_remain(std::numeric_limits<int>::max())
+            , leftMost_blocks(-1), rightMost_blocks(-1){}
     };
-    struct last_layer{
-        unsigned long long data[64], summary;
-        int _max, _min;
-        last_layer() : summary(0ULL), _max(-1), _min(64){
-            memset(data, 0, sizeof(data));
-        }
-        inline bool empty() const noexcept { return (_max == -1); }
-        inline bool isOne() const noexcept { return (_max == _min); }
-        inline int max() const noexcept { return _max; }
-        inline int min() const noexcept { return _min; }
-        bool find(const int value) const noexcept {
-            return (value == _min) || ((data[value >> 6] >> (value & 63)) & 1ULL);
-        }
-        bool insert(int value) noexcept {
-            if(value == _min) return false;
-            else if(_max == -1) return _max = _min = value, true;
-            else if(value < _min) swap(value, _min);
-            else if(value > _max) _max = value;
-            const int id = (value >> 6);
-            if((data[id] >> (value & 63)) & 1ULL) return false;
-            else{
-                data[id] ^= (1ULL << (value & 63)), summary |= (1ULL << id);
-                return true;
-            }
-        }
-        void erase(int value) noexcept {
-            if(_max == _min){
-                _max = -1, _min = 64;
-                return;
-            }else if(value == _min){
-                const int id = lsb(summary);
-                _min = value = (id << 6) + lsb(data[id]);
-            }
-            const int id = (value >> 6);
-            data[id] ^= (1ULL << (value & 63));
-            if(data[id] == 0) summary ^= (1ULL << id);
-            if(value == _max){
-                if(summary == 0) _max = _min;
-                else{
-                    const int id = msb(summary);
-                    _max = (id << 6) + msb(data[id]);
-                }
-            }
-        }
-        int predecessor(const int value) const noexcept {
-            if(_min >= value) return -1;
-            else if(value > _max) return _max;
-            const int id = (value >> 6), sm = (id << 6);
-            if(value > sm + lsb(data[id]))
-                return sm + msb(data[id] & ((1ULL << (value & 63)) - 1ULL));
-            else{
-                const int id2 = msb(summary & ((1ULL << id) - 1ULL));
-                return (id2 << 6) + msb(data[id2]);
-            }
-        }
-        int successor(const int value) const noexcept {
-            if(value < _min) return _min;
-            else if(value >= _max) return 64;
-            const int id = (value >> 6), sm = (id << 6);
-            if(value < sm + msb(data[id]))
-                return sm + lsb(data[id] & ~((1ULL << ((value & 63) + 1)) - 1ULL));
-            else{
-                const int id2 = lsb(summary & ~((1ULL << (id + 1)) - 1ULL));
-                return (id2 << 6) + lsb(data[id2]);
-            }
-        }
-    };
-    first_layer base_layer;
+
+    BlockCounter counter;
+    std::vector<ChunkResult> remain;
+
+    int arrange_blocks
+        (RandomAccessIterator& leftFrom, const RandomAccessIterator leftTo, RandomAccessIterator& rightFrom, const RandomAccessIterator rightTo);
+    auto arrange_chunk(const unsigned index);
+    inline void swapBlocks(RandomAccessIterator from, RandomAccessIterator to, const int blockSize);
+    const int arrange_leftBlocks();
+    const int arrange_rightBlocks();
+
 public:
-    vanEmdeBoasTree() : _size(0), base_layer(){}
-    friend ostream& operator<< (ostream& os, vanEmdeBoasTree& veb) noexcept {
-        for(unsigned int st = veb.successor(-1); st != veb.LENGTH; st = veb.successor(st))
-            os << st << " ";
-        return os;
+    ParallelPartitionSolver
+        (const RandomAccessIterator _first, const RandomAccessIterator _last, const UnaryPredicate _func, const unsigned _THRESHOLD)
+        : first(_first), last(_last), func(_func), length(std::distance(_first, _last)), THRESHOLD(_THRESHOLD), counter(length){}
+    RandomAccessIterator operator()();
+};
+
+template<typename RandomAccessIterator, class UnaryPredicate>
+int ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_blocks
+    (RandomAccessIterator& leftFrom, const RandomAccessIterator leftTo, RandomAccessIterator& rightFrom, const RandomAccessIterator rightTo)
+{
+    while(leftFrom < leftTo && rightFrom < rightTo)
+    {
+        while(func(*leftFrom) && ++leftFrom < leftTo);
+        while(!func(*rightFrom) && ++rightFrom < rightTo);
+        if(leftFrom == leftTo || rightFrom == rightTo)
+            break;
+        std::iter_swap(leftFrom, rightFrom);
+        ++leftFrom, ++rightFrom;
     }
-    bool empty() const noexcept { return (_size == 0); }
-    size_t size() const noexcept { return _size; }
-    size_t max_size() const noexcept { return LENGTH; }
-    bool find(const unsigned int value) const noexcept {
-        if(value >= LENGTH) return false;
-        return base_layer.find(value);
+    if(leftFrom == leftTo && rightFrom == rightTo)
+        return 0;
+    if(leftFrom == leftTo)
+        return -1;
+    return 1;
+}
+
+template<typename RandomAccessIterator, class UnaryPredicate>
+auto ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_chunk(const unsigned index)
+{
+    int localLeftMost = -1, localRightMost = -1;
+    int leftBlock = localLeftMost, rightBlock = localRightMost;
+    RandomAccessIterator leftFrom, rightFrom;
+    RandomAccessIterator leftTo = leftFrom, rightTo = rightFrom;
+    unsigned block_size = counter.block_size;
+    int result = 0;
+    while(true)
+    {
+        if(result <= 0)
+        {
+            localLeftMost = leftBlock;
+            if(!counter.get_left_block(leftBlock))
+                break;
+            leftFrom = first + leftBlock * block_size;
+            leftTo = leftFrom + block_size;
+        }
+        if(result >= 0)
+        {
+            localRightMost = rightBlock;
+            if(!counter.get_right_block(rightBlock))
+                break;
+            rightTo = last - rightBlock * block_size;
+            rightFrom = rightTo - block_size;
+        }
+        result = arrange_blocks(leftFrom, leftTo, rightFrom, rightTo);
     }
-    int max() const noexcept { return base_layer.max(); }
-    int min() const noexcept { return base_layer.min(); }
-    void insert(const unsigned int value){
-        assert(value < LENGTH);
-        _size += base_layer.insert(value);
+    ChunkResult info;
+    if(leftFrom != leftTo)
+        info.left_remain = leftBlock;
+    if(rightFrom != rightTo)
+        info.right_remain = rightBlock;
+    info.leftMost_blocks = localLeftMost, info.rightMost_blocks = localRightMost;
+    return info;
+}
+
+template<typename RandomAccessIterator, class UnaryPredicate>
+inline void ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::swapBlocks
+    (RandomAccessIterator from, RandomAccessIterator to, const int blockSize)
+{
+    for(int i = 0; i < blockSize; ++i, ++from, ++to)
+    {
+        std::iter_swap(from, to);
     }
-    void erase(const unsigned int value){
-        assert(value < LENGTH);
-        base_layer.erase(value), --_size;
+}
+
+template<typename RandomAccessIterator, class UnaryPredicate>
+const int ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_leftBlocks()
+{
+    const int blockSize = counter.block_size;
+    int j = -1;
+    int leftmostBlock = std::max_element(remain.begin(), remain.end(), [](const ChunkResult& arg1, const ChunkResult& arg2)
+    {
+        return arg1.leftMost_blocks < arg2.leftMost_blocks;
+    })->leftMost_blocks;
+    std::sort(remain.begin(), remain.end(), [](const ChunkResult& arg1, const ChunkResult& arg2)
+    {
+        return arg1.left_remain < arg2.left_remain;
+    });
+    for(unsigned i = 0; i < remain.size(); ++i)
+        if(remain[i].left_remain < leftmostBlock)
+            j = i;
+    for(unsigned i = 0; i < remain.size() && remain[i].left_remain <= leftmostBlock;){
+        if(remain[j].left_remain == leftmostBlock)
+        {
+            --j;
+        }
+        else
+        {
+            swapBlocks(first + remain[i].left_remain * blockSize, first + leftmostBlock * blockSize, blockSize);
+            ++i;
+        }
+        --leftmostBlock;
     }
-    int predecessor(const int value) const noexcept {
-        return base_layer.predecessor(value);
+    return leftmostBlock;
+}
+
+template<typename RandomAccessIterator, class UnaryPredicate>
+const int ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::arrange_rightBlocks()
+{
+    const int blockSize = counter.block_size;
+    int j = -1;
+    int rightmostBlock = std::max_element(remain.begin(), remain.end(), [](const ChunkResult& arg1, const ChunkResult& arg2)
+    {
+        return arg1.rightMost_blocks < arg2.rightMost_blocks;
+    })->rightMost_blocks;
+    std::sort(remain.begin(), remain.end(), [](const ChunkResult& arg1, const ChunkResult& arg2)
+    {
+        return arg1.right_remain < arg2.right_remain;
+    });
+    for(unsigned i = 0; i < remain.size(); ++i)
+        if(remain[i].right_remain < rightmostBlock)
+            j = i;
+    for(unsigned i = 0; i < remain.size() && remain[i].right_remain <= rightmostBlock;)
+    {
+        if(remain[j].right_remain == rightmostBlock)
+        {
+            --j;
+        }
+        else
+        {
+            swapBlocks(last - (remain[i].right_remain + 1) * blockSize, last - (rightmostBlock + 1) * blockSize, blockSize);
+            ++i;
+        }
+        --rightmostBlock;
     }
-    int successor(const int value) const noexcept {
-        return base_layer.successor(value);
+    return rightmostBlock;
+}
+
+template<typename RandomAccessIterator, class UnaryPredicate>
+RandomAccessIterator ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate>::operator()()
+{
+    if(length <= THRESHOLD)
+        return std::partition(first, last, func);
+    const unsigned block_count = counter.block_count;
+    const unsigned block_size = counter.block_size;
+    const unsigned workerCount = std::min(std::thread::hardware_concurrency(), block_count / 2);
+    std::vector<std::future<ChunkResult> > fut;
+    for(unsigned i = 0; i < workerCount; ++i)
+    {
+        fut.push_back(std::async(&ParallelPartitionSolver::arrange_chunk, this, i));
+    }
+    for(auto& entry : fut)
+    {
+        remain.push_back(entry.get());
+    }
+    const int leftMostBlock = arrange_leftBlocks();
+    const int rightMostBlock = arrange_rightBlocks();
+    return std::partition(first + (leftMostBlock + 1) * block_size,
+                            last - (rightMostBlock + 1) * block_size, func);
+}
+
+template<typename RandomAccessIterator, class UnaryPredicate>
+RandomAccessIterator parallel_partition
+    (const RandomAccessIterator first, const RandomAccessIterator last, const UnaryPredicate func, const unsigned THRESHOLD)
+{
+    ParallelPartitionSolver<RandomAccessIterator, UnaryPredicate> solver(first, last, func, THRESHOLD);
+    return solver();
+}
+
+template<typename T>
+class ThreadsafeQueue
+{
+private:
+    class Node
+    {
+    public:
+        std::shared_ptr<T> data;
+        std::unique_ptr<Node> next;
+    };
+    std::mutex head_mutex;
+    std::unique_ptr<Node> head;
+    std::mutex tail_mutex;
+    Node* tail;
+    std::condition_variable data_cond;
+    std::atomic<bool> complete;
+
+    Node* get_tail()
+    {
+        std::lock_guard<std::mutex> tail_lock(tail_mutex);
+        return tail;
+    }
+    void pop_head()
+    {
+        std::unique_ptr<Node> old_head = std::move(head);
+        head = std::move(old_head->next);
+    }
+
+public:
+    ThreadsafeQueue() : head(new Node), tail(head.get()), complete(false){}
+    void push(const T new_value)
+    {
+        std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
+        std::unique_ptr<Node> p(new Node);
+        {
+            std::lock_guard<std::mutex> tail_lock(tail_mutex);
+            tail->data = new_data;
+            Node* const new_tail = p.get();
+            tail->next = std::move(p);
+            tail = new_tail;
+        }
+        data_cond.notify_one();
+    }
+    bool wait_and_pop(T& value, std::atomic<unsigned>& num)
+    {
+        std::unique_lock<std::mutex> head_lock(head_mutex);
+        if(locked_empty() && num.load(std::memory_order_acquire) == 0)
+        {
+            finish();
+            return false;
+        }
+        bool check;
+        data_cond.wait(head_lock, [&]
+        {
+            return (check = !locked_empty()) || (num.load(std::memory_order_acquire) == 0);
+        });
+        if(!check)
+        {
+            finish();
+            return false;
+        }
+        num.fetch_add(1, std::memory_order_acq_rel);
+        value = std::move(*head->data);
+        pop_head();
+        return true;
+    }
+    void finish()
+    {
+        if(!complete.load(std::memory_order_acquire))
+        {
+            complete.store(true, std::memory_order_release);
+            data_cond.notify_all();
+        }
+    }
+    bool locked_empty()
+    {
+        return (head.get() == get_tail());
     }
 };
 
-#define getchar getchar_unlocked
-#define putchar putchar_unlocked
+template<typename RandomAccessIterator, class Compare>
+class ParallelQuickSortSolver {
+private:
+    const RandomAccessIterator first, last;
+    const Compare comp;
+    ThreadsafeQueue<std::pair<RandomAccessIterator, RandomAccessIterator> > task_queue;
+    std::mt19937 mt;
+    std::atomic<unsigned> actthread_num;
+    const unsigned total_length;
+    const unsigned THRESHOLD;
 
-inline int in() {
-    int n = 0; short c;
-    while ((c = getchar()) >= '0') n = n * 10 + c - '0';
-    return n;
+    void getTask_and_run();
+    void parallel_partial_sort(const RandomAccessIterator _first, const RandomAccessIterator _last);
+
+public:
+    ParallelQuickSortSolver(const RandomAccessIterator _first, const RandomAccessIterator _last, const Compare _comp)
+        : first(_first), last(_last), comp(_comp), task_queue(), mt(std::random_device{}()),
+            actthread_num(0), total_length(std::distance(first, last)), THRESHOLD(std::max(total_length / 200, (1u << 14)))
+    {
+        task_queue.push(std::make_pair(first, last));
+    }
+    void operator()();
+};
+
+template<typename RandomAccessIterator, class Compare>
+void ParallelQuickSortSolver<RandomAccessIterator, Compare>::getTask_and_run()
+{
+    std::pair<RandomAccessIterator, RandomAccessIterator> task;
+    while(task_queue.wait_and_pop(task, actthread_num))
+    {
+        parallel_partial_sort(task.first, task.second);
+    }
 }
 
-inline void out(int n) {
-    short res[10], i = 0;
-    do { res[i++] = n % 10, n /= 10; } while (n);
-    while (i) putchar(res[--i] + '0');
-    putchar('\n');
+template<typename RandomAccessIterator, class Compare>
+void ParallelQuickSortSolver<RandomAccessIterator, Compare>::parallel_partial_sort(const RandomAccessIterator _first, const RandomAccessIterator _last)
+{
+    const unsigned length = std::distance(_first, _last);
+    if(length <= THRESHOLD)
+    {
+        if(length >= 2)
+            std::sort(_first, _last);
+        actthread_num.fetch_sub(1, std::memory_order_acq_rel);
+        return;
+    }
+    std::uniform_int_distribution<> uid(0, length-1);
+    const RandomAccessIterator pivot_itr = std::next(_first, uid(mt));
+    const auto pivot = *pivot_itr;
+    std::iter_swap(_first, pivot_itr);
+    const RandomAccessIterator middle
+        = parallel_partition(_first + 1, _last, std::bind(comp, std::placeholders::_1, std::cref(pivot)), std::max(total_length / 4, (1u << 17)));
+    std::iter_swap(_first, middle - 1);
+    task_queue.push(std::make_pair(_first, middle - 1));
+    parallel_partial_sort(middle, _last);
+}
+
+template<typename RandomAccessIterator, class Compare>
+void ParallelQuickSortSolver<RandomAccessIterator, Compare>::operator()()
+{
+    const unsigned hardware_threads = std::thread::hardware_concurrency();
+    std::vector<std::future<void> > fut;
+    for(unsigned i = 0; i < hardware_threads; ++i)
+    {
+        fut.push_back(std::async(&ParallelQuickSortSolver<RandomAccessIterator, Compare>::getTask_and_run, this));
+    }
+    for(auto& entry : fut)
+    {
+        entry.get();
+    }
+}
+
+template<typename RandomAccessIterator, class Compare=std::less<typename RandomAccessIterator::value_type> >
+void parallel_quick_sort(const RandomAccessIterator first, const RandomAccessIterator last, const Compare comp=Compare())
+{
+    ParallelQuickSortSolver<RandomAccessIterator, Compare> solver(first, last, comp);
+    solver();
+}
+
+int comp_count(const int &left, const int & right) {
+	if (left + 1 < right) {
+		return (right - left) + comp_count(left, (left + right) / 2) + comp_count((left + right) / 2, right);
+	}
+	else {
+		return 0;
+	}
 }
 
 int main()
 {
     cin.tie(0);
     ios::sync_with_stdio(false);
-    vanEmdeBoasTree veb;
-    int n = in(), a, b;
+    int n;
+    cin >> n;
+    vi a(n);
     rep(i,n){
-        a = in();
-        if(a == 0){
-            veb.insert(in());
-            cout << (int)veb.size() << endl;
-            // out(veb.size());
-        }else if(a == 1){
-            cout << veb.find(in()) << endl;
-            // out(veb.find(in()));
-        }else if(a == 2){
-            a = in();
-            if(veb.find(a)) veb.erase(a);
-        }else{
-            a = in(), b = in();
-            for(int st = veb.successor(a-1); st <= b; st = veb.successor(st))
-                cout << st << endl;
-                // cout << st << "\n";
-        }
+        cin >> a[i];
     }
+    parallel_quick_sort(all(a));
+    rep(i,n-1){
+        cout << a[i] << " ";
+    }
+    cout << a[n-1] << "\n";
+    cout << comp_count(0, n) << "\n";
     return 0;
 }
