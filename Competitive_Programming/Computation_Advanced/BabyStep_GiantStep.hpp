@@ -1,57 +1,75 @@
 #include "../header.hpp"
 
 //離散対数問題に対するアルゴリズム
-long long mod_pow(long long a, long long b, long long m)
+int mod_pow(int a, int b, int m)
 {
     a %= m;
-    long long res = 1;
+    int res = 1;
     while(b){
         if(b & 1){
-            res = res * a % m;
+            res = (long long)res * a % m;
         }
-        a = a * a % m;
+        a = (long long)a * a % m;
         b >>= 1;
     }
     return res;
 }
 
-void extgcd(long long a, long long b, long long& x, long long& y)
-{
-    if(b != 0){
-        extgcd(b,a%b,y,x);
-        y -= (a/b)*x;
-    }else{
-        x = 1;
-        y = 0;
+int mod_inv(int a, int m){
+	int u[] = {a, 1, 0}, v[] = {m, 0, 1}, t;
+    while(*v){
+		t = *u / *v;
+		swap(u[0] -= t * v[0], v[0]);
+        swap(u[1] -= t * v[1], v[1]);
+        swap(u[2] -= t * v[2], v[2]);
     }
+	return (u[1] % m + m) % m;
 }
 
-long long mod_inverse(long long a, long long m)
-{
-    long long x,y;
-    extgcd(a,m,x,y);
-    return (m + x % m) % m;
+int gcd(int a, int b){
+    int tmp;
+    while(b) tmp = a, a = b, b = tmp % b;
+    return a;
 }
 
-//g^x ≡ y (mod p) の解xを求める (O(p^(1/2)logp))
-long long BabyStep_GiantStep(long long g, long long y, long long p)
+// a^x ≡ b (mod p) の解 x を求める (p^(1/2) log p)
+int baby_step_giant_step(int a, int b, int p)
 {
-    long long m = floor(sqrt(p));
-    map<long long,long long> mp;
-    long long val = 1;
-    for(int i = 0; i < m; i++){
-        mp[val] = i;
-        val = val * g % p;
+    int m = ceil(sqrt(p));
+    unordered_map<int, int> mp;
+    int val = 1;
+    for(int i = 0; i < m; ++i){
+        if(mp.find(val) == mp.end()) mp[val] = i;
+        val = (long long)val * a % p;
     }
-    long long invgm = mod_pow(mod_inverse(g,p), m, p);
-    long long giant = y;
-    for(int i = 0; i < m; i++){
-        if(mp.find(giant) != mp.end()){
-            return i*m + mp[giant];
+    int inv = mod_pow(mod_inv(a, p), m, p);
+    int cur = b, res = numeric_limits<int>::max();
+    for(int i = 0; i < m; ++i){
+        auto it = mp.find(cur);
+        if(it != mp.end()){
+            res = min(res, i * m + it->second);
         }else{
-            giant = giant * invgm % p;
+            cur = (long long)cur * inv % p;
         }
     }
-    //解なし
-    return -1;
+    return (res == numeric_limits<int>::max()) ? -1 : res;
+}
+
+int general_baby_step_giant_step(int a, int b, int p)
+{
+    if(a == 0){
+        if(b == 0) return (p == 1) ? 0 : 1;
+        else if(b == 1) return 0;
+        else return -1;
+    }
+    int g, cnt = 0;
+    for(;;++cnt){
+        if((b == 1) || (p == 1)) return cnt;
+        if((g = gcd(a, p)) == 1) break;
+        if(b % g != 0) return -1;
+        b /= g, p /= g;
+        b = (long long)mod_inv(a / g, p) * b % p;
+    }
+    int res = baby_step_giant_step(a, b, p);
+    return (res < 0) ? res : res + cnt;
 }
