@@ -39,8 +39,9 @@ private:
         }
     };
     inline static unsigned int ceilpow2(unsigned int u) noexcept {
+        if(u == 0u) return 0u;
         --u, u |= u >> 1, u |= u >> 2, u |= u >> 4, u |= u >> 8;
-        return (u | (u >> 16)) + 1;
+        return (u | (u >> 16)) + 1u;
     }
     inline static bucket *increment(bucket *cur) noexcept {
         for(++cur; !cur->_end; ++cur){
@@ -109,6 +110,10 @@ private:
         data_type new_data = forward<Data>(data);
         return insert(cur, move(new_data.first), dist, move(new_data.second));
     }
+    template<typename... Args>
+    bucket *emplace(Args&&... args){
+        return find_insert(data_type(forward<Args>(args)...));
+    }
     bucket *backward_shift(bucket *cur, bool next_ret){
         bucket *next = next_bucket(cur), *ret = cur;
         if(next->_dist < 1) return next_ret ? increment(cur) : cur;
@@ -135,7 +140,10 @@ private:
         return erase_impl(_find(key), next_ret);
     }
     bool rehash_check(){
-        if(load_rate() >= MAX_LOAD_RATE){
+        if(_bucket_count == 0){
+            rehash(1u);
+            return true;
+        }else if(load_rate() >= MAX_LOAD_RATE){
             rehash(_bucket_count * 2u);
             return true;
         }else if(DOWNSIZE){
@@ -173,10 +181,12 @@ public:
     const float MAX_LOAD_RATE = 0.5f;
     const float MIN_LOAD_RATE = 0.1f;
     const unsigned int DOWNSIZE_THRESHOLD = 16u;
-    UnorderedMap(unsigned int bucket_size = 1u)
-     : _bucket_count(ceilpow2(max(bucket_size, 1u))), _mask(_bucket_count - 1),
+    UnorderedMap(unsigned int bucket_size = 0u)
+     : _bucket_count(ceilpow2(bucket_size)), _mask(_bucket_count - 1),
         _data_count(0u), _buckets(new bucket[_bucket_count + 1]){
-        _buckets[_bucket_count - 1]._last = true, _buckets[_bucket_count]._end = true;
+        if(_bucket_count > 0) _buckets[_bucket_count - 1]._last = true;
+        else _mask = 0;
+        _buckets[_bucket_count]._end = true;
     }
     UnorderedMap(const UnorderedMap& another)
         : _bucket_count(another._bucket_count), _mask(another._mask), _data_count(another._data_count){
@@ -210,6 +220,9 @@ public:
         another._buckets = nullptr;
         return *this;
     }
+    void allocate(unsigned int element_size){
+        rehash(ceilpow2(ceil(element_size / MAX_LOAD_RATE) + 1));
+    }
     ~UnorderedMap(){ delete[] _buckets; }
     friend ostream& operator<< (ostream& os, UnorderedMap& ump) noexcept {
         for(auto val : ump) os << '{' << val.first << ',' << val.second << "} ";
@@ -229,11 +242,15 @@ public:
     size_t size() const noexcept { return _data_count; }
     size_t bucket_count() const noexcept { return _bucket_count; }
     bool empty() const noexcept { return (_data_count == 0); }
-    iterator begin() const noexcept { return _buckets->empty() ? iterator(increment(_buckets)) : iterator(_buckets); }
-    iterator end() const noexcept { return iterator(_buckets + _bucket_count); }
+    iterator begin() noexcept {
+        return (_buckets->empty() && _bucket_count > 0) ? iterator(increment(_buckets)) : iterator(_buckets);
+    }
+    iterator end() noexcept { return iterator(_buckets + _bucket_count); }
     iterator find(const _Key& key){ return iterator(_find(key)); }
     iterator insert(const data_type& data){ return iterator(find_insert(data)); }
     iterator insert(data_type&& data){ return iterator(find_insert(move(data))); }
+    template<typename... Args>
+    iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
     iterator erase(const _Key& key){ return iterator(erase_key(key)); }
     iterator erase(const iterator& itr){ return iterator(erase_itr(itr.bucket_ptr)); }
     void simple_erase(const _Key& key){ erase_key(key, false); }
@@ -440,13 +457,75 @@ private:
         T res = res2.first->al;
         return join(join(res1.first,res2.first), res2.second), res;
     }
+    void dfs(const int u, const int p, const BSTNode<T> *cur,
+        bool *visit, vector<BSTNode<T>*>& nodes, const vector<vector<int> >& G) noexcept {
+        visit[u] = true;
+        nodes.push_back(vertex_set[u]);
+        for(auto& v : G[u]){
+            if(v != p){
+                BSTNode<T>* e1 = new BSTNode<T>(u, v);
+                nodes.push_back(e1);
+                dfs(v, u, cur, visit, nodes, G);
+                BSTNode<T>* e2 = new BSTNode<T>(v, u);
+                if(u < v) edge_set[pair_to_ll(u, v)] = {e1, e2};
+                else edge_set[pair_to_ll(v, u)] = {e2, e1};
+                nodes.push_back(e2);
+            }
+        }
+    }
+    void bst_build(vector<BSTNode<T>* >& nodes) noexcept {
+        int i, n = (int)nodes.size(), st = 2, isolate = ((n % 4 == 1) ? (n-1) : -1);
+        while(st <= n){
+            for(i = st-1; i < n; i += 2*st){
+                nodes[i]->left = nodes[i-st/2], nodes[i-st/2]->par = nodes[i];
+                if(i+st/2 < n) nodes[i]->right = nodes[i+st/2], nodes[i+st/2]->par = nodes[i];
+                else if(isolate >= 0) nodes[i]->right = nodes[isolate], nodes[isolate]->par = nodes[i];
+                nodes[i]->eval();
+            }
+            isolate = ((n % (4*st) >= st && (n % (4*st) < 2*st)) ? (i-2*st): isolate);
+            st <<= 1;
+        }
+    }
+    void build_forest(const vector<vector<int> >& forest) noexcept {
+        bool *visit = new bool[V]();
+        for(int i = 0; i < V; i++){
+            if(!visit[i]){
+                vector<BSTNode<T>* > nodes;
+                BSTNode<T> *cur = nullptr;
+                dfs(i, -1, cur, visit, nodes, forest);
+                bst_build(nodes);
+            }
+        }
+        delete[] visit;
+    }
+    void build_tree(const int root, const vector<vector<int> >& tree) noexcept {
+        bool *visit = new bool[V]();
+        vector<BSTNode<T>* > nodes;
+        BSTNode<T> *cur = nullptr;
+        dfs(root, -1, cur, visit, nodes, tree);
+        bst_build(nodes);
+        delete[] visit;
+    }
+
 public:
     const int V;
-    EulerTourTree(const vector<T>& ver_value, bool helper=false) noexcept
-        : V((int)ver_value.size()){
+    EulerTourTree(const vector<T>& ver_value) noexcept : V((int)ver_value.size()){
         vertex_set = new BSTNode<T>*[V];
         for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode<T>(i, i, ver_value[i]);
-        if(helper) G.resize(V);
+    }
+    EulerTourTree(const vector<T>& ver_value, const vector<vector<int> >& forest) noexcept
+        : EulerTourTree(ver_value){
+        unsigned int element_size = 0;
+        for(int i = 0; i < V; ++i) element_size += forest[i].size();
+        edge_set.allocate(element_size);
+        build_forest(forest);
+    }
+    EulerTourTree(const vector<T>& ver_value, const int root, const vector<vector<int> >& tree) noexcept
+        : EulerTourTree(ver_value){
+        unsigned int element_size = 0;
+        for(int i = 0; i < V; ++i) element_size += tree[i].size();
+        edge_set.allocate(element_size);
+        build_tree(root, tree);
     }
     // ~EulerTourTree(){
     //     for(auto it : edge_set){
@@ -489,9 +568,9 @@ public:
             assert(it != edge_set.end());
             range(((*it).second).second, ((*it).second).first, val);
         }else{
-            auto it = edge_set.find(pair_to_ll(ver_id, par_id));
+            auto it = edge_set.find(pair_to_ll(par_id, ver_id));
             assert(it != edge_set.end());
-            range(((*it).second).second, ((*it).second).first, val);
+            range(((*it).second).first, ((*it).second).second, val);
         }
     }
     // 頂点 ver_id の存在する連結成分内の頂点全体の総和を取得
@@ -500,69 +579,14 @@ public:
     T query(const int ver_id, const int par_id){
         if(par_id < 0) return splay(vertex_set[ver_id])->al;
         if(ver_id < par_id){
-            auto it = edge_set.find(pair_to_ll(ver_id, par_id));
+            auto it = edge_set.find({ver_id, par_id});
             assert(it != edge_set.end());
-            return query(((*it).second).second, ((*it).second).first);
+            return query((it->second).second, (it->second).first);
         }else{
             auto it = edge_set.find({par_id, ver_id});
             assert(it != edge_set.end());
-            return query(((*it).second).second, ((*it).second).first);
+            return query((it->second).first, (it->second).second);
         }
-    }
-
-// ヘルパー関数
-    vector<vector<int> > G;
-    void add_edge(const int u, const int v) noexcept { G[u].push_back(v), G[v].push_back(u); }
-    void dfs(const int u, const int p, const BSTNode<T> *cur,
-        vector<int>& parent, vector<BSTNode<T>*>& nodes) noexcept {
-        parent[u] = p;
-        nodes.push_back(vertex_set[u]);
-        for(auto& v : G[u]){
-            if(v != p){
-                BSTNode<T>* e1 = new BSTNode<T>(u, v);
-                nodes.push_back(e1);
-                dfs(v, u, cur, parent, nodes);
-                BSTNode<T>* e2 = new BSTNode<T>(v, u);
-                if(u < v) edge_set[pair_to_ll(u, v)] = {e1, e2};
-                else edge_set[pair_to_ll(v, u)] = {e2, e1};
-                nodes.push_back(e2);
-            }
-        }
-    }
-    void bst_build(vector<BSTNode<T>* >& nodes) noexcept {
-        int i, n = (int)nodes.size(), st = 2, isolate = ((n % 4 == 1) ? (n-1) : -1);
-        while(st <= n){
-            for(i = st-1; i < n; i += 2*st){
-                nodes[i]->left = nodes[i-st/2], nodes[i-st/2]->par = nodes[i];
-                if(i+st/2 < n) nodes[i]->right = nodes[i+st/2], nodes[i+st/2]->par = nodes[i];
-                else if(isolate >= 0) nodes[i]->right = nodes[isolate], nodes[isolate]->par = nodes[i];
-                nodes[i]->eval();
-            }
-            isolate = ((n % (4*st) >= st && (n % (4*st) < 2*st)) ? (i-2*st): isolate);
-            st <<= 1;
-        }
-    }
-    // _root を根とする木を構築(親の vector を返す)
-    vector<int> build_tree(const int _root) noexcept {
-        vector<int> parent(V, -1);
-        vector<BSTNode<T>* > nodes;
-        BSTNode<T> *cur = nullptr;
-        dfs(_root, -1, cur, parent, nodes);
-        bst_build(nodes);
-        return parent;
-    }
-    // 森を構築
-    vector<int> build_forest() noexcept {
-        vector<int> parent(V, -1);
-        for(int i = 0; i < V; i++){
-            if(parent[i] < 0){
-                vector<BSTNode<T>* > nodes;
-                BSTNode<T> *cur = nullptr;
-                dfs(i, -1, cur, parent, nodes);
-                bst_build(nodes);
-            }
-        }
-        return parent;
     }
 
 private:

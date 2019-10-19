@@ -37,6 +37,7 @@ private:
         }
     };
     inline static unsigned int ceilpow2(unsigned int u) noexcept {
+        if(u == 0u) return 0u;
         --u, u |= u >> 1, u |= u >> 2, u |= u >> 4, u |= u >> 8;
         return (u | (u >> 16)) + 1;
     }
@@ -128,7 +129,10 @@ private:
         return erase_impl(_find(key), next_ret);
     }
     bool rehash_check(){
-        if(load_rate() >= MAX_LOAD_RATE){
+        if(_bucket_count == 0){
+            rehash(1u);
+            return true;
+        }else if(load_rate() >= MAX_LOAD_RATE){
             rehash(_bucket_count * 2u);
             return true;
         }else if(DOWNSIZE){
@@ -166,10 +170,12 @@ public:
     const float MAX_LOAD_RATE = 0.5f;
     const float MIN_LOAD_RATE = 0.1f;
     const unsigned int DOWNSIZE_THRESHOLD = 16u;
-    UnorderedSet(unsigned int bucket_size = 1u)
-     : _bucket_count(ceilpow2(max(bucket_size, 1u))), _mask(_bucket_count - 1),
+    UnorderedSet(unsigned int bucket_size = 0u)
+     : _bucket_count(ceilpow2(bucket_size)), _mask(_bucket_count - 1),
         _data_count(0u), _buckets(new bucket[_bucket_count + 1]){
-        _buckets[_bucket_count - 1]._last = true, _buckets[_bucket_count]._end = true;
+        if(_bucket_count > 0) _buckets[_bucket_count - 1]._last = true;
+        else _mask = 0;
+        _buckets[_bucket_count]._end = true;
     }
     UnorderedSet(const UnorderedSet& another)
         : _bucket_count(another._bucket_count), _mask(another._mask), _data_count(another._data_count){
@@ -203,6 +209,9 @@ public:
         another._buckets = nullptr;
         return *this;
     }
+    void allocate(unsigned int element_size){
+        rehash(ceilpow2(ceil(element_size / MAX_LOAD_RATE) + 1));
+    }
     ~UnorderedSet(){ delete[] _buckets; }
     friend ostream& operator<< (ostream& os, UnorderedSet& ust) noexcept {
         for(_Key& val : ust) os << val << " ";
@@ -216,7 +225,7 @@ public:
     size_t bucket_count() const noexcept { return _bucket_count; }
     bool empty() const noexcept { return (_data_count == 0); }
     iterator begin() noexcept {
-        return _buckets->empty() ? iterator(increment(_buckets)) : iterator(_buckets);
+        return (_buckets->empty() && _bucket_count > 0) ? iterator(increment(_buckets)) : iterator(_buckets);
     }
     iterator end() noexcept { return iterator(_buckets + _bucket_count); }
     iterator find(const _Key& key) const { return iterator(_find(key)); }

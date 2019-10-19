@@ -157,13 +157,66 @@ private:
         T res = res2.first->al;
         return join(join(res1.first,res2.first), res2.second), res;
     }
+    void dfs(const int u, const int p, const BSTNode<T> *cur,
+        bool *visit, vector<BSTNode<T>*>& nodes, const vector<vector<int> >& G) noexcept {
+        visit[u] = true;
+        nodes.push_back(vertex_set[u]);
+        for(auto& v : G[u]){
+            if(v != p){
+                BSTNode<T>* e1 = new BSTNode<T>(u, v);
+                nodes.push_back(e1);
+                dfs(v, u, cur, visit, nodes, G);
+                BSTNode<T>* e2 = new BSTNode<T>(v, u);
+                if(u < v) edge_set[{u, v}] = {e1, e2};
+                else edge_set[{v, u}] = {e2, e1};
+                nodes.push_back(e2);
+            }
+        }
+    }
+    void bst_build(vector<BSTNode<T>* >& nodes) noexcept {
+        int i, n = (int)nodes.size(), st = 2, isolate = ((n % 4 == 1) ? (n-1) : -1);
+        while(st <= n){
+            for(i = st-1; i < n; i += 2*st){
+                nodes[i]->left = nodes[i-st/2], nodes[i-st/2]->par = nodes[i];
+                if(i+st/2 < n) nodes[i]->right = nodes[i+st/2], nodes[i+st/2]->par = nodes[i];
+                else if(isolate >= 0) nodes[i]->right = nodes[isolate], nodes[isolate]->par = nodes[i];
+                nodes[i]->eval();
+            }
+            isolate = ((n % (4*st) >= st && (n % (4*st) < 2*st)) ? (i-2*st): isolate);
+            st <<= 1;
+        }
+    }
+    void build_forest(const vector<vector<int> >& forest) noexcept {
+        bool *visit = new bool[V]();
+        for(int i = 0; i < V; i++){
+            if(!visit[i]){
+                vector<BSTNode<T>* > nodes;
+                BSTNode<T> *cur = nullptr;
+                dfs(i, -1, cur, visit, nodes, forest);
+                bst_build(nodes);
+            }
+        }
+        delete[] visit;
+    }
+    void build_tree(const int root, const vector<vector<int> >& tree) noexcept {
+        bool *visit = new bool[V]();
+        vector<BSTNode<T>* > nodes;
+        BSTNode<T> *cur = nullptr;
+        dfs(root, -1, cur, visit, nodes, tree);
+        bst_build(nodes);
+        delete[] visit;
+    }
+
 public:
     const int V;
-    EulerTourTree(const vector<T>& ver_value, bool helper=false) noexcept : V((int)ver_value.size()){
+    EulerTourTree(const vector<T>& ver_value) noexcept : V((int)ver_value.size()){
         vertex_set = new BSTNode<T>*[V];
         for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode<T>(i, i, ver_value[i]);
-        if(helper) G.resize(V);
     }
+    EulerTourTree(const vector<T>& ver_value, const vector<vector<int> >& forest) noexcept
+        : EulerTourTree(ver_value){ build_forest(forest); }
+    EulerTourTree(const vector<T>& ver_value, const int root, const vector<vector<int> >& tree) noexcept
+        : EulerTourTree(ver_value){ build_tree(root, tree); }
     // ~EulerTourTree(){
     //     for(auto it : edge_set){
     //         delete (it.second).first;
@@ -224,61 +277,6 @@ public:
             assert(it != edge_set.end());
             return query((it->second).first, (it->second).second);
         }
-    }
-
-// ヘルパー関数
-    vector<vector<int> > G;
-    void add_edge(const int u, const int v) noexcept { G[u].push_back(v), G[v].push_back(u); }
-    void dfs(const int u, const int p, const BSTNode<T> *cur,
-        vector<int>& parent, vector<BSTNode<T>*>& nodes) noexcept {
-        parent[u] = p;
-        nodes.push_back(vertex_set[u]);
-        for(auto& v : G[u]){
-            if(v != p){
-                BSTNode<T>* e1 = new BSTNode<T>(u, v);
-                nodes.push_back(e1);
-                dfs(v, u, cur, parent, nodes);
-                BSTNode<T>* e2 = new BSTNode<T>(v, u);
-                if(u < v) edge_set[{u, v}] = {e1, e2};
-                else edge_set[{v, u}] = {e2, e1};
-                nodes.push_back(e2);
-            }
-        }
-    }
-    void bst_build(vector<BSTNode<T>* >& nodes) noexcept {
-        int i, n = (int)nodes.size(), st = 2, isolate = ((n % 4 == 1) ? (n-1) : -1);
-        while(st <= n){
-            for(i = st-1; i < n; i += 2*st){
-                nodes[i]->left = nodes[i-st/2], nodes[i-st/2]->par = nodes[i];
-                if(i+st/2 < n) nodes[i]->right = nodes[i+st/2], nodes[i+st/2]->par = nodes[i];
-                else if(isolate >= 0) nodes[i]->right = nodes[isolate], nodes[isolate]->par = nodes[i];
-                nodes[i]->eval();
-            }
-            isolate = ((n % (4*st) >= st && (n % (4*st) < 2*st)) ? (i-2*st): isolate);
-            st <<= 1;
-        }
-    }
-    // _root を根とする木を構築(親の vector を返す)
-    vector<int> build_tree(const int _root) noexcept {
-        vector<int> parent(V, -1);
-        vector<BSTNode<T>* > nodes;
-        BSTNode<T> *cur = nullptr;
-        dfs(_root, -1, cur, parent, nodes);
-        bst_build(nodes);
-        return parent;
-    }
-    // 森を構築
-    vector<int> build_forest() noexcept {
-        vector<int> parent(V, -1);
-        for(int i = 0; i < V; i++){
-            if(parent[i] < 0){
-                vector<BSTNode<T>* > nodes;
-                BSTNode<T> *cur = nullptr;
-                dfs(i, -1, cur, parent, nodes);
-                bst_build(nodes);
-            }
-        }
-        return parent;
     }
 
 private:
