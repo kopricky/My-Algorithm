@@ -55,9 +55,9 @@ private:
     function< T(T, T) > func[4];
 
 public:
-    SyntaxTree(string& s){
-        func[0] = [&](T x, T y){ return x + y; }, func[1] = [&](T x, T y){ return x - y; };
-        func[2] = [&](T x, T y){ return x * y; }, func[3] = [&](T x, T y){ return x / y; };
+    SyntaxTree(const string& s){
+        func[0] = [&](const T x, const T y){ return x + y; }, func[1] = [&](const T x, const T y){ return x - y; };
+        func[2] = [&](const T x, const T y){ return x * y; }, func[3] = [&](const T x, const T y){ return x / y; };
         int pos = 0;
         root = expr(s, pos);
     }
