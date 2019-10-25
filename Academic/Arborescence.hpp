@@ -244,22 +244,7 @@ private:
     LazyUnionFind<_Tp> uf;
     vector<FibonacciHeap<edge, _Tp>*> fh;
     vector<typename FibonacciHeap<edge, _Tp>::node*> nodes;
-public:
-    _Tp ans;
-    vector<int> parent;
-    Arborescence(int node_size)
-        : V(node_size), super_id(V), revG(V), cycle(2*V), passive(V),
-            used(V, -1), heap(V, -1), par(2*V), uf(V), fh(V, nullptr), nodes(V, nullptr),
-                ans((_Tp)0), parent(V, -1){
-        iota(par.begin(), par.end(), 0);
-    }
-    // ~Arborescence(){
-        // for(int i = 0; i < V; ++i) if(nodes[i]) delete nodes[i];
-        // for(int i = 0; i < V; ++i) if(fh[i]) delete fh[i];
-    // }
-    void add_edge(int from, int to, _Tp cost){
-        revG[to].emplace_back(from, to, cost);
-    }
+    
     void _move_node(int prev, int vertex, int next, const edge *e){
         move_node(fh[prev], nodes[vertex], fh[next]);
         heap[vertex] = next, nodes[vertex]->_data = e;
@@ -342,6 +327,23 @@ public:
                 cycle_dfs(v, -1);
             }
         }
+    }
+    
+public:
+    _Tp ans;
+    vector<int> parent;
+    Arborescence(int node_size)
+        : V(node_size), super_id(V), revG(V), cycle(2*V), passive(V),
+            used(V, -1), heap(V, -1), par(2*V), uf(V), fh(V, nullptr), nodes(V, nullptr),
+                ans((_Tp)0), parent(V, -1){
+        iota(par.begin(), par.end(), 0);
+    }
+    // ~Arborescence(){
+        // for(int i = 0; i < V; ++i) if(nodes[i]) delete nodes[i];
+        // for(int i = 0; i < V; ++i) if(fh[i]) delete fh[i];
+    // }
+    void add_edge(int from, int to, _Tp cost){
+        revG[to].emplace_back(from, to, cost);
     }
     _Tp solve(const int root){
         used[root] = 1;
