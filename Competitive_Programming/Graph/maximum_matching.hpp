@@ -107,16 +107,17 @@ public:
         }
         return X;
     }
-    int rank(){
+    vector<int> rank(){
         mat<T> X(r, c);
         for(int i = 0; i < r; i++){
             for(int j = 0; j < c; j++){
                 X[i][j] = (*this)[i][j];
             }
         }
+        vector<int> index;
         int res = 0;
         for(int i = 0; i < c; i++){
-            if(res == r) return res;
+            if(res == r) break;
             if(!X[res][i]){
                 int pivot = res + 1;
                 for(; pivot < r; pivot++){
@@ -135,9 +136,9 @@ public:
                     X[j][k] -= X[res][k] * X[j][i];
                 }
             }
-            res++;
+            index.push_back(i), ++res;
         }
-        return res;
+        return index;
     }
     bool det_zero() const {
         mat<T> X(r);
@@ -210,13 +211,13 @@ public:
 
 class Matching {
 private:
-    int V;
+    const int V;
     vector<pair<int, int> > es;
-    vector<int> cnt;
+    vector<int> index, cnt;
     random_device rnd;
 	mt19937 mt;
     uniform_int_distribution<> randval;
-    static constexpr int LOOP = 2;
+    static constexpr int LOOP = 1;
     static constexpr uint mod = 1000000007;
     mat<ModInt<mod> > inverse_22(const int id, const mat<ModInt<mod> >& invT){
         ModInt<mod> invdev = (ModInt<mod>)1 / (invT[0][0]*invT[id][id] - invT[0][id]*invT[id][0]);
@@ -240,29 +241,28 @@ private:
         }
         invT = N_12_12 - N_12_3n * inverse_22(id, invT) * N_3n_12;
     }
-    vector<pair<int, int> > find_matching(const mat<ModInt<mod> >& T){
+    void find_matching(const mat<ModInt<mod> >& T){
         int sz = T.row();
-        vector<pair<int, int> > res;
         mat<ModInt<mod> > invT = T.inverse();
         vector<int> vset(sz); iota(vset.begin(), vset.end(), 0);
         for(int i = sz; i > 0; i -= 2){
             for(int j = 1; j < i; j++){
                 if(invT[0][j] && T[vset[0]][vset[j]]){
-                    if(vset[j] < V) res.emplace_back(vset[0], vset[j]);
+                    ans.emplace_back(index[vset[0]], index[vset[j]]);
                     vset.erase(vset.begin()), vset.erase(vset.begin() + j - 1);
                     schur_complement(j, invT);
                     break;
                 }
             }
         }
-        return res;
     }
 
 public:
-    Matching(int node_size) : V(node_size), cnt(V+1, 0), mt(rnd()), randval(0, mod-1){}
-    void add_edge(int u, int v){
-        es.push_back(make_pair(u, v));
-    }
+    vector<pair<int, int> > ans;
+
+    Matching(const int node_size)
+        : V(node_size), cnt(V + 1, 0), mt(rnd()), randval(1, mod - 1){}
+    void add_edge(const int u, const int v){ es.emplace_back(u, v); }
     bool perfect_matchching(){
         for(int i = 0; i < LOOP; i++){
             mat<ModInt<mod> > A(V);
@@ -281,21 +281,32 @@ public:
                 int r = randval(mt);
                 A[e.first][e.second] = r, A[e.second][e.first] = -r;
             }
-            cnt[A.rank()]++;
+            vector<int> res = A.rank();
+            ++cnt[res.size()];
+            if((size_t)(max_element(cnt.begin(), cnt.end()) - cnt.begin()) == res.size()){
+                index = move(res);
+            }
         }
         return (int)(max_element(cnt.begin(), cnt.end()) - cnt.begin()) / 2;
     }
-    vector<pair<int, int> > find_maximum_matching(){
-        int res = maximum_matchching();
-        int newV = 2*(V-res);
-        for(int i = 0; i < V; i++) for(int j = V; j < newV; j++) add_edge(i, j);
+    int find_maximum_matching(){
+        const int sz = maximum_matchching();
+        vector<pair<int, int> > ans_tmp;
+        vector<int> unzip(V, -1);
+        for(int i = 0; i < 2 * sz; ++i) unzip[index[i]] = i;
         for(int i = 0; i < LOOP; i++){
-            mat<ModInt<mod> > A(newV);
+            mat<ModInt<mod> > A(2 * sz);
             for(auto e : es){
+                const int u = unzip[e.first], v = unzip[e.second];
+                if(u < 0 || v < 0) continue;
                 int r = randval(mt);
-                A[e.first][e.second] = r, A[e.second][e.first] = -r;
+                A[u][v] = r, A[v][u] = -r;
             }
-            if(!A.det_zero()) return find_matching(A);
+            if(!A.det_zero()){
+                find_matching(A);
+                break;
+            }
         }
+        return sz;
     }
 };
