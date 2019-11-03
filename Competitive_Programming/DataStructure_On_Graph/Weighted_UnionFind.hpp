@@ -26,7 +26,7 @@ public:
         w += weight(x), w -= weight(y);
         x = par[x], y = par[y];
         if(x == y) return;
-    	if(nrank[x] < nrank[y]){
+        if(nrank[x] < nrank[y]){
             swap(x,y);
             w = -w;
         }

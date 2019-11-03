@@ -31,7 +31,7 @@ public:
     };
     int V;
     vector<vector<int> > G,rG,bucket,tree;
-	vector<int> sdom,et,par,idom,dom;
+    vector<int> sdom,et,par,idom,dom;
     UF uf;
     DominatorTree(int node_size) : V(node_size), G(V), rG(V), bucket(V), tree(V), sdom(V, -1)
                                     , et(V), par(V), idom(V), dom(V){}
@@ -79,12 +79,12 @@ public:
             idom[v] = et[idom[v]];
         }
         idom[root] = -1;
-		for(int i=0;i<V;i++){
-			if(i != root){
-				if(i != root){
-					tree[idom[i]].push_back(i);
-				}
-			}
-		}
+        for(int i=0;i<V;i++){
+            if(i != root){
+                if(i != root){
+                    tree[idom[i]].push_back(i);
+                }
+            }
+        }
     }
 };

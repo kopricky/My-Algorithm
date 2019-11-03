@@ -17,7 +17,7 @@ public:
     void unite(int x,int y){
         x = find(x), y = find(y);
         if(x == y) return;
-    	if(nrank[x] < nrank[y]) swap(x,y);
+        if(nrank[x] < nrank[y]) swap(x,y);
         par[y] = x;
         if(nrank[x] == nrank[y]) nrank[x]++;
     }
