@@ -77,12 +77,12 @@ public:
         for(int i = 0; i < V; i++){
             h[i] += dist[i];
         }
-        int d = f;
+        Cat d = f;
         for(int v = t; v != s; v = prevv[v]){
             d = min(d, G[prevv[v]][preve[v]].cap);
         }
         f -= d;
-        res += d * h[t];
+        res += h[t] * d;
         for(int v = t; v != s; v = prevv[v]){
             edge& e = G[prevv[v]][preve[v]];
             e.cap -= d;
