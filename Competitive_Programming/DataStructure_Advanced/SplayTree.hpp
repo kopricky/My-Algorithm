@@ -174,13 +174,6 @@ pair<node<_Key, _Tp>*, bool> erase(const _Key _key, node<_Key, _Tp>* root){
     return make_pair(join(l, r), true);
 }
 
-// root1 を根とする木と root 2 を根とする木の merge
-template<typename _Key, typename _Tp>
-node<_Key, _Tp>* merge(node<_Key, _Tp>* root1, node<_Key, _Tp>* root2) noexcept {
-    if(!root2) return root1;
-    return insert(root2, root1);
-}
-
 // root を根とする木を (_key 未満, _key 以上) の木に split する.
 // lower_bound ⇒ get に変えるとキー値ベースではなく個数ベースで split できる.
 template<typename _Key, typename _Tp>

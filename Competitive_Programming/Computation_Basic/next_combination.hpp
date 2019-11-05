@@ -1,6 +1,6 @@
 #include "../header.hpp"
 
-vector<bool> v(n.false);
+vector<bool> v(n, false);
 fill(v.end() - r, v.end(), true);
 do {
     vector<int> res;
