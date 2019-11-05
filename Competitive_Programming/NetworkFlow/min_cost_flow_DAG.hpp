@@ -27,22 +27,22 @@ public:
     }
     bool tsort(){
         queue<int> que;
-		for(int i = 0; i < V; i++){
-			if(deg[i] == 0){
-				que.push(i);
-			}
-		}
-		while(!que.empty()){
-			int p = que.front();
-			que.pop();
-			ord.push_back(p);
-			for(auto& e : G[p]){
-				if(e.is_for && --deg[e.to] == 0){
-					que.push(e.to);
-				}
-			}
-		}
-		return (*max_element(deg.begin(),deg.end()) == 0);
+        for(int i = 0; i < V; i++){
+            if(deg[i] == 0){
+                que.push(i);
+            }
+        }
+        while(!que.empty()){
+            int p = que.front();
+            que.pop();
+            ord.push_back(p);
+            for(auto& e : G[p]){
+                if(e.is_for && --deg[e.to] == 0){
+                    que.push(e.to);
+                }
+            }
+        }
+        return (*max_element(deg.begin(),deg.end()) == 0);
     }
     void calc_potential(int s){
         h[s] = 0;
@@ -77,12 +77,12 @@ public:
         for(int i = 0; i < V; i++){
             h[i] += dist[i];
         }
-        int d = f;
+        Cat d = f;
         for(int v = t; v != s; v = prevv[v]){
             d = min(d, G[prevv[v]][preve[v]].cap);
         }
         f -= d;
-        res += d * h[t];
+        res += h[t] * d;
         for(int v = t; v != s; v = prevv[v]){
             edge& e = G[prevv[v]][preve[v]];
             e.cap -= d;

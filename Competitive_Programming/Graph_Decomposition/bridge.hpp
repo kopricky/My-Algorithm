@@ -55,15 +55,15 @@ private:
         }
     }
 public:
-	int V, kind;
-	vector<vector<int> > G, tree;
-	vector<vector<pair<int, int> > > check;
+    int V, kind;
+    vector<vector<int> > G, tree;
+    vector<vector<pair<int, int> > > check;
     vector<pair<int, int> > bridge;
-	vector<int> ord, low, cmp;
+    vector<int> ord, low, cmp;
     bool *visit;
-	biconnected(int node_size)
+    biconnected(int node_size)
         : V(node_size), kind(0), G(V), check(V), ord(V), low(V)
-			,cmp(V), visit(new bool[V]()){}
+            ,cmp(V), visit(new bool[V]()){}
     // ~biconnected(){ delete[] visit; }
     void add_edge(int u, int v)
     {
@@ -72,25 +72,25 @@ public:
         check[v].emplace_back((int)check[u].size()-1, 0);
     }
     // 橋を検出する.
-	void detect_bridge(){
-		int id = 0;
-		for(int i = 0; i < V; i++){
-			if(!visit[i]){
-				dfs(i, -1, id, -1);
-			}
-		}
-	}
-	// 2(辺)連結成分を頂点とする木(tree) を作る(事前に detect_bridge() を呼んでおく必要がある).
+    void detect_bridge(){
+        int id = 0;
+        for(int i = 0; i < V; i++){
+            if(!visit[i]){
+                dfs(i, -1, id, -1);
+            }
+        }
+    }
+    // 2(辺)連結成分を頂点とする木(tree) を作る(事前に detect_bridge() を呼んでおく必要がある).
     // 木の頂点数を返す.
     // cmp[i] は元の頂点 i の含まれる頂点(2(辺)連結成分) を表す.
-	int make_bctree()
-	{
-		rebuild();
+    int make_bctree()
+    {
+        rebuild();
         tree.resize(kind);
-		for(int i = 0; i < (int)bridge.size(); i++){
-			int a = cmp[bridge[i].first], b = cmp[bridge[i].second];
-			tree[a].push_back(b), tree[b].push_back(a);
-		}
+        for(int i = 0; i < (int)bridge.size(); i++){
+            int a = cmp[bridge[i].first], b = cmp[bridge[i].second];
+            tree[a].push_back(b), tree[b].push_back(a);
+        }
         return kind;
-	}
+    }
 };
