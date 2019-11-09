@@ -7,7 +7,7 @@
 
 template<typename T> class segtree {
 private:
-    int n,sz;
+    int n, sz;
     vector<T> node, min_val, second_val, lazy;
     vector<int> count;
     vector<bool> lazyFlag;
