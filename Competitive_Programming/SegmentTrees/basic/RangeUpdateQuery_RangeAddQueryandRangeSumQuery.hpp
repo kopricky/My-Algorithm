@@ -37,7 +37,7 @@ public:
         eval(k);
         if(b <= l || r <= a) return;
         if(a <= l && r <= b){
-            lazy_add[k] = 0; lazy_update[k] = x*(r-l); lazyFlag[k] = true; eval(k);
+            lazy_update[k] = x*(r-l); lazyFlag[k] = true; eval(k);
         }else{
             update(a, b, x, 2*k, l, (l+r)/2); update(a, b, x, 2*k+1, (l+r)/2, r);
             node[k] = node[2*k] + node[2*k+1];
