@@ -2,6 +2,7 @@
 
 template<typename T> class Dinic {
 private:
+    static_assert(std::is_integral<T>::value, "Integral required.");
     struct edge{
         int to;
         T cap;
