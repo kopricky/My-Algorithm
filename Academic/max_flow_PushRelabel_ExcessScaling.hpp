@@ -21,22 +21,19 @@ public:
         int prev, next;
     };
     const int N, H;
-    vector<size_t> sz;
     vector<node> dat;
-    List(const int _N, const int _H) : N(_N), H(_H), sz(H), dat(N+H){ clear(); }
-    inline size_t size(const int h) const { return sz[h]; }
-    inline bool empty(const int h) const { return (sz[h] == 0); }
+    List(const int _N, const int _H) : N(_N), H(_H), dat(N+H){ clear(); }
+    inline bool empty(const int h) const { return (dat[N+h].next == N+h); }
+    inline bool more_one(const int h) const { return dat[N+h].prev != dat[N+h].next; }
     inline void insert(const int h, const int u){
-        ++sz[h];
         dat[u].prev = dat[N+h].prev, dat[u].next = N+h;
         dat[dat[N+h].prev].next = u, dat[N+h].prev = u;
     }
-    inline void erase(const int h, const int u){
-        --sz[h];
+    inline void erase(const int u){
         dat[dat[u].prev].next = dat[u].next, dat[dat[u].next].prev = dat[u].prev;
     }
     inline void clear(){
-        for(int i = N; i < N+H; ++i) sz[i-N] = 0, dat[i].prev = dat[i].next = i;
+        for(int i = N; i < N+H; ++i) dat[i].prev = dat[i].next = i;
     }
 };
 
@@ -107,7 +104,6 @@ private:
             for(int id = all_ver.dat[V+i].next; id < V; id = all_ver.dat[id].next){
                 potential[id] = V+1;
             }
-            all_ver.sz[i] = 0;
             all_ver.dat[V+i].prev = all_ver.dat[V+i].next = V+i;
         }
     }
@@ -140,8 +136,8 @@ private:
                 cur = potential[e.to] + 1;
             }
         }
-        if((int)all_ver.size(prv) > 1){
-            all_ver.erase(prv, u);
+        if(all_ver.more_one(prv)){
+            all_ver.erase(u);
             if((potential[u] = cur) == V) return;
             act_ver.push(cur, u);
             all_ver.insert(cur, u);
