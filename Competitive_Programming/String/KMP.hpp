@@ -62,3 +62,12 @@ public:
         }
     }
 };
+
+// 文字列 s[0, i] の最小周期の長さ
+void minimum_cycle(const string& s, vector<int>& res){
+	KMP kmp(s);
+	res.resize((int)s.size());
+	for(int i = 0; i < (int)s.size(); ++i){
+		res[i] = i + 1 - kmp.table[i+1];
+	}
+}
