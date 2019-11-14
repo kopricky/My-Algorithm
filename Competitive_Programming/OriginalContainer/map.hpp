@@ -200,7 +200,8 @@ public:
     iterator begin() noexcept { return confirm_header(), iterator(_M_start); }
     iterator end() noexcept { return confirm_header(), iterator(_M_header); }
     void clear(){
-        clear_dfs(_M_root), _M_node_count = 0;
+        if(_M_root) clear_dfs(_M_root);
+        _M_node_count = 0;
         data_type new_data;
         _M_root = _M_header = _M_start = new node(move(new_data));
     }
