@@ -5,9 +5,8 @@ private:
     void dfs(int u, int p, int& tm)
     {
         bool flag = false;
-        ord[u] = low[u] = tm++;
-        for(int i = 0; i < (int)G[u].size(); i++){
-            int v = G[u][i];
+        ord[u] = low[u] = tm++, st.push(u);
+        for(int v : G[u]){
             if(ord[v] < 0){
                 dfs(v, u, tm);
                 low[u] = min(low[u], low[v]);
@@ -19,7 +18,7 @@ private:
             }
         }
         if(ord[u] == low[u]){
-            bridge.emplace_back(u, p);
+            if(p >= 0) bridge.emplace_back(u, p);
             while(true){
                 const int v = st.top();
                 st.pop();
@@ -38,12 +37,12 @@ public:
     vector<int> ord, low, cmp;
     stack<int> st;
     biconnected(int node_size)
-        : V(node_size), kind(0), G(V), ord(V), low(V), cmp(V){}
+        : V(node_size), kind(0), G(V), ord(V, -1), low(V), cmp(V){}
     void add_edge(const int u, const int v){
         G[u].push_back(v), G[v].push_back(u);
     }
     // 橋を検出する(二(辺)連結成分の個数を返す).
-    int detect_bridge(){
+    int identify_bridge(){
         int tm = 0;
         for(int i = 0; i < V; ++i){
             if(ord[i] < 0) dfs(i, -1, tm);
