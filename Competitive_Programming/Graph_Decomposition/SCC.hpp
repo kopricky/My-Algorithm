@@ -28,7 +28,7 @@ private:
         }
     }
 public:
-    vector<vector<int> > dag_graph;
+    vector<vector<int> > graph;
     vector<int> cmp;
     int cnt;
     SCC(const int node_size)
@@ -45,11 +45,11 @@ public:
         return cnt;
     }
     void make_graph(){
-        dag_graph.resize(cnt);
+        graph.resize(cnt);
         for(int i = 0; i < V; ++i){
             for(int j : G[i]){
                 if(cmp[i] != cmp[j]){
-                    dag_graph[cmp[i]].push_back(cmp[j]);
+                    graph[cmp[i]].push_back(cmp[j]);
                 }
             }
         }
