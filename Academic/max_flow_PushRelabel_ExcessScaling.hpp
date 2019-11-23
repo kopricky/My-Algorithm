@@ -85,7 +85,7 @@ private:
         }
     }
     void init(){
-        potential[s] = V+1;
+        potential[s] = V + 1;
         for(edge& e : G[s]){
             if(potential[e.to] < V && e.cap > 0){
                 U = max(U, e.cap), logU = max(logU, (int)ceil(log2(e.cap)));
@@ -102,7 +102,7 @@ private:
     void gap_relabel(const int u){
         for(int i = potential[u]; i <= pot_max; ++i){
             for(int id = all_ver.dat[V+i].next; id < V; id = all_ver.dat[id].next){
-                potential[id] = V+1;
+                potential[id] = V + 1;
             }
             all_ver.dat[V+i].prev = all_ver.dat[V+i].next = V+i;
         }

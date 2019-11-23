@@ -175,8 +175,7 @@ class SimpleMergeSet
 {
 public:
     vector<int> next;
-    SimpleMergeSet(const int node_size)
-        : next((int)node_size){
+    SimpleMergeSet(const int node_size) : next(node_size){
         iota(next.begin(), next.end(), 0);
     }
     void unite(const int u, const int v){
