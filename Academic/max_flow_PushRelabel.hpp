@@ -83,8 +83,8 @@ private:
         for(edge& e : G[s]){
             if(potential[e.to] < V){
                 G[e.to][e.rev].cap = e.cap, excess[s] -= e.cap, excess[e.to] += e.cap;
+                e.cap = 0;
             }
-            e.cap = 0;
         }
         return calc_active();
     }

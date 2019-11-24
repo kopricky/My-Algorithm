@@ -90,8 +90,8 @@ private:
             if(potential[e.to] < V && e.cap > 0){
                 U = max(U, e.cap), logU = max(logU, (int)ceil(log2(e.cap)));
                 G[e.to][e.rev].cap = e.cap, excess[s] -= e.cap, excess[e.to] += e.cap;
+                e.cap = 0;
             }
-            e.cap = 0;
         }
     }
     int global_relabel(const T K){
