@@ -17,11 +17,11 @@ public:
     }
     void update(int k, T a)
     {
-    	node[k+n] = make_pair(a, k);
+        node[k+n] = make_pair(a, k);
         k += n;
-    	while(k>>=1){
+        while(k>>=1){
             node[k] = min(node[2*k], node[2*k+1]);
-    	}
+        }
     }
     pair<T, int> query(int a,int b,int k=0,int l=0,int r=-1)
     {
@@ -29,8 +29,8 @@ public:
         pair<T, int> res2 = make_pair(numeric_limits<T>::max(), sz);
         a += n, b += n;
         while(a != b){
-            if(a % 2) cmn(res1, node[a++]);
-            if(b % 2) cmn(res2, node[--b]);
+            if(a % 2) res1 = min(res1, node[a++]);
+            if(b % 2) res2 = min(res2, node[--b]);
             a >>= 1, b>>= 1;
         }
         return min(res1, res2);

@@ -8,10 +8,10 @@
 template<typename T> class dynamic_segtree{
 private:
     struct node {
-    	T val, lazy;
+        T val, lazy;
         int st_size;
-    	node *par, *left, *right;
-    	node() : val(id2), lazy(id1), st_size(0),
+        node *par, *left, *right;
+        node() : val(id2), lazy(id1), st_size(0),
             par(nullptr), left(nullptr), right(nullptr){}
     };
     void opr1(T& arg1,T arg2){
@@ -71,17 +71,17 @@ public:
     }
     void range(int a, int b, const T x, node *k = root, int l = 0, int r = MAX_SIZE){
         eval(k, l, r);
-    	if(b <= l || r <= a) return;
-    	if(a <= l && r <= b){
+        if(b <= l || r <= a) return;
+        if(a <= l && r <= b){
             opr1(k->lazy, k->st_size * x);
             eval(k, l, r);
             return;
-    	}
+        }
         k->val = id2;
-    	if(k->left){
+        if(k->left){
             range(a, b, x, k->left, l, (l+r)/2);
             k->val = opr2(k->val,k->left->val);
-    	}
+        }
         if(k->right){
             range(a, b, x, k->right, (l+r)/2, r);
             k->val = opr2(k->val,k->right->val);

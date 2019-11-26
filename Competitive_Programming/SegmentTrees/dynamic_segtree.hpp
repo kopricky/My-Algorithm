@@ -8,9 +8,9 @@
 template<typename T> class dynamic_segtree{
 private:
     struct node {
-    	T val;
-    	node *par, *left, *right;
-    	node() : val(identity), par(nullptr), left(nullptr), right(nullptr){}
+        T val;
+        node *par, *left, *right;
+        node() : val(identity), par(nullptr), left(nullptr), right(nullptr){}
     };
     void opr1(T& arg1,T arg2){
         arg1 = arg2;

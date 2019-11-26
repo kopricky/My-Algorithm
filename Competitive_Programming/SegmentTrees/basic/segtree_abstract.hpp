@@ -3,13 +3,13 @@
 template<typename T> class segtree {
 private:
     int n,sz;
-	T id_element;
-	function<T(const T&, const T&)> binary_opr;
+    T id_element;
+    function<T(const T&, const T&)> binary_opr;
     vector<T> node;
 
 public:
     segtree(const vector<T>& init_vec, const function<T(const T&, const T&)> func, T ie) :
-		n(1), sz((int)init_vec.size()), binary_opr(func), id_element(ie){
+        n(1), sz((int)init_vec.size()), binary_opr(func), id_element(ie){
         while(n < sz){
             n *= 2;
         }
@@ -23,10 +23,10 @@ public:
     }
     void update(int k, T a)
     {
-    	node[k+=n] = a;
-    	while(k>>=1){
-    		node[k] = binary_opr(node[2*k],node[2*k+1]);
-    	}
+        node[k+=n] = a;
+        while(k>>=1){
+            node[k] = binary_opr(node[2*k],node[2*k+1]);
+        }
     }
     T query(int a,int b)
     {
