@@ -17,11 +17,11 @@ public:
     }
     void update(int k, T a)
     {
-    	node[k+n] = make_pair(a, k);
+        node[k+n] = make_pair(a, k);
         k += n;
-    	while(k>>=1){
+        while(k>>=1){
             node[k] = min(node[2*k], node[2*k+1]);
-    	}
+        }
     }
     pair<T, int> query(int a,int b,int k=0,int l=0,int r=-1)
     {

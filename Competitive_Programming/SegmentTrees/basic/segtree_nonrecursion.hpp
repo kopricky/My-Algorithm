@@ -17,10 +17,10 @@ public:
     }
     void update(int k,T a)
     {
-    	node[k+=n] = a;
-    	while(k>>=1){
+        node[k+=n] = a;
+        while(k>>=1){
             node[k] = min(node[2*k],node[2*k+1]);
-    	}
+        }
     }
     T query(int a,int b)
     {
