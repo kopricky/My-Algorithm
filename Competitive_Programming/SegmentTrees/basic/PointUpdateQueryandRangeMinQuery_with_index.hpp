@@ -29,8 +29,8 @@ public:
         pair<T, int> res2 = make_pair(numeric_limits<T>::max(), sz);
         a += n, b += n;
         while(a != b){
-            if(a % 2) cmn(res1, node[a++]);
-            if(b % 2) cmn(res2, node[--b]);
+            if(a % 2) res1 = min(res1, node[a++]);
+            if(b % 2) res2 = min(res2, node[--b]);
             a >>= 1, b>>= 1;
         }
         return min(res1, res2);
