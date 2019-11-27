@@ -78,13 +78,13 @@ private:
         }
     }
     int init(){
-        potential[s] = V+1;
+        potential[s] = V + 1;
         bfs();
         for(edge& e : G[s]){
             if(potential[e.to] < V){
                 G[e.to][e.rev].cap = e.cap, excess[s] -= e.cap, excess[e.to] += e.cap;
+                e.cap = 0;
             }
-            e.cap = 0;
         }
         return calc_active();
     }
@@ -96,7 +96,7 @@ private:
     void gap_relabel(const int u){
         for(int i = potential[u]; i <= pot_max; ++i){
             for(int id = all_ver.dat[V+i].next; id < V; id = all_ver.dat[id].next){
-                potential[id] = V+1;
+                potential[id] = V + 1;
             }
             all_ver.dat[V+i].prev = all_ver.dat[V+i].next = V+i;
         }

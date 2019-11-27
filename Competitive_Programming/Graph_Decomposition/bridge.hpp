@@ -2,90 +2,59 @@
 
 class biconnected {
 private:
-    void dfs(int u, int p, int &k, int q)
+    void dfs(int u, int p, int& tm)
     {
-        visit[u] = true;
-        ord[u] = k++;
-        low[u] = ord[u];
-        for(int i = 0; i < (int)G[u].size(); i++){
-            int v = G[u][i];
-            if(!visit[v]){
-                dfs(v, u, k, i);
+        bool flag = false;
+        ord[u] = low[u] = tm++, st.push(u);
+        for(int v : G[u]){
+            if(ord[v] < 0){
+                dfs(v, u, tm);
                 low[u] = min(low[u], low[v]);
-                if(ord[u] < low[v]){
-                    bridge.emplace_back(u, v);
-                    check[u][i].second = 1;
-                    check[v][check[u][i].first].second = 1;
-                }
-            }else if(v != p || q != check[u][i].first){
+            }else if(v != p){
                 low[u] = min(low[u], ord[v]);
+            }else{
+                if(flag) low[u] = min(low[u], ord[v]);
+                else flag = true;
             }
         }
-    }
-    void restrict_dfs(int u, int p, int kind, queue<int>& que)
-    {
-        visit[u] = true;
-        cmp[u] = kind;
-        for(int i = 0; i < (int)G[u].size(); i++){
-            int v = G[u][i];
-            if(check[u][i].second){
-                if(!visit[v]){
-                    que.push(v);
-                }
-            }else if(!visit[v]){
-                restrict_dfs(v, u, kind, que);
+        if(ord[u] == low[u]){
+            if(p >= 0) bridge.emplace_back(u, p);
+            while(true){
+                const int v = st.top();
+                st.pop();
+                cmp[v] = kind;
+                if(v == u) break;
             }
+            ++kind;
         }
     }
-    void rebuild()
-    {
-        kind = 0;
-        fill(visit, visit + V, false);
-        for(int i = 0; i < V; i++){
-            if(!visit[i]){
-                queue<int> que;
-                que.push(i);
-                while(!que.empty()){
-                    int p = que.front();
-                    que.pop();
-                    restrict_dfs(p, -1, kind, que);
-                    kind++;
-                }
-            }
-        }
-    }
+
 public:
-    int V, kind;
+    const int V;
+    int kind;
     vector<vector<int> > G, tree;
-    vector<vector<pair<int, int> > > check;
     vector<pair<int, int> > bridge;
     vector<int> ord, low, cmp;
-    bool *visit;
+    stack<int> st;
     biconnected(int node_size)
-        : V(node_size), kind(0), G(V), check(V), ord(V), low(V)
-            ,cmp(V), visit(new bool[V]()){}
-    // ~biconnected(){ delete[] visit; }
-    void add_edge(int u, int v)
-    {
+        : V(node_size), kind(0), G(V), ord(V, -1), low(V), cmp(V){}
+    void add_edge(const int u, const int v){
         G[u].push_back(v), G[v].push_back(u);
-        check[u].emplace_back((int)check[v].size(), 0);
-        check[v].emplace_back((int)check[u].size()-1, 0);
     }
-    // 橋を検出する.
-    void detect_bridge(){
-        int id = 0;
-        for(int i = 0; i < V; i++){
-            if(!visit[i]){
-                dfs(i, -1, id, -1);
-            }
+    // 橋を検出する(二(辺)連結成分の個数を返す).
+    int identify_bridge(){
+        int tm = 0;
+        for(int i = 0; i < V; ++i){
+            if(ord[i] < 0) dfs(i, -1, tm);
         }
+        for(int i = 0; i < V; ++i) cmp[i] = kind - 1 - cmp[i];
+        return kind;
     }
     // 2(辺)連結成分を頂点とする木(tree) を作る(事前に detect_bridge() を呼んでおく必要がある).
     // 木の頂点数を返す.
     // cmp[i] は元の頂点 i の含まれる頂点(2(辺)連結成分) を表す.
     int make_bctree()
     {
-        rebuild();
         tree.resize(kind);
         for(int i = 0; i < (int)bridge.size(); i++){
             int a = cmp[bridge[i].first], b = cmp[bridge[i].second];

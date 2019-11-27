@@ -4,54 +4,48 @@
 //各2(点)連結成分を求めたいときはコメントアウトをはずす
 class Articulation {
 public:
-	int V;
+	using P = pair<int, int>;
+	const int V;
 	vector<vector<int> > G;
 	vector<int> ord;	//訪問時間
 	vector<int> low; //low[u]はuから高々1個の後退辺を通ってたどりつけるノードのordの最小値
-	vector<bool> visit; //訪問したかどうかのフラグ
 	vector<bool> art; //関節点かどうかの判定
 	// vector<vector<P> > edgeset;
 	// stack<P> st;
-	Articulation(int node_size) : V(node_size), G(V), ord(V, -1), low(V), visit(V, false), art(V, false){}
-	void add_edge(int a,int b){
+	Articulation(const int node_size)
+	 	: V(node_size), G(V), ord(V, -1), low(V), art(V, false){}
+	void add_edge(const int a, const int b){
 		G[a].push_back(b), G[b].push_back(a);
 	}
-	void dfs(int v,int p,int &k){
-		visit[v] = true;
-		ord[v] = low[v] = k++;
-		int ct = 0;	//ノードvの次数
-		for(int w : G[v]){
-			// if(w != p && ord[w] < ord[v]) st.push(P(v, w));
-			if(!visit[w]){
-				ct++;
-				dfs(w,v,k);
-				low[v] = min(low[v],low[w]);	//子のノードのlowと比較する
-				if(p >= 0 && ord[v] <= low[w]){
-					art[v] = true;
-				}
-				// if(low[w] >= ord[v]){
+	void dfs(const int u, const int p, int &tm){
+		ord[u] = low[u] = tm++;
+		int ct = 0;	// ノードvの次数
+		for(int v : G[u]){
+			// if(v != p && ord[v] < ord[u]) st.push(P(u, v));
+			if(ord[v] < 0){
+				++ct;
+				dfs(v, u, tm);
+				low[u] = min(low[u], low[v]);	//子のノードのlowと比較する
+				if(p >= 0 && ord[u] <= low[v]) art[u] = true;
+				// if(low[v] >= ord[u]){
 				//     edgeset.push_back(vector<P>());
-				//     while(1){
+				//     while(true){
 				//         P p = st.top();
 				//         st.pop();
 				//         edgeset.back().push_back(p);
-				//         if(p == P(v, w)) break;
+				//         if(p == P(u, v)) break;
 				//     }
 				// }
-			}else if(w != p && ord[w] < low[v]){
-				low[v] = ord[w];
+			}else{
+				low[u] = min(low[u], ord[v]);
 			}
 		}
-		if(p == -1 && ct > 1){
-			art[v] = true;	//根の次数が2以上なら根は関節点
-		}
+		if(p == -1 && ct > 1) art[u] = true;	//根の次数が2以上なら根は関節点
 	}
 	void solve(){
-		for(int i = 0; i < V; i++){
-			int k = 0;
-			if(!visit[i]){
-				dfs(i, -1, k);
-			}
+		int tm = 0;
+		for(int i = 0; i < V; ++i){
+			if(ord[i] < 0) dfs(i, -1, tm);
 		}
 	}
 };
