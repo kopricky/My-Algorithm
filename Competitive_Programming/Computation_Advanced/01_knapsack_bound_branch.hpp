@@ -10,7 +10,7 @@ void dfs(int n, long long W, long long value, long long weight, long long& opt, 
     //使う
     if(weight + vec[index].second <= W){
         opt = max(opt, value + vec[index].first);
-        long long tweight = weight + vec[index].second;;
+        long long tweight = weight + vec[index].second;
         long long tvalue = value + vec[index].first;
         for(int i=index+1;i<(int)vec.size();i++){
             if(tweight + vec[i].second <= W){
