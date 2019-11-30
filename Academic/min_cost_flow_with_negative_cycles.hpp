@@ -75,12 +75,13 @@ private:
     const Cot inf;
     vector<vector<Cot> > dp;
     vector<vector<edge*> > prev;
-    pair<int, int> minimum_mean_cycle(){
+    int minimum_mean_cycle(){
         for(int k = 0; k < V; ++k){
             for(int i = 0; i < V; ++i){
                 dp[k+1][i] = inf;
             }
             for(int i = 0; i < V; ++i){
+                if(dp[k][i] == inf) continue;
                 for(edge& e : G[i]){
                     if(e.cap > 0 && dp[k+1][e.to] > dp[k][i] + e.cost){
                         dp[k+1][e.to] = dp[k][i] + e.cost;
@@ -89,7 +90,7 @@ private:
                 }
             }
         }
-        if(*min_element(dp[V].begin(), dp[V].end()) == inf) return make_pair(-1, -1);
+        if(*min_element(dp[V].begin(), dp[V].end()) == inf) return -1;
         int start = -1;
         Cot tnum = inf / V;
         int tden = 1;
@@ -103,33 +104,39 @@ private:
                     num = dp[V][i] - dp[k][i], den = V - k;
                 }
             }
-            if(num > -inf / V){
-                if((num * tden < den * tnum) || (num * tden == den * tnum && den < tden)){
-                    tnum = num, tden = den;
-                    start = i;
-                }
+            if(num * tden < den * tnum){
+                tnum = num, tden = den, start = i;
             }
         }
-        return (tnum < 0) ? make_pair(start, tden) : make_pair(-1, -1);
+        return (tnum < 0) ? start : -1;
     }
     bool update(Cot& res){
-        int level = V, start, length;
-        pair<int, int> info = minimum_mean_cycle();
-        start = info.first, length = info.second;
+        int start = minimum_mean_cycle();
         if(start < 0) return false;
+        int level = V;
         Cat df = numeric_limits<Cat>::max();
-        for(int i = 0; i < length; ++i){
+        vector<Cat> route;
+        vector<int> used(V, -1);
+        while(true){
+            if(used[start] >= 0){
+                for(int i = used[start]; i < (int)route.size(); ++i){
+                    df = min(df, route[i]);
+                }
+                level = V - used[start];
+                break;
+            }
+            used[start] = (int)route.size();
             edge *e = prev[level--][start];
-            df = min(df, e->cap);
+            route.push_back(e->cap);
             start = G[e->to][e->rev].to;
         }
-        level = V;
-        for(int i = 0; i < length; ++i){
-            edge *e = prev[level--][start];
+        int cur = start;
+        do {
+            edge *e = prev[level--][cur];
             edge *reve = &G[e->to][e->rev];
             e->cap -= df, reve->cap += df, res += df * e->cost;
-            start = reve->to;
-        }
+            cur = reve->to;
+        }while(level >= 0 && cur != start);
         return true;
     }
 public:
