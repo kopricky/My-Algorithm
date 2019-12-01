@@ -1,6 +1,6 @@
 #include "./header.hpp"
 
-template<typename _Tp> class Goldberg95 {
+template<typename _Tp> class FindingPotential {
 public:
     static_assert(std::is_integral<_Tp>::value, "Integral required.");
 private:
@@ -186,7 +186,7 @@ private:
 
 public:
     vector<_Tp> potential;
-    Goldberg95(const int node_size)
+    FindingPotential(const int node_size)
         : V(node_size), E(0), min_cost(0), G(V), graph(V), dag(V), que(V),
             ord(V), low(V), st(V), cmp(V), repr(V), dist(V), prv(V, 0), ng(V),
                 layer_cnt(V), potential(V, 0){}
