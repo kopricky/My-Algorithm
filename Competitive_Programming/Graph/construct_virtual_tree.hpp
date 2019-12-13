@@ -83,3 +83,40 @@ public:
     }
     // int construct_virtual_tree(vector<int>& ver_list, unordered_map<int, int>& mapping, vector<vector<edge> >& graph);
 };
+
+// virtual tree の root を返す. mapping: 元の頂点番号 → graph の頂点番号(ver_list が逆変換)
+int LCA::construct_virtual_tree(vector<int>& ver_list, unordered_map<int, int>& mapping, vector<vector<int> >& graph){
+    const int n = (int)ver_list.size();
+    graph.resize(n);
+    sort(ver_list.begin(), ver_list.end(), [&](const int a, const int b){ return id[a] < id[b]; });
+    stack<int> st;
+    st.push(ver_list[0]), mapping[ver_list[0]] = 0;
+    int id = n;
+    for(int i = 0; i < n-1; ++i){
+        const int u = solve(ver_list[i], ver_list[i+1]);
+        if(u != ver_list[i]){
+            int mapped_ver = mapping[st.top()];
+            while(true){
+                st.pop();
+                if(st.empty() || depth[u] >= depth[st.top()]) break;
+                const int tmp = mapping[st.top()];
+                graph[tmp].push_back(mapped_ver), mapped_ver = tmp; 
+            }
+            if(st.empty() || st.top() != u){
+                st.push(u), ver_list.push_back(u);
+                graph.push_back({mapped_ver});
+                mapping[u] = id++;
+            }else{
+                graph[mapping[u]].push_back(mapped_ver);
+            }
+        }
+        st.push(ver_list[i+1]), mapping[ver_list[i+1]] = i+1;
+    }
+    int mapped_ver = ((st.size() > 1) ? mapping[st.top()] : -1);
+    while(st.size() > 1){
+        st.pop();
+        const int tmp = mapping[st.top()];
+        graph[tmp].push_back(mapped_ver), mapped_ver = tmp;
+    }
+    return st.top();
+}
