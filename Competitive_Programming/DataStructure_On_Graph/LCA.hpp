@@ -81,5 +81,4 @@ public:
         int lca = solve(u,v);
         return depth[u] + depth[v] - 2*depth[lca];
     }
-    // int construct_virtual_tree(vector<int>& ver_list, unordered_map<int, int>& mapping, vector<vector<edge> >& graph);
 };

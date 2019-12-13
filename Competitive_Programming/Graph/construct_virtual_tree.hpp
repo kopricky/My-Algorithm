@@ -81,11 +81,12 @@ public:
         int lca = solve(u,v);
         return depth[u] + depth[v] - 2*depth[lca];
     }
-    // int construct_virtual_tree(vector<int>& ver_list, unordered_map<int, int>& mapping, vector<vector<edge> >& graph);
+    int construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& graph);
 };
 
-// virtual tree の root を返す. mapping: 元の頂点番号 → graph の頂点番号(ver_list が逆変換)
-int LCA::construct_virtual_tree(vector<int>& ver_list, unordered_map<int, int>& mapping, vector<vector<int> >& graph){
+// ver_list 内の頂点から構成されるグラフ graph の virtual tree を構築し, その root を返す.
+// mapping: 元の頂点番号 → graph の頂点番号(ver_list が逆変換) (mapping の長さは元のグラフの頂点数以上あることを仮定)
+int LCA::construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& graph){
     const int n = (int)ver_list.size();
     graph.resize(n);
     sort(ver_list.begin(), ver_list.end(), [&](const int a, const int b){ return id[a] < id[b]; });
@@ -100,7 +101,7 @@ int LCA::construct_virtual_tree(vector<int>& ver_list, unordered_map<int, int>& 
                 st.pop();
                 if(st.empty() || depth[u] >= depth[st.top()]) break;
                 const int tmp = mapping[st.top()];
-                graph[tmp].push_back(mapped_ver), mapped_ver = tmp; 
+                graph[tmp].push_back(mapped_ver), mapped_ver = tmp;
             }
             if(st.empty() || st.top() != u){
                 st.push(u), ver_list.push_back(u);
