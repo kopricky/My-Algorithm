@@ -67,3 +67,25 @@ public:
         return ans;
     }
 };
+
+using mod = ModInt<MOD>;
+
+mod inv[MAX_N],fac[MAX_N],finv[MAX_N];
+
+void make()
+{
+	fac[0] = fac[1] = 1;
+	finv[0] = finv[1] = 1;
+	inv[1] = 1;
+	for(int i=2;i<MAX_N;i++){
+		inv[i] = MOD - inv[MOD % i] * (MOD / i);
+		fac[i] = fac[i-1] * i;
+		finv[i] = finv[i-1] * inv[i];
+	}
+}
+
+mod comb(int a, int b)
+{
+	if(a<b) return 0;
+	return fac[a] * finv[b] * finv[a-b];
+}
