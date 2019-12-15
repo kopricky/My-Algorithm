@@ -199,7 +199,7 @@ public:
         return os;
     }
     void clear(){
-        UnorderedSet new_unordered_set(1u);
+        UnorderedSet new_unordered_set(0u);
         swap(*this, new_unordered_set);
     }
     size_t size() const noexcept { return _data_count; }

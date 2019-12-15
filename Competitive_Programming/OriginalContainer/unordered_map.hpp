@@ -238,7 +238,7 @@ public:
         return res->data_ptr()->second;
     }
     void clear(){
-        UnorderedMap new_unordered_map(1u);
+        UnorderedMap new_unordered_map(0u);
         swap(*this, new_unordered_map);
     }
     inline size_t size() const noexcept { return _data_count; }
