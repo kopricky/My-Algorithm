@@ -20,7 +20,7 @@ public:
     void add_edge(const int a, const int b){
         G[a].push_back(b), G[b].push_back(a);
     }
-    pair<long long,long long> hash_dfs(const int u, const int p)
+    pair<unsigned long long, unsigned long long> hash_dfs(const int u, const int p)
     {
         unsigned long long res[] = {1ULL, 1ULL};
         for(auto v : G[u]){
@@ -35,7 +35,7 @@ public:
         res[1] = (res[1] + rnum[1][depth_st[u]]) % mod[1];
         return make_pair(res[0], res[1]);
     }
-    pair<long long,long long> hash(int root=0)
+    pair<unsigned long long, unsigned long long> hash(int root=0)
     {
         return hash_dfs(root, -1);
     }
