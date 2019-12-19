@@ -248,7 +248,7 @@ private:
     }
 
 public:
-    
+
     friend ostream& operator<<(ostream& os, const AMP& num) {
         if(num.zero){ os << "0."; for(int i = 0; i < acc-1; i++) os << '0';
                     os << "+e0"; return os; }
@@ -283,7 +283,7 @@ public:
         for(int i = 0; i < acc; i++){
             res += (*this)[i] * d, d *= 10.0;
         }
-        return res * pow(10.0, ex);
+        return sign ? -res * pow(10.0, ex) : res * pow(10.0, ex);
     }
 
     AMP& operator=(long long num) {
