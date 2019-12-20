@@ -26,14 +26,16 @@ public:
     inline bool empty(const int h) const { return (dat[N+h].next == N+h); }
     inline bool more_one(const int h) const { return dat[N+h].prev != dat[N+h].next; }
     inline void insert(const int h, const int u){
+        if(dat[u].prev != u) return;
         dat[u].prev = dat[N+h].prev, dat[u].next = N+h;
         dat[dat[N+h].prev].next = u, dat[N+h].prev = u;
     }
     inline void erase(const int u){
         dat[dat[u].prev].next = dat[u].next, dat[dat[u].next].prev = dat[u].prev;
+        dat[u].prev = dat[u].next = u;
     }
     inline void clear(){
-        for(int i = N; i < N+H; ++i) dat[i].prev = dat[i].next = i;
+        for(int i = 0; i < N+H; ++i) dat[i].prev = dat[i].next = i;
     }
 };
 
@@ -66,7 +68,7 @@ private:
                     act_min = min(act_min, potential[i]);
                 }
             }else{
-                potential[i] = V+1;
+                potential[i] = V + 1;
             }
         }
         return act_min;
@@ -104,7 +106,7 @@ private:
             for(int id = all_ver.dat[V+i].next; id < V; id = all_ver.dat[id].next){
                 potential[id] = V + 1;
             }
-            all_ver.dat[V+i].prev = all_ver.dat[V+i].next = V+i;
+            all_ver.dat[V+i].prev = all_ver.dat[V+i].next = V + i;
         }
     }
     void discharge(const int u, const T K){
