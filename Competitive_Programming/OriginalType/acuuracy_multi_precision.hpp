@@ -7,7 +7,7 @@ private:
     static constexpr int MOD_ = 924844033;
 
     static void trim_digit(AMP& num){
-        while((int)num.size() >= 1 && num.back() == 0) num.pop_back();
+        while((int)num.size() > 1 && num.back() == 0) num.pop_back();
         if((int)num.size() == 1 && num[0] == 0){ num.zero = true; return; }
         while((int)num.size() < acc) num.push_front(0), num.ex--;
         while((int)num.size() > acc + 1) num.pop_front(), num.ex++;
@@ -269,9 +269,9 @@ public:
     }
 
     void print_decimal(int decimal) const {
-        if(zero){ cout << "0."; for(int i = 0; i < decimal; i++) cout << '0';}
+        if(zero){ cout << "0."; for(int i = 0; i < decimal; i++) cout << '0'; return; }
         if(sign) cout << '-';
-        for(int i = max(ex+acc-1, 0LL); i >= -decimal; i--){
+        for(int i = max(ex+acc-1, 0LL); i >= -decimal; --i){
             cout << ((i-ex >= 0 && i-ex < acc) ? ((*this)[i-ex]) : 0);
             if(i == 0) cout << '.';
         }
@@ -579,7 +579,7 @@ public:
     }
 
     friend AMP log10(const AMP& x){
-        assert(x > AMP(0));
+        assert(x > AMP());
         return AMP(acc + x.ex);
     }
 
