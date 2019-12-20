@@ -234,7 +234,7 @@ private:
     };
 
     static void mpi_AMP(MPI& a, const AMP& b){
-        if(b.zero){ a = MPI(0); return; }
+        if(b.zero){ a = MPI(); return; }
         int n = (int)b.size();
         a.resize(n);
         for(int i = 0; i < n; i++) a[i] = b[i];
@@ -248,7 +248,7 @@ private:
     }
 
 public:
-    
+
     friend ostream& operator<<(ostream& os, const AMP& num) {
         if(num.zero){ os << "0."; for(int i = 0; i < acc-1; i++) os << '0';
                     os << "+e0"; return os; }
@@ -271,8 +271,8 @@ public:
     void print_decimal(int decimal) const {
         if(zero){ cout << "0."; for(int i = 0; i < decimal; i++) cout << '0';}
         if(sign) cout << '-';
-        for(int i = max(ex+acc-1,0LL); i >= -decimal; i--){
-            cout << ((i-ex >= 0 || i-ex >= acc)?(*this)[i-ex]:'0');
+        for(int i = max(ex+acc-1, 0LL); i >= -decimal; i--){
+            cout << ((i-ex >= 0 && i-ex < acc) ? ((*this)[i-ex]) : 0);
             if(i == 0) cout << '.';
         }
     }
@@ -283,7 +283,7 @@ public:
         for(int i = 0; i < acc; i++){
             res += (*this)[i] * d, d *= 10.0;
         }
-        return res * pow(10.0, ex);
+        return sign ? -res * pow(10.0, ex) : res * pow(10.0, ex);
     }
 
     AMP& operator=(long long num) {
@@ -590,7 +590,7 @@ public:
         while(b){
             if(b % 2) res *= a;
             a *= a;
-            b = b/2;
+            b = b / 2;
         }
         return res;
     }
