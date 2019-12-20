@@ -85,7 +85,8 @@ public:
 };
 
 // ver_list 内の頂点から構成されるグラフ graph の virtual tree を構築し, その root を返す.
-// mapping: 元の頂点番号 → graph の頂点番号(ver_list が逆変換) (mapping の長さは元のグラフの頂点数以上あることを仮定)
+// mapping: 元の頂点番号 → graph の頂点番号(ver_list の逆変換) も同時に計算
+// (元のグラフの頂点数以上の長さの vector を引数 mapping として与える)
 int LCA::construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& graph){
     const int n = (int)ver_list.size();
     graph.resize(n);
