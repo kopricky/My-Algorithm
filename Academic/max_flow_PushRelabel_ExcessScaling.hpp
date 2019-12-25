@@ -113,13 +113,14 @@ private:
         for(int& i = cur_edge[u]; i < (int)G[u].size(); ++i){
             edge& e = G[u][i];
             if(potential[u] == potential[e.to] + 1 && e.cap > 0){
-                if(push(u, e, K)) return;
+                const T f = min({e.cap, excess[u], 2 * K - 1 - excess[e.to]});
+                if(f == (T)0) continue;
+                if(push(u, e, f)) return;
             }
         }
         relabel(u);
     }
-    bool push(const int u, edge& e, const T K){
-        T f = min(e.cap, K);
+    bool push(const int u, edge& e, const T f){
         const int v = e.to;
         e.cap -= f, excess[u] -= f;
         G[v][e.rev].cap += f, excess[v] += f;
