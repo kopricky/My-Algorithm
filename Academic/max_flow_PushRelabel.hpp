@@ -173,10 +173,11 @@ private:
     void validate(){
         for(int i = 0; i < V; ++i){
             if(potential[i] >= V){
-                cur_edge[i] = 0, potential[i] = V;
-                if(excess[i] > 0) act_ver.push(0, i);
+                cur_edge[i] = 0, potential[i] = V + 1;
+                if(excess[i] > 0) act_ver.push(1, i);
             }
         }
+        potential[s] = V;
         int level = 0;
         while(level >= 0){
             if(act_ver.empty(level)){
