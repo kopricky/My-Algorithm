@@ -35,11 +35,14 @@ private:
         if(r - l == 1) return cur->f(k);
         T ans = cur->f(k);
         const T mid = (l + r) / 2;
-        if(k < mid && cur->left){
-            ans = min(ans, query(cur->left, k, l, mid));
-        }
-        if(mid <= k && cur->right){
-            ans = min(ans, query(cur->right, k, mid, r));
+        if(k < mid){
+            if(cur->left){
+                ans = min(ans, query(cur->left, k, l, mid));
+            }
+        }else{
+            if(cur->right){
+                ans = min(ans, query(cur->right, k, mid, r));
+            }
         }
         return ans;
     }
