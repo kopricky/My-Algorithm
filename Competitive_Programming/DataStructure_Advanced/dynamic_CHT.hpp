@@ -1,69 +1,75 @@
 #include "../header.hpp"
 
-// 単調でない傾きについての convex hull trick
-// Li Chao Segment Tree を用いて O(nlog(MAX_A))
 template<typename T> class CHT {
 private:
     struct node {
         node *left, *right;
         T a, b;
-        node() : left(nullptr), right(nullptr){}
-        node(T arg1, T arg2)
+        node(const T arg1, const T arg2)
             : left(nullptr), right(nullptr), a(arg1), b(arg2){}
-        T f(T x, T a, T b){ return a * x + b; }
-        void add(T l, T r, T _a, T _b) {
-            if(f(l, _a, _b) < f(l, a, b)) {
-                swap(a, _a), swap(b, _b);
-            }
-            if(f(r, a, b) <= f(r, _a, _b)) return;
-            T mid = (l + r) / 2;
-            if(f(mid, a, b) < f(mid, _a, _b)){
-                if(!right){
-                    right = new node(_a, _b);
-                }else{
-                    right->add(mid + 1, r, _a, _b);
-                }
-            }else{
-                swap(a, _a), swap(b, _b);
-                if(!left){
-                    left = new node(_a,_b);
-                }else{
-                    left->add(l, mid, _a, _b);
-                }
-            }
-        }
-        T query(T l, T r, T k) {
-            if(l == r) return f(k, a, b);
-            T ans = f(k, a, b);
-            T mid = (l + r) / 2;
-            if(k <= mid && left){
-                ans = min(ans, left->query(l, mid, k));
-            }
-            if(k > mid && right){
-                ans = min(ans, right->query(mid + 1, r, k));
-            }
-            return ans;
-        }
-        void clear() {
-            if(left) left->clear();
-            if(right) right->clear();
-            delete this;
-        }
+        T f(const T x) const { return a * x + b; }
     };
+    void swap(node *x, node *y){
+        std::swap(x->a, y->a), std::swap(x->b, y->b);
+    }
+    void add(node *cur, node *nw, const T l, const T r){
+        if(nw->f(l) < cur->f(l)) swap(cur, nw);
+        if(cur->f(r - 1) <= nw->f(r - 1)) return;
+        const T mid = (l + r) / 2;
+        if(cur->f(mid) <= nw->f(mid)){
+            if(!cur->right){
+                cur->right = new node(nw->a, nw->b);
+            }else{
+                add(cur->right, nw, mid, r);
+            }
+        }else{
+            swap(cur, nw);
+            if(!cur->left){
+                cur->left = new node(nw->a, nw->b);
+            }else{
+                add(cur->left, nw, l, mid);
+            }
+        }
+    }
+    T query(node *cur, T k, T l, T r){
+        if(r - l == 1) return cur->f(k);
+        T ans = cur->f(k);
+        const T mid = (l + r) / 2;
+        if(k < mid && cur->left){
+            ans = min(ans, query(cur->left, k, l, mid));
+        }
+        if(mid <= k && cur->right){
+            ans = min(ans, query(cur->right, k, mid, r));
+        }
+        return ans;
+    }
+    void clear(node *cur){
+        if(cur->left) clear(cur->left);
+        if(cur->right) clear(cur->right);
+        delete cur;
+    }
+    const T lpos, rpos;
     node *root;
-    T min_val, max_val;
 public:
-    // arg1:クエリになげる最小の値, arg2:クエリになげる最大の値
-    CHT(T arg1, T arg2)
-        : min_val(arg1), max_val(arg2){ root = new node(0, numeric_limits<T>::max() / 10); }
+    CHT(const T _lpos, const T _rpos)
+        : lpos(_lpos), rpos(_rpos), root(new node(0, numeric_limits<T>::max() / 2)){
+        assert(lpos < rpos);
+    }
+    // ~CHT(){ clear(root); }
     // f(x) = a * x + b を挿入
-    void add(T a, T b) {
-        return root->add(min_val, max_val, a, b);
+    void add_line(const T a, const T b){
+        node *nw = new node(a, b);
+        return add(root, nw, lpos, rpos);
     }
-    // x = kでの最小値
-    T query(T k) {
-        return root->query(min_val, max_val, k);
+    // f(x) = a * x + b を [c, d) の範囲に挿入
+    void add_line(const T a, const T b, const T c, const T d){
+        assert(c < d);
+        node *nw = new node(a, b);
+        return add(root, nw, c, d);
     }
-    ~CHT(){ root->clear(); }
+    // x = k での最小値
+    T query(const T k){
+        return query(root, k, lpos, rpos);
+    }
 };
 
