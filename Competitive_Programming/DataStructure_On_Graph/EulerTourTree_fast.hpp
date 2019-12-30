@@ -445,6 +445,10 @@ private:
         return ver1->par;
     }
     T& get(BSTNode<T> *ver) noexcept { return splay(ver)->value; }
+    void point_update(BSTNode<T> *ver, const T& val){
+        BSTNode<T>::opr1(splay(ver)->value, val);
+        ver->al = BSTNode<T>::opr2(ver->al, val);
+    }
     void range(BSTNode<T> *edge1, BSTNode<T> *edge2, const T& val) noexcept {
         auto res1 = split_lower_bond(edge1);
         auto res2 = split_upper_bond(edge2);
@@ -496,7 +500,7 @@ private:
                 bst_build(nodes);
             }
         }
-        delete[] visit;
+        // delete[] visit;
     }
     void build_tree(const int root, const vector<vector<int> >& tree) noexcept {
         bool *visit = new bool[V]();
@@ -504,7 +508,7 @@ private:
         BSTNode<T> *cur = nullptr;
         dfs(root, -1, cur, visit, nodes, tree);
         bst_build(nodes);
-        delete[] visit;
+        // delete[] visit;
     }
 
 public:
@@ -558,6 +562,10 @@ public:
     }
     // 頂点 ver_id の値を取得
     T& get(int ver_id) noexcept { return get(vertex_set[ver_id]); }
+    // 頂点 ver_id に val を加える
+    void point_update(const int ver_id, const T& val) noexcept {
+        return point_update(vertex_set[ver_id], val);
+    }
     // 頂点 ver_id の存在する連結成分内の頂点全体に val を加える
     void component_range(const int ver_id, const T& val){ range(ver_id, -1, val); }
     // 親が par_id であるような頂点 ver_id の部分木内に存在する頂点全体に val を加える
@@ -579,13 +587,13 @@ public:
     T query(const int ver_id, const int par_id){
         if(par_id < 0) return splay(vertex_set[ver_id])->al;
         if(ver_id < par_id){
-            auto it = edge_set.find({ver_id, par_id});
+            auto it = edge_set.find(pair_to_ll(ver_id, par_id));
             assert(it != edge_set.end());
-            return query((it->second).second, (it->second).first);
+            return query(((*it).second).second, ((*it).second).first);
         }else{
-            auto it = edge_set.find({par_id, ver_id});
+            auto it = edge_set.find(pair_to_ll(par_id, ver_id));
             assert(it != edge_set.end());
-            return query((it->second).first, (it->second).second);
+            return query(((*it).second).first, ((*it).second).second);
         }
     }
 
@@ -597,3 +605,4 @@ private:
         if(cur->right) check_dfs(cur->right);
     }
 };
+

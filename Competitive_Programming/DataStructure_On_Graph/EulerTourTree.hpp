@@ -196,7 +196,7 @@ private:
                 bst_build(nodes);
             }
         }
-        delete[] visit;
+        // delete[] visit;
     }
     void build_tree(const int root, const vector<vector<int> >& tree) noexcept {
         bool *visit = new bool[V]();
@@ -204,7 +204,7 @@ private:
         BSTNode<T> *cur = nullptr;
         dfs(root, -1, cur, visit, nodes, tree);
         bst_build(nodes);
-        delete[] visit;
+        // delete[] visit;
     }
 
 public:
