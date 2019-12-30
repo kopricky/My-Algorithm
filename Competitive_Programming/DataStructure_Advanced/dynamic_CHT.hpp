@@ -15,6 +15,9 @@ private:
         T tf(const T x) const {
             return a * x + b;
         }
+        bool isLine(const T _l, const T _r) const {
+            return (l == _l) && (r == _r);
+        }
     };
     void swap(node *x, node *y){
         std::swap(x->a, y->a), std::swap(x->b, y->b), std::swap(x->l, y->l), std::swap(x->r, y->r);
@@ -52,7 +55,25 @@ private:
                 swap(cur, nw);
                 break;
             }
-            if(nw->r <= mid){
+            if(cur->isLine(l, r) && nw->isLine(l, r)){
+                if(nw->tf(l) < cur->tf(l)) swap(cur, nw);
+                if(cur->tf(mid) <= nw->tf(mid)){
+                    if(!cur->right){
+                        cur->right = new node(nw->a, nw->b, mid, r);
+                        break;
+                    }else{
+                        cur = cur->right, l = mid, nw->l = mid;
+                    }
+                }else{
+                    swap(cur, nw);
+                    if(!cur->left){
+                        cur->left = new node(nw->a, nw->b, l, mid);
+                        break;
+                    }else{
+                        cur = cur->left, r = mid, nw->r = mid;
+                    }
+                }
+            }else if(nw->r <= mid){
                 if(!cur->left){
                     cur->left = new node(nw->a, nw->b, nw->l, nw->r);
                     break;
@@ -113,12 +134,12 @@ public:
         assert(lpos < rpos);
     }
     // ~CHT(){ clear(root); }
-    // 直線 f(x) = a * x + b を挿入
+    // f(x) = a * x + b を挿入
     void add_line(const T a, const T b){
         node *nw = new node(a, b, lpos, rpos);
         return _add_line(root, nw, lpos, rpos);
     }
-    // 線分 f(x) = a * x + b (x ∈ [l, r)) を挿入
+    // f(x) = a * x + b (x ∈ [l, r)) を挿入
     void add_segment(const T a, const T b, const T l, const T r){
         assert(l < r);
         node *nw = new node(a, b, l, r);
