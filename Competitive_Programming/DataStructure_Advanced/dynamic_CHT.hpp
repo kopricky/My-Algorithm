@@ -4,11 +4,10 @@ template<typename T> class CHT {
 private:
     struct node {
         node *left, *right;
-        const T inf;
+        static const T inf = numeric_limits<T>::max();
         T a, b, l, r;
         node(const T _a, const T _b, const T _l, const T _r)
-            : left(nullptr), right(nullptr), inf(numeric_limits<T>::max()),
-                a(_a), b(_b), l(_l), r(_r){}
+            : left(nullptr), right(nullptr), a(_a), b(_b), l(_l), r(_r){}
         T f(const T x) const {
             return (l <= x && x < r) ? (a * x + b) : inf;
         }
