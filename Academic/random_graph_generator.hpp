@@ -34,33 +34,39 @@ private:
         add_edge(p.first, q.first), add_edge(p.second, q.second);
     }
     bool construct_init_graph() noexcept {
-        int cur, ver, num, pos = *max_element(degree.begin(), degree.end());
-        vector<stack<int> > bucket(V);
-        for(int i = 0; i < V; i++) bucket[degree[i]].push(i);
-        queue<pair<int, int> > memo;
-        while(pos >= 1){
-            if(bucket[pos].empty()){
-                pos--;
-                continue;
+        const int node_size = (int)degree.size();
+        const int max_degree = *max_element(degree.begin(), degree.end());
+        if(max_degree > node_size - 1) return false;
+        if(accumulate(degree.begin(), degree.end(), 0LL) % 2 == 1) return false;
+        vector<stack<int> > bucket(max_degree + 1);
+        vector<int> deg_cnt(max_degree + 1, 0);
+        for(int i = 0; i < node_size; ++i) bucket[degree[i]].push(i);
+        vector<pair<int, int> > deg_seq;
+        for(int i = max_degree; i >= 1; --i){
+            deg_cnt[i] = (int)bucket[i].size();
+            while(!bucket[i].empty()){
+                deg_seq.emplace_back(i, bucket[i].top()), bucket[i].pop();
             }
-            ver = bucket[pos].top(), num = pos;
-            bucket[pos].pop();
-            for(cur = pos; cur >= 1; cur--){
-                while(num > 0 && !bucket[cur].empty()){
-                    int tmp = bucket[cur].top();
-                    bucket[cur].pop();
-                    add_edge(ver, tmp);
-                    memo.push({cur-1, tmp});
-                    num--;
+        }
+        while(!deg_seq.empty()){
+            int pos = 0, rem = deg_seq.back().first, cur_degree;
+            const int ver = deg_seq.back().second;
+            --deg_cnt[rem], deg_seq.pop_back();
+            stack<int> update;
+            while(rem > 0){
+                if(pos >= (int)deg_seq.size()) return false;
+                cur_degree = deg_seq[pos].first;
+                const int start = max(pos, pos + deg_cnt[cur_degree] - rem);
+                for(int i = start; i < pos + deg_cnt[cur_degree]; ++i){
+                    add_edge(ver, deg_seq[i].second);
+                    --deg_seq[i].first, update.push(cur_degree);
                 }
-                if(num == 0) break;
+                pos += deg_cnt[cur_degree], rem -= deg_cnt[cur_degree];
             }
-            if(cur == 0) return false;
-            while(!memo.empty()){
-                pair<int, int> p = memo.front();
-                memo.pop();
-                if(p.first >= 1) bucket[p.first].push(p.second);
+            while(!update.empty()){
+                --deg_cnt[update.top()], ++deg_cnt[update.top() - 1], update.pop();
             }
+            while(!deg_seq.empty() && deg_seq.back().first == 0) deg_seq.pop_back();
         }
         return true;
     }
@@ -174,7 +180,7 @@ public:
             start(chrono::high_resolution_clock::now()), mt(rnd()), loop_count(0), graph{g}, degree{d}{
         assert(check());
         assert(construct_init_graph());
-        if(connected) transform_to_connected_graph();
+        if(connected) assert(IsConnected());
         shuffle_graph();
         construct_graph();
     }
