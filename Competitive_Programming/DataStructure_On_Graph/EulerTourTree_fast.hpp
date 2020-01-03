@@ -440,7 +440,7 @@ private:
         }
         // delete edge1; delete edge2;
     }
-    bool IsConnected(BSTNode<T> *ver1, BSTNode<T> *ver2) noexcept {
+    bool connected(BSTNode<T> *ver1, BSTNode<T> *ver2) noexcept {
         splay(ver1), splay(ver2);
         return ver1->par;
     }
@@ -556,9 +556,9 @@ public:
         cut(edge1, edge2);
     }
     // node1_id と node2_id が同じ木(連結成分)に属するか
-    bool IsConnected(const int node1_id, const int node2_id) noexcept {
+    bool connected(const int node1_id, const int node2_id) noexcept {
         if(node1_id == node2_id) return true;
-        return IsConnected(vertex_set[node1_id], vertex_set[node2_id]);
+        return connected(vertex_set[node1_id], vertex_set[node2_id]);
     }
     // 頂点 ver_id の値を取得
     T& get(int ver_id) noexcept { return get(vertex_set[ver_id]); }

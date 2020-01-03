@@ -672,7 +672,7 @@ private:
         }
         // delete edge1; delete edge2;
     }
-    bool IsConnected(BSTNode *ver1, BSTNode *ver2) noexcept {
+    bool connected(BSTNode *ver1, BSTNode *ver2) noexcept {
         splay(ver1), splay(ver2);
         return ver1->par;
     }
@@ -705,9 +705,9 @@ public:
         edge_set.simple_erase(it);
         cut(edge1, edge2);
     }
-    bool IsConnected(const int node1_id, const int node2_id) noexcept {
+    bool connected(const int node1_id, const int node2_id) noexcept {
         if(node1_id == node2_id) return true;
-        return IsConnected(vertex_set[node1_id], vertex_set[node2_id]);
+        return connected(vertex_set[node1_id], vertex_set[node2_id]);
     }
     int component_size(int node_id) noexcept { return component_size(vertex_set[node_id]); }
     void check_dfs(const BSTNode* cur) const noexcept {
@@ -737,7 +737,7 @@ private:
             for(auto it = cur->adjacent.begin(); it != cur->adjacent.end();){
                 pair<int, int> e = {min(cur->from, *it), max(cur->from, *it)};
                 BSTNode *correspond = et[layer].vertex_set[*it];
-                if(et[layer].IsConnected(another, *it)){
+                if(et[layer].connected(another, *it)){
                     flag = true, rep_edge = e;
                     cur->adjacent.simple_erase(it), correspond->adjacent.simple_erase(cur->from);
                     if(!correspond->subofftree_check()){
@@ -805,7 +805,7 @@ public:
     bool link(int node1_id, int node2_id) noexcept {
         if(node1_id > node2_id) swap(node1_id, node2_id);
         detect_layer[EulerTourTree::pair_to_ll(node1_id, node2_id)] = 0;
-        if(et[0].IsConnected(node1_id, node2_id)){
+        if(et[0].connected(node1_id, node2_id)){
             BSTNode *ver1 = et[0].vertex_set[node1_id], *ver2 = et[0].vertex_set[node2_id];
             splay(ver1)->subofftree_edge = true, ver1->adjacent.insert(node2_id);
             splay(ver2)->subofftree_edge = true, ver2->adjacent.insert(node1_id);
@@ -837,7 +837,7 @@ public:
             return false;
         }
     }
-    bool IsConnected(const int node1_id, const int node2_id) noexcept {
-        return et[0].IsConnected(node1_id, node2_id);
+    bool connected(const int node1_id, const int node2_id) noexcept {
+        return et[0].connected(node1_id, node2_id);
     }
 };
