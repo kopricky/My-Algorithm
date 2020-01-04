@@ -1,13 +1,14 @@
 #include "../header.hpp"
 
 template<typename T> class Dinic {
-private:
+public:
     static_assert(std::is_integral<T>::value, "Integral required.");
     struct edge{
         int to;
         T cap;
         int rev;
     };
+private:
     const int V;
     vector<int> level, iter, que;
     static unsigned long long floor2(unsigned long long v){
