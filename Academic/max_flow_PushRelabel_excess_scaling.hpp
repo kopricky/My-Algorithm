@@ -7,12 +7,12 @@ private:
     vector<int> node;
 public:
     Stack(const int _N, const int _H) : N(_N), H(_H), node(N+H){ clear(); }
-    inline bool empty() const { return sz == 0; }
-    inline bool empty(const int h) const { return node[N+h] == N+h; }
-    inline int top(const int h) const { return node[N+h]; }
-    inline void pop(const int h){ --sz, node[N+h] = node[node[N+h]]; }
-    inline void push(const int h, const int u){ ++sz, node[u] = node[N+h], node[N+h] = u; }
-    inline void clear(){ sz = 0, iota(node.begin() + N, node.end(), N); }
+    bool empty() const { return sz == 0; }
+    bool empty(const int h) const { return node[N+h] == N+h; }
+    int top(const int h) const { return node[N+h]; }
+    void pop(const int h){ --sz, node[N+h] = node[node[N+h]]; }
+    void push(const int h, const int u){ ++sz, node[u] = node[N+h], node[N+h] = u; }
+    void clear(){ sz = 0, iota(node.begin() + N, node.end(), N); }
 };
 
 template <typename T> class PushRelabel {

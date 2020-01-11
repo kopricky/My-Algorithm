@@ -7,11 +7,11 @@ private:
     vector<int> node;
 public:
     Stack(const int _N, const int _H) : N(_N), H(_H), node(N+H){ clear(); }
-    inline bool empty(const int h) const { return node[N+h] == N+h; }
-    inline int top(const int h) const { return node[N+h]; }
-    inline void pop(const int h){ node[N+h] = node[node[N+h]]; }
-    inline void push(const int h, const int u){ node[u] = node[N+h], node[N+h] = u; }
-    inline void clear(){ iota(node.begin() + N, node.end(), N); }
+    bool empty(const int h) const { return node[N+h] == N+h; }
+    int top(const int h) const { return node[N+h]; }
+    void pop(const int h){ node[N+h] = node[node[N+h]]; }
+    void push(const int h, const int u){ node[u] = node[N+h], node[N+h] = u; }
+    void clear(){ iota(node.begin() + N, node.end(), N); }
 };
 
 class List {
@@ -22,16 +22,16 @@ public:
     const int N, H;
     vector<node> dat;
     List(const int _N, const int _H) : N(_N), H(_H), dat(N+H){ clear(); }
-    inline bool empty(const int h) const { return (dat[N+h].next == N+h); }
-    inline bool more_one(const int h) const { return dat[N+h].prev != dat[N+h].next; }
-    inline void insert(const int h, const int u){
+    bool empty(const int h) const { return (dat[N+h].next == N+h); }
+    bool more_one(const int h) const { return dat[N+h].prev != dat[N+h].next; }
+    void insert(const int h, const int u){
         dat[u].prev = dat[N+h].prev, dat[u].next = N+h;
         dat[dat[N+h].prev].next = u, dat[N+h].prev = u;
     }
-    inline void erase(const int u){
+    void erase(const int u){
         dat[dat[u].prev].next = dat[u].next, dat[dat[u].next].prev = dat[u].prev;
     }
-    inline void clear(){
+    void clear(){
         for(int i = N; i < N+H; ++i) dat[i].prev = dat[i].next = i;
     }
 };
