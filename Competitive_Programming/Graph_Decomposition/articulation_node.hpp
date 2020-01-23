@@ -5,33 +5,33 @@ class Articulation {
 public:
     struct bcnode;
 private:
-	const int V;
+    const int V;
     vector<vector<int> > dfs_tree;
     vector<int> ord, low, self_loops;
-	void dfs(const int u, const int p, int& tm){
-		ord[u] = low[u] = tm++;
+    void dfs(const int u, const int p, int& tm){
+        ord[u] = low[u] = tm++;
         bool multi_edge = false;
-		int ct = 0;
-		for(const int v : G[u]){
-			if(ord[v] < 0){
+        int ct = 0;
+        for(const int v : G[u]){
+            if(ord[v] < 0){
                 dfs_tree[u].push_back(v);
-				++ct, dfs(v, u, tm);
-				low[u] = min(low[u], low[v]);
-				if(p >= 0 && ord[u] <= low[v]) art[u] = true;
-			}else if(v == p){
+                ++ct, dfs(v, u, tm);
+                low[u] = min(low[u], low[v]);
+                if(p >= 0 && ord[u] <= low[v]) art[u] = true;
+            }else if(v == p){
                 if(multi_edge){
                     dfs_tree[u].push_back(v);
                     low[u] = min(low[u], ord[v]);
                 }else{
                     multi_edge = true;
                 }
-			}else if(ord[v] < ord[u]){
+            }else if(ord[v] < ord[u]){
                 dfs_tree[u].push_back(v);
                 low[u] = min(low[u], ord[v]);
             }
-		}
-		if(p == -1 && ct > 1) art[u] = true;
-	}
+        }
+        if(p == -1 && ct > 1) art[u] = true;
+    }
     bool check(const int cur, const pair<int, int> e) const {
         return ((e.first != cur && ord[cur] > low[e.first])
                 || (e.second != cur && ord[cur] > low[e.second]));
@@ -107,12 +107,12 @@ public:
         if(a == b) ++self_loops[a];
         else G[a].push_back(b), G[b].push_back(a);
     }
-	void solve(){
-		int tm = 0;
+    void solve(){
+        int tm = 0;
         for(int i = 0; i < V; ++i){
-			if(ord[i] < 0) dfs(i, -1, tm);
-		}
-	}
+            if(ord[i] < 0) dfs(i, -1, tm);
+        }
+    }
     int make_bctree(){
         bool *visit = new bool[V]();
         bool *used = new bool[V]();
