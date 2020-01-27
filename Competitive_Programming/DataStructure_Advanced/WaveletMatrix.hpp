@@ -22,7 +22,7 @@ struct BitRank {
     }
     // i ビット目を val(0,1) にセット
     inline void set(int i, unsigned long long val) {
-        block[i/MAX_BIT] |= (val << (i % MAX_BIT));
+        block[i / MAX_BIT] |= (val << (i % MAX_BIT));
     }
     void build() {
         for(int i = 1; i < (int)block.size(); i++){
@@ -31,7 +31,7 @@ struct BitRank {
     }
     // [0, i) ビットの 1 の数
     inline int rank1(int i) {
-        int j = i/MAX_BIT, k = i % MAX_BIT;
+        int j = i / MAX_BIT, k = i % MAX_BIT;
         return count[j] + (k ? __builtin_popcountll(block[j] << (MAX_BIT-k)) : 0);
     }
     // [i, j) ビットの 1 の数
