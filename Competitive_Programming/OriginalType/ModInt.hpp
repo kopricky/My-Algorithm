@@ -36,7 +36,7 @@ public:
     ModInt& operator/=(const ModInt& val){ return *this = *this / val; }
     ModInt operator+(const long long val) const { return ModInt{v + val}; }
     ModInt operator-(const long long val) const { return ModInt{v - val}; }
-    ModInt operator*(const long long val) const { return ModInt{(long long)v * (val % mod)}; }
+    ModInt operator*(const long long val) const { return ModInt{(long long)(v * (val % mod))}; }
     ModInt operator/(const long long val) const { return ModInt{(long long)v * inv(val)}; }
     ModInt& operator+=(const long long val){ return *this = *this + val; }
     ModInt& operator-=(const long long val){ return *this = *this - val; }
@@ -77,7 +77,7 @@ void make()
 	fac[0] = fac[1] = 1;
 	finv[0] = finv[1] = 1;
 	inv[1] = 1;
-	for(int i=2;i<MAX_N;i++){
+	for(int i = 2; i < MAX_N; ++i){
 		inv[i] = MOD - inv[MOD % i] * (MOD / i);
 		fac[i] = fac[i-1] * i;
 		finv[i] = finv[i-1] * inv[i];
@@ -86,6 +86,6 @@ void make()
 
 mod comb(int a, int b)
 {
-	if(a<b) return 0;
+	if(a < b) return 0;
 	return fac[a] * finv[b] * finv[a-b];
 }
