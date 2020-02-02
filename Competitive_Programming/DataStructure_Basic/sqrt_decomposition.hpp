@@ -2,12 +2,12 @@
 
 //平方分割
 
-template<typename T> class QuadraticDecomposition{
+template<typename T> class SqrtDecomposition{
 public:
     vector<T> data;
     int sz,backet_size,backet_cnt;
     vector<T> backet;
-    QuadraticDecomposition(vector<T>& v) : data(v), sz((int)data.size()),
+    SqrtDecomposition(vector<T>& v) : data(v), sz((int)data.size()),
         backet_size((int)sqrt(sz)), backet_cnt(sz / backet_size + 1), backet(backet_cnt, 0){
         for(int i = 0; i < sz; i++){
             backet[i / backet_size] += data[i];  //例えば和を持たせる処理

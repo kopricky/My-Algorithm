@@ -21,8 +21,8 @@ unsigned int mul(const unsigned int x, const unsigned int y)
 unsigned int mod_pow(unsigned int x, unsigned int n)
 {
     unsigned int res = 1;
-    while(n > 0) {
-        if(n & 1) { res = mul(res, x); }
+    while(n > 0){
+        if(n & 1){ res = mul(res, x); }
         x = mul(x, x);
         n >>= 1;
     }
@@ -75,8 +75,8 @@ vector<int> convolute(const vector<int>& a, const vector<int>& b, int asize, int
     int t = 1;
     while(t < size){ t <<= 1; }
     vector<int> A(t, 0), B(t, 0);
-    for(int i = 0; i < asize; i++){ A[i] = a[i]; }
-    for(int i = 0; i < bsize; i++){ B[i] = b[i]; }
+	for(int i = 0; i < asize; i++){ A[i] = (a[i] < MOD) ? a[i] : (a[i] % MOD); }
+	for(int i = 0; i < bsize; i++){ B[i] = (b[i] < MOD) ? b[i] : (b[i] % MOD); }
     ntt(A), ntt(B);
     for(int i = 0; i < t; i++) { A[i] = mul(A[i], B[i]); }
     ntt(A, true);
