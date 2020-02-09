@@ -1,20 +1,6 @@
 #include "../header.hpp"
 
 //離散対数問題に対するアルゴリズム
-unsigned int mod_pow(unsigned int a, unsigned int b, unsigned int m)
-{
-    a %= m;
-    unsigned int res = 1;
-    while(b){
-        if(b & 1){
-            res = (unsigned long long)res * a % m;
-        }
-        a = (unsigned long long)a * a % m;
-        b >>= 1;
-    }
-    return res;
-}
-
 unsigned int mod_inv(int a, int m)
 {
 	int u[] = {a, 1, 0}, v[] = {m, 0, 1}, t;
@@ -24,7 +10,7 @@ unsigned int mod_inv(int a, int m)
         swap(u[1] -= t * v[1], v[1]);
         swap(u[2] -= t * v[2], v[2]);
     }
-    unsigned int res = u[1] % m + m;
+    int res = u[1] % m + m;
 	return (res >= m) ? (res - m) : res;
 }
 
@@ -42,10 +28,10 @@ int baby_step_giant_step(unsigned int a, unsigned int b, unsigned int p)
     unordered_map<unsigned int, unsigned int> mp;
     unsigned int val = 1;
     for(unsigned int i = 0; i < m; ++i){
-        if(mp.find(val) == mp.end()) mp[val] = i;
+        mp.insert({val, i});
         val = (unsigned long long)val * a % p;
     }
-    unsigned int inv = mod_pow(a, p - m - 1, p);
+    unsigned int inv = mod_inv(val, p);
     unsigned int cur = b, res = numeric_limits<unsigned int>::max();
     for(unsigned int i = 0; i < m; ++i){
         auto it = mp.find(cur);
@@ -76,3 +62,4 @@ int general_baby_step_giant_step(unsigned int a, unsigned int b, unsigned int p)
     int res = baby_step_giant_step(a, b, p);
     return (res < 0) ? res : res + cnt;
 }
+
