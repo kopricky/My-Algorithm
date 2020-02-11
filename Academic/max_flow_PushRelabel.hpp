@@ -111,7 +111,7 @@ private:
         return relabel(u);
     }
     bool push(const int u, edge& e){
-        T f = min(e.cap, excess[u]);
+        const T f = min(e.cap, excess[u]);
         const int v = e.to;
         e.cap -= f, excess[u] -= f;
         G[v][e.rev].cap += f, excess[v] += f;
