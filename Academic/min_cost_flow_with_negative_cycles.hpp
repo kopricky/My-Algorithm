@@ -146,7 +146,7 @@ public:
     vector<vector<edge> > G;
     MinCostFlow(const int node_size)
      : V(node_size), inf(numeric_limits<Cot>::max()),
-        dp(V+1, vector<Cat>(V, 0)), prev(V+1, vector<edge*>(V)), G(V){}
+        dp(V+1, vector<Cot>(V, 0)), prev(V+1, vector<edge*>(V)), G(V){}
     void add_edge(const int from, const int to, const Cat cap, const Cot cost){
         G[from].push_back((edge){to, cap, cost, (int)G[to].size()});
         G[to].push_back((edge){from, 0, -cost, (int)G[from].size() - 1});
