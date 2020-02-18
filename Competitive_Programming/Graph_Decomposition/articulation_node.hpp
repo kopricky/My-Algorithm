@@ -1,48 +1,25 @@
 #include "../header.hpp"
 
-//関節点を求めるアルゴリズム(計算量は線形)
+// 関節点を求めるアルゴリズム(計算量は線形)
+// 自己ループは存在しないことを仮定
 class Articulation {
 public:
     struct bcnode;
 private:
-    const int V;
-    vector<vector<int> > dfs_tree;
-    vector<int> ord, low, self_loops;
-    void dfs(const int u, const int p, int& tm){
-        ord[u] = low[u] = tm++;
-        bool multi_edge = false;
-        int ct = 0;
+	const int V;
+    vector<int> ord, low;
+    bool check(const int u){
         for(const int v : G[u]){
-            if(ord[v] < 0){
-                dfs_tree[u].push_back(v);
-                ++ct, dfs(v, u, tm);
-                low[u] = min(low[u], low[v]);
-                if(p >= 0 && ord[u] <= low[v]) art[u] = true;
-            }else if(v == p){
-                if(multi_edge){
-                    dfs_tree[u].push_back(v);
-                    low[u] = min(low[u], ord[v]);
-                }else{
-                    multi_edge = true;
-                }
-            }else if(ord[v] < ord[u]){
-                dfs_tree[u].push_back(v);
-                low[u] = min(low[u], ord[v]);
-            }
+            if(ord[v] < 0) return true;
         }
-        if(p == -1 && ct > 1) art[u] = true;
+        return false;
     }
-    bool check(const int cur, const pair<int, int> e) const {
-        return ((e.first != cur && ord[cur] > low[e.first])
-                || (e.second != cur && ord[cur] > low[e.second]));
-    }
-    void identify_block(const int u, bool *used, 
-                        stack<pair<int, int> >& st, const vector<int>& bcnode_id){
+    void identify_block(const int u, const int v, bool *used, 
+                            stack<pair<int, int> >& st, const vector<int>& bcnode_id){
         vector<pair<int, int> > block;
         vector<int> cut_vertex;
         while(!st.empty()){
             const pair<int, int> p = st.top();
-            if(check(u, p)) break;
             st.pop(), block.push_back(p);
             if(art[p.first] && !used[p.first]){
                 cut_vertex.push_back(p.first);
@@ -52,6 +29,7 @@ private:
                 cut_vertex.push_back(p.second);
                 used[p.second] = true;
             }
+            if(p == (pair<int, int>){u, v}) break;
         }
         const int block_id = (int)bctree.size();
         bctree.push_back(vector<int>());
@@ -62,34 +40,37 @@ private:
             used[ver] = false;
         }
     }
-    void redfs(const int u, const int p, bool *visit, bool *used,
+	void dfs(const int u, const int p, int& tm, bool *used,
                 stack<pair<int, int> >& st, vector<int>& bcnode_id){
-        visit[u] = true;
-        if(art[u]){
-            bcnode_id[u] = (int)bctree.size();
-            bctree.push_back(vector<int>());
-            bcnodes.emplace_back(false, vector<pair<int, int> >{{u, u}});
-        }
-        for(int i = 0; i < self_loops[u]; ++i) st.push({u, u});
-        if(art[u] || p == -1){
-            for(const int v : dfs_tree[u]){
-                if(!visit[v] && low[v] >= ord[u]){
-                    st.push({u, v});
-                    redfs(v, u, visit, used, st, bcnode_id);
-                    // u might not be an articulation point when u is the root
-                    if(art[u]) identify_block(u, used, st, bcnode_id);
+		ord[u] = low[u] = tm++;
+        bool multi_edge = false;
+		for(const int v : G[u]){
+			if(ord[v] < 0){
+                st.push({u, v});
+				dfs(v, u, tm, used, st, bcnode_id);
+				low[u] = min(low[u], low[v]);
+				if(ord[u] <= low[v]){
+                    if(!art[u] && (p >= 0 || check(u))){
+                        art[u] = true;
+                        bcnode_id[u] = (int)bctree.size();
+                        bctree.push_back(vector<int>());
+                        bcnodes.emplace_back(false, vector<pair<int, int> >{{u, u}});
+                    }
+                    identify_block(u, v, used, st, bcnode_id);
                 }
-            }
-        }
-        for(const int v : dfs_tree[u]){
-            if(!visit[v]){
+			}else if(v == p){
+                if(multi_edge){
+                    st.push({u, v});
+                    low[u] = min(low[u], ord[v]);
+                }else{
+                    multi_edge = true;
+                }
+			}else if(ord[v] < ord[u]){
                 st.push({u, v});
-                redfs(v, u, visit, used, st, bcnode_id);
-            }else if(ord[v] < ord[u]){
-                st.push({u, v});
+                low[u] = min(low[u], ord[v]);
             }
-        }
-    }
+		}
+	}
 public:
     vector<vector<int> > G;
     vector<bool> art;
@@ -102,30 +83,19 @@ public:
     vector<vector<int> > bctree;
     vector<bcnode> bcnodes;
     Articulation(const int node_size)
-        : V(node_size), dfs_tree(V), ord(V, -1), low(V), self_loops(V, 0), G(V), art(V, false){}
+        : V(node_size), ord(V, -1), low(V), G(V), art(V, false){}
     void add_edge(const int a, const int b){
-        if(a == b) ++self_loops[a];
-        else G[a].push_back(b), G[b].push_back(a);
+        G[a].push_back(b), G[b].push_back(a);
     }
-    void solve(){
-        int tm = 0;
-        for(int i = 0; i < V; ++i){
-            if(ord[i] < 0) dfs(i, -1, tm);
-        }
-    }
-    int make_bctree(){
-        bool *visit = new bool[V]();
+	int solve(){
+		int tm = 0;
         bool *used = new bool[V]();
         stack<pair<int, int> > st;
         vector<int> bcnode_id(V, -1); // bcnode_id[original vertex] = cut vertex;
         for(int i = 0; i < V; ++i){
-            if(!visit[i]){
-                redfs(i, -1, visit, used, st, bcnode_id);
-                if(!st.empty()) identify_block(i, used, st, bcnode_id);
-            }
-        }
-        delete[] visit;
+			if(ord[i] < 0) dfs(i, -1, tm, used, st, bcnode_id);
+		}
         delete[] used;
         return (int)bctree.size();
-    }
+	}
 };
