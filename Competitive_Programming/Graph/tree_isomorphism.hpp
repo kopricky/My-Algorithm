@@ -3,45 +3,47 @@
 //根つき木の同型性判定(ハッシュ値を比較)
 class tree_hashing {
 private:
-    static vector<unsigned int> rnum[2];
-    static constexpr unsigned int mod[2] = {1000000007, 1000000009};
-    const int V;
+    static vector<vector<unsigned int> > rnum;
+    static constexpr unsigned int mod = 1000000007;
+    const int V, RC;
     vector<vector<int> > G;
     
-    pair<unsigned int, unsigned int> hash_dfs(const int u, const int p, int& depth){
-        unsigned int res[] = {1u, 1u};
+    static unsigned int add(const unsigned int x, const unsigned int y){
+        return (x + y >= mod) ? (x + y - mod) : (x + y);
+    }
+    static unsigned int mul(const unsigned int x, const unsigned int y){
+        return (unsigned long long)x * y % mod;
+    }
+    int hash_dfs(const int u, const int p, vector<unsigned int>& res){
+        int depth = 0;
         for(auto v : G[u]){
             if(v != p){
-                int d = 0;
-                auto val = hash_dfs(v, u, d);
-                depth = max(depth, d);
-                res[0] = (unsigned long long)res[0] * val.first % mod[0];
-                res[1] = (unsigned long long)res[1] * val.second % mod[1];
+                vector<unsigned int> vec(RC, 1u);
+                const int d = hash_dfs(v, u, vec);
+                depth = max(depth, d + 1);
+                for(int i = 0; i < RC; ++i) res[i] = mul(res[i], vec[i]);
             }
         }
-        ++depth;
-        res[0] = (res[0] + rnum[0][depth] >= mod[0]) ?
-        (res[0] + rnum[0][depth] - mod[0]) : (res[0] + rnum[0][depth]);
-        res[1] = (res[1] + rnum[1][depth] >= mod[1]) ?
-        (res[1] + rnum[1][depth] - mod[1]) : (res[1] + rnum[1][depth]);
-        return make_pair(res[0], res[1]);
+        for(int i = 0; i < RC; ++i) res[i] = add(res[i], rnum[depth][i]);
+        return depth;
     }
 public:
-    tree_hashing(const int node_size) : V(node_size), G(V){
-        random_device rnd;
-        mt19937 mt(rnd());
-        uniform_int_distribution<> rand1(1, mod[0] - 1), rand2(1, mod[1] - 1);
-        while((int)rnum[0].size() < V){
-            rnum[0].push_back(rand1(mt)), rnum[1].push_back(rand2(mt));
+    tree_hashing(const int node_size, const int random_count=2)
+        : V(node_size), RC(random_count), G(V){
+        mt19937 mt(random_device{}());
+        uniform_int_distribution<> random(1, mod - 1);
+        while((int)rnum.size() < V){
+            vector<unsigned int> vec(RC);
+            for(int i = 0; i < RC; ++i) vec[i] = random(mt);
+            rnum.push_back(vec);
         }
     }
     void add_edge(const int a, const int b){
         G[a].push_back(b), G[b].push_back(a);
     }
-    pair<unsigned int, unsigned int> hash(int root=0)
-    {
-        int d = 0;
-        return hash_dfs(root, -1, d);
+    vector<unsigned int> hash(const int root=0){
+        vector<unsigned int> vec(RC, 1u);
+        return hash_dfs(root, -1, vec), vec;
     }
 };
-vector<unsigned int> tree_hashing::rnum[2];
+vector<vector<unsigned int> > tree_hashing::rnum;
