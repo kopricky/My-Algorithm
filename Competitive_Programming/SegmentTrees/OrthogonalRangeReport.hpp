@@ -14,122 +14,127 @@ private:
     using CT = CandidateType;
     using pcc = pair<CT, CT>;
     using pci = pair<CT, int>;
-    int n,sz;
-    //座標, インデックス
-    vector<pair<pcc, int> > sorted;
-    //x座標
+    int n, sz;
+    // x座標
     vector<CT> xs;
-    //y座標, インデックス
+    // y座標, インデックス
     vector<vector<pci> > ys;
-    void query(int lxid, int rxid, CT ly, CT ry, vector<int>& report, int k, int l, int r){
-        if(r <= lxid || rxid <= l) return;
-        if(lxid <= l && r <= rxid){
-            auto st = lower_bound(all(ys[k]),pci(ly,-1)), ed = upper_bound(all(ys[k]),pci(ry,-1));
-            for(auto it = st; it != ed; ++it){
-                report.push_back(it->second);
+    void _query(int lxid, int rxid, const CT ly, const CT ry, vector<int>& report){
+        lxid += n, rxid += n;
+        while(lxid != rxid){
+            if(lxid & 1){
+                const auto st = lower_bound(all(ys[lxid]), pci(ly, -1));
+                const auto ed = lower_bound(all(ys[lxid]), pci(ry, -1));
+                for(auto it = st; it != ed; ++it) report.push_back(it->second);
+                ++lxid;
             }
-        }else{
-            query(lxid,rxid,ly,ry,report,2*k+1,l,(l+r)/2);
-            query(lxid,rxid,ly,ry,report,2*k+2,(l+r)/2,r);
+            if(rxid & 1){
+                --rxid;
+                const auto st = lower_bound(all(ys[rxid]), pci(ly, -1));
+                const auto ed = lower_bound(all(ys[rxid]), pci(ry, -1));
+                for(auto it = st; it != ed; ++it) report.push_back(it->second);
+            }
+            lxid >>= 1, rxid >>= 1;
         }
     }
 public:
-    OrthogonalRangeReport(const vector<pcc>& cand) : n(1), sz((int)cand.size()), sorted(sz), xs(sz){
-        while(n < sz) n *= 2;
-        for(int i = 0; i < sz; i++){
-            sorted[i] = make_pair(cand[i], i);
+    OrthogonalRangeReport(const vector<pcc>& cand) : n(1), sz((int)cand.size()), xs(sz){
+        while(n < sz){
+            n *= 2;
+        }
+        vector<pci> sorted(sz);
+        for(int i = 0; i < sz; ++i){
+            sorted[i] = {cand[i].first, i};
         }
         sort(sorted.begin(), sorted.end());
-        ys.resize(2*n-1);
-        for(int i = 0; i < sz; i++){
-            xs[i] = (sorted[i].first).first;
-            ys[i+n-1] = {pci((sorted[i].first).second, sorted[i].second)};
+        ys.resize(2*n);
+        for(int i = 0; i < sz; ++i){
+            xs[i] = sorted[i].first;
+            ys[i+n] = {make_pair(cand[sorted[i].second].second, sorted[i].second)};
         }
-        for(int i=n-2; i>=0; i--){
-            ys[i].resize((int)ys[2*i+1].size() + (int)ys[2*i+2].size());
-            merge(all(ys[2*i+1]),all(ys[2*i+2]),ys[i].begin(),[&](pci& a, pci& b){
+        for(int i = n-1; i >= 1; --i){
+            ys[i].resize((int)ys[2*i].size() + (int)ys[2*i+1].size());
+            merge(all(ys[2*i]), all(ys[2*i+1]), ys[i].begin(), [&](const pci& a, const pci& b){
                 return a.first < b.first;
             });
         }
     }
-    // [lx,rx)×[ly,ry)の長方形領域の範囲内の点のインデックスを報告する
-    void query(CT lx, CT rx, CT ly, CT ry, vector<int>& report) {
-        int lxid = lower_bound(all(xs),lx) - xs.begin();
-        int rxid = upper_bound(all(xs),rx-1) - xs.begin();
+    void query(const CT lx, const CT ly, const CT rx, const CT ry, vector<int>& report) {
+        const int lxid = lower_bound(all(xs), lx) - xs.begin();
+        const int rxid = lower_bound(all(xs), rx) - xs.begin();
         if(lxid >= rxid) return;
-        query(lxid,rxid,ly,ry,report,0,0,n);
+        _query(lxid, rxid, ly, ry, report);
     }
 };
 
 // フラクショナルカスケーディング版
+#define all(v) (v).begin(), (v).end()
+
 template<typename CandidateType> class OrthogonalRangeReport
 {
 private:
     using CT = CandidateType;
     using pcc = pair<CT, CT>;
-    using pcci = pair<pcc, int>;
-    int n,sz;
-    //座標, インデックス
-    vector<pcci> sorted;
-    //x座標
+    using pci = pair<CT, int>;
+    int n, sz;
+    // x座標
     vector<CT> xs;
-    // (y座標, x座標), インデックス
-    vector<vector<pcci> > ys;
-    vector<vector<int> > start[2];
-    vector<vector<int> > end[2];
-    static bool less(const pcci& a, const pcci& b){
-        return ((a.first).first == (b.first).first) ? ((a.first).second < (b.first).second) : ((a.first).first < (b.first).first);
+    // y座標, インデックス
+    vector<vector<pci> > ys;
+    // 位置
+    vector<vector<vector<int> > > pos;
+    static bool less(const pci& a, const pci& b, const vector<pcc>& cand){
+        return (a.first == b.first) ?
+                (cand[a.second].first < cand[b.second].first) : (a.first < b.first);
     }
-    void query(int lxid, int rxid, int lyid, int ryid, vector<int>& report, int k, int l, int r){
-        if(lyid >= ryid) return;
-        if(r <= lxid || rxid <= l) return;
+    void query(const int lxid, const int rxid, const int lyid, const int ryid,
+                vector<int>& report, const int k, const int l, const int r){
+        if(lyid >= ryid || r <= lxid || rxid <= l) return;
         if(lxid <= l && r <= rxid){
             for(int i = lyid; i < ryid; ++i){
                 report.push_back(ys[k][i].second);
             }
         }else{
-            query(lxid, rxid, start[0][k][lyid], end[0][k][ryid], report, 2*k+1, l, (l+r)/2);
-            query(lxid, rxid, start[1][k][lyid], end[1][k][ryid], report, 2*k+2, (l+r)/2, r);
+            query(lxid, rxid, pos[k][lyid][0], pos[k][ryid][0], report, 2*k+1, l, (l+r)/2);
+            query(lxid, rxid, pos[k][lyid][1], pos[k][ryid][1], report, 2*k+2, (l+r)/2, r);
         }
     }
 public:
-    OrthogonalRangeReport(const vector<pcc>& cand) : n(1), sz((int)cand.size()), sorted(sz), xs(sz){
+    OrthogonalRangeReport(const vector<pcc>& cand) : n(1), sz((int)cand.size()), xs(sz){
         while(n < sz) n *= 2;
-        for(int i = 0; i < sz; i++){
-            sorted[i] = pcci(cand[i], i);
+        vector<pci> sorted(sz);
+        for(int i = 0; i < sz; ++i){
+            sorted[i] = {cand[i].first, i};
         }
         sort(sorted.begin(), sorted.end());
-        ys.resize(2*n-1);
-        for(int i = 0; i < 2; ++i){
-            start[i].resize(n-1), end[i].resize(n-1);
-        }
+        ys.resize(2*n-1), pos.resize(n-1);
         for(int i = 0; i < sz; ++i){
-            xs[i] = (sorted[i].first).first;
-            ys[i+n-1] = {pcci(pcc((sorted[i].first).second, (sorted[i].first).first), sorted[i].second)};
+            xs[i] = sorted[i].first;
+            ys[i+n-1] = {make_pair(cand[sorted[i].second].second, sorted[i].second)};
         }
-        for(int i = n - 2; i >= 0; --i){
+        for(int i = n-2; i >= 0; --i){
             ys[i].resize((int)ys[2*i+1].size() + (int)ys[2*i+2].size());
-            merge(all(ys[2*i+1]), all(ys[2*i+2]), ys[i].begin(), less);
-            for(int j = 0; j < 2; ++j){
-                start[j][i].resize((int)ys[i].size() + 1);
-                end[j][i].resize((int)ys[i].size() + 1);
-                int st = 0, ed = 0;
-                for(int k = 0; k < (int)ys[i].size(); ++k){
-                    while(st < (int)ys[2*i+j+1].size() && less(ys[2*i+j+1][st], ys[i][k])) ++st;
-                    start[j][i][k] = st;
-                    while(ed < (int)ys[2*i+j+1].size() && less(ys[2*i+j+1][ed], ys[i][k])) ++ed;
-                    end[j][i][k] = ed;
+            merge(all(ys[2*i+1]), all(ys[2*i+2]), ys[i].begin(), [&](const pci& a, const pci& b){
+                return (a.first == b.first) ?
+                        (cand[a.second].first < cand[b.second].first) : (a.first < b.first);
+            });
+            pos[i].resize((int)ys[i].size() + 1, vector<int>(2));
+            for(int k = 0; k < 2; ++k){
+                int p = 0;
+                for(int j = 0; j < (int)ys[i].size(); ++j){
+                    while(p < (int)ys[2*i+k+1].size() && less(ys[2*i+k+1][p], ys[i][j], cand)) ++p;
+                    pos[i][j][k] = p;
                 }
-                start[j][i].back() = end[j][i].back() = (int)ys[2*i+j+1].size();
+                pos[i][(int)ys[i].size()][k] = (int)ys[2*i+k+1].size();
             }
         }
     }
     // [lx,rx)×[ly,ry)の長方形領域の範囲内の点のインデックスを報告する
-    void query(CT lx, CT rx, CT ly, CT ry, vector<int>& report) {
-        const int lxid = lower_bound(all(xs),lx) - xs.begin();
-        const int rxid = upper_bound(all(xs),rx-1) - xs.begin();
-        const int lyid = lower_bound(all(ys[0]), pcci(pcc(ly, numeric_limits<CT>::min()), 0)) - ys[0].begin();
-        const int ryid = upper_bound(all(ys[0]), pcci(pcc(ry, numeric_limits<CT>::min()), 0)) - ys[0].begin();
+    void query(const CT lx, const CT rx, const CT ly, const CT ry, vector<int>& report) {
+        const int lxid = lower_bound(all(xs), lx) - xs.begin();
+        const int rxid = lower_bound(all(xs), rx) - xs.begin();
+        const int lyid = lower_bound(all(ys[0]), pci(ly, -1)) - ys[0].begin();
+        const int ryid = lower_bound(all(ys[0]), pci(ry, -1)) - ys[0].begin();
         if(lxid >= rxid) return;
         query(lxid, rxid, lyid, ryid, report, 0, 0, n);
     }

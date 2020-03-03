@@ -15,21 +15,19 @@ public:
             node[i] = min(node[2*i],node[2*i+1]);
         }
     }
-    void update(int k,T a)
-    {
+    void update(int k,T a){
         node[k+=n] = a;
         while(k>>=1){
             node[k] = min(node[2*k],node[2*k+1]);
         }
     }
-    T query(int a,int b)
-    {
+    T query(int a,int b){
         T res1 = numeric_limits<T>::max();
         T res2 = numeric_limits<T>::max();
         a += n, b += n;
         while(a != b){
-            if(a % 2) res1 = min(res1, node[a++]);
-            if(b % 2) res2 = min(node[--b], res2);
+            if(a & 1) res1 = min(res1, node[a++]);
+            if(b & 1) res2 = min(node[--b], res2);
             a >>= 1, b >>= 1;
         }
         return min(res1, res2);

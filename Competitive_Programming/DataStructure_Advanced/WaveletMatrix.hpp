@@ -100,7 +100,7 @@ public:
         return i - p;
     }
     // [l, r) の k(0,1,2...) 番目に小さい値を返す
-    int quantile(int k, int l, int r) {
+    int quantile(int k, int l, int r){
         int res = 0;
         for(int i = 0; i < height; i++){
             int j = B[i].rank0(l, r);

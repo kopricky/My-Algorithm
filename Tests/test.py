@@ -6,14 +6,13 @@ import urllib.request
 import urllib.error
 import json
 import sys
-
+import os
 
 def main():
     args = sys.argv
     code_path, problem_id = args[1], args[2]
-    abs_path = '/home/masataka/my_algorithm/Tests'
-    print('g++ -O3 -pthread -o {}/exec ./{}'.format(abs_path, code_path).split())
-    exec_check = subprocess.call('g++ -O3 -pthread -o {}/exec ./{}'.format(abs_path, code_path).split())
+    abs_path = os.getcwd()
+    exec_check = subprocess.call('g++ -std=c++14 -O3 -pthread -o {}/exec ./{}'.format(abs_path, code_path).split())
     if exec_check == 1:
         print('コンパイル失敗')
         return
