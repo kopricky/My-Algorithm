@@ -12,6 +12,7 @@ def main():
     args = sys.argv
     code_path, problem_id = args[1], args[2]
     abs_path = '/home/masataka/my_algorithm/Tests'
+    print('g++ -O3 -pthread -o {}/exec ./{}'.format(abs_path, code_path).split())
     exec_check = subprocess.call('g++ -O3 -pthread -o {}/exec ./{}'.format(abs_path, code_path).split())
     if exec_check == 1:
         print('コンパイル失敗')
