@@ -65,13 +65,13 @@ BSTNode *splay(BSTNode *u) noexcept {
     if(!u) return nullptr;
     while(!(u->IsRoot())){
         BSTNode *p = u->par, *gp = p->par;
-        if(p->IsRoot()){ // zig
+        if(p->IsRoot()){
             u->rotate((u == p->left));
         }else{
             bool flag = (u == p->left);
-            if((u == p->left) == (p == gp->left)){ // zig-zig
+            if((u == p->left) == (p == gp->left)){
                 p->rotate(flag), u->rotate(flag);
-            }else{ // zig-zag
+            }else{
                 u->rotate(flag), u->rotate(!flag);
             }
         }
@@ -131,7 +131,7 @@ private:
             if(edge2->right) edge2->right->par = nullptr;
             join(edge1->left, edge2->right);
         }
-        // delete edge1; delete edge2;
+        delete edge1; delete edge2;
     }
     bool connected(BSTNode *ver1, BSTNode *ver2) noexcept {
         splay(ver1), splay(ver2);
@@ -140,7 +140,6 @@ private:
     int component_size(BSTNode *ver) noexcept { return splay(ver)->sz; }
 public:
     int V;
-    EulerTourTree(){}
     // ~EulerTourTree(){
     //     for(auto it : edge_set){
     //         delete (it.second).first;
@@ -149,7 +148,7 @@ public:
     //     for(int i = 0; i < V; ++i) delete vertex_set[i];
     //     delete[] vertex_set;
     // }
-    void resize(const int node_size) noexcept {
+    EulerTourTree(const int node_size) noexcept {
         V = node_size, vertex_set = new BSTNode*[V];
         for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode(i);
     }
@@ -251,12 +250,12 @@ private:
         }else return replace(from, to, layer-1);
     }
 public:
-    const int V, layer_count;
-    EulerTourTree* et;
+    const int V;
+    int depth;
+    vector<EulerTourTree> et;
     unordered_map<pair<int, int>, int, EulerTourTree::pair_hash> detect_layer;
-    DynamicConnectivity(int node_size) noexcept : V(node_size), layer_count(ceil(log2(V))+1){
-        et = new EulerTourTree[layer_count];
-        for(int i = 0; i < layer_count; i++) et[i].resize(V);
+    DynamicConnectivity(const int node_size) noexcept : V(node_size), depth(1){
+        et.emplace_back(V);
     }
     // ~DynamicConnectivity(){
     //     delete[] et;
@@ -283,6 +282,7 @@ public:
         auto& st = et[layer].vertex_set[node1_id]->adjacent;
         if(st.find(node2_id) == st.end()){
             for(int i = 0; i <= layer; i++) et[i].cut(node1_id, node2_id);
+            if(layer + 1 == depth) ++depth, et.emplace_back(V);
             return replace(node1_id, node2_id, layer);
         }else{
             et[layer].vertex_set[node1_id]->adjacent.erase(node2_id);

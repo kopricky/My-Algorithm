@@ -601,13 +601,13 @@ BSTNode *splay(BSTNode *u) noexcept {
     if(!u) return nullptr;
     while(!(u->IsRoot())){
         BSTNode *p = u->par, *gp = p->par;
-        if(p->IsRoot()){ // zig
+        if(p->IsRoot()){
             u->rotate((u == p->left));
         }else{
             bool flag = (u == p->left);
-            if((u == p->left) == (p == gp->left)){ // zig-zig
+            if((u == p->left) == (p == gp->left)){
                 p->rotate(flag), u->rotate(flag);
-            }else{ // zig-zag
+            }else{
                 u->rotate(flag), u->rotate(!flag);
             }
         }
@@ -679,7 +679,10 @@ private:
     int component_size(BSTNode *ver) noexcept { return splay(ver)->sz; }
 public:
     int V;
-    EulerTourTree(){}
+    EulerTourTree(const int node_size){
+        V = node_size, vertex_set = new BSTNode*[V];
+        for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode(i);
+    }
     // ~EulerTourTree(){
     //     for(auto it : edge_set){
     //         delete (it.second).first;
@@ -688,10 +691,6 @@ public:
     //     for(int i = 0; i < V; ++i) delete vertex_set[i];
     //     delete[] vertex_set;
     // }
-    void resize(const int node_size) noexcept {
-        V = node_size, vertex_set = new BSTNode*[V];
-        for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode(i);
-    }
     void reroot(const int node_id) noexcept { reroot(vertex_set[node_id]); }
     void link(int node1_id, int node2_id, bool flag=true) noexcept {
         if(node1_id > node2_id) swap(node1_id, node2_id);
@@ -709,7 +708,7 @@ public:
         if(node1_id == node2_id) return true;
         return connected(vertex_set[node1_id], vertex_set[node2_id]);
     }
-    int component_size(int node_id) noexcept { return component_size(vertex_set[node_id]); }
+    int component_size(const int node_id) noexcept { return component_size(vertex_set[node_id]); }
     void check_dfs(const BSTNode* cur) const noexcept {
         if(cur->left) check_dfs(cur->left);
         cout << "{" << (cur->from) << "," << (cur->to) << "} ";
@@ -792,12 +791,12 @@ private:
         }else return replace(from, to, layer-1);
     }
 public:
-    const int V, layer_count;
-    EulerTourTree* et;
+    const int V;
+    int depth;
+    vector<EulerTourTree> et;
     UnorderedMap<unsigned long long, int, EulerTourTree::murmur_hash64> detect_layer;
-    DynamicConnectivity(int node_size) noexcept : V(node_size), layer_count(ceil(log2(V))+1){
-        et = new EulerTourTree[layer_count];
-        for(int i = 0; i < layer_count; i++) et[i].resize(V);
+    DynamicConnectivity(const int node_size) noexcept : V(node_size), depth(1){
+        et.emplace_back(V);
     }
     // ~DynamicConnectivity(){
     //     delete[] et;
@@ -824,6 +823,7 @@ public:
         auto& st = et[layer].vertex_set[node1_id]->adjacent;
         if(st.find(node2_id) == st.end()){
             for(int i = 0; i <= layer; i++) et[i].cut(node1_id, node2_id);
+            if(layer + 1 == depth) ++depth, et.emplace_back(V);
             return replace(node1_id, node2_id, layer);
         }else{
             et[layer].vertex_set[node1_id]->adjacent.simple_erase(node2_id);
