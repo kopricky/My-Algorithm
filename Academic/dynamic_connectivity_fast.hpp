@@ -21,6 +21,7 @@ private:
         inline bool empty() const noexcept { return (_dist == -1); }
     };
     inline static unsigned int ceilpow2(unsigned int u) noexcept {
+        if(u == 0u) return 0u;
         --u, u |= u >> 1, u |= u >> 2, u |= u >> 4, u |= u >> 8;
         return (u | (u >> 16)) + 1;
     }
@@ -81,6 +82,10 @@ private:
         _Key new_key = forward<Key>(key);
         return insert(cur, dist, move(new_key));
     }
+    template<typename... Args>
+    bucket *emplace(Args&&... args){
+        return find_insert(_Key(forward<Args>(args)...));
+    }
     bucket *backward_shift(bucket *cur, bool next_ret){
         bucket *next = next_bucket(cur), *ret = cur;
         if(next->_dist < 1) return next_ret ? increment(cur) : cur;
@@ -106,7 +111,10 @@ private:
         return erase_impl(_find(key), next_ret);
     }
     bool rehash_check(){
-        if(load_rate() >= MAX_LOAD_RATE){
+        if(_bucket_count == 0){
+            rehash(1u);
+            return true;
+        }else if(load_rate() >= MAX_LOAD_RATE){
             rehash(_bucket_count * 2u);
             return true;
         }else if(DOWNSIZE){
@@ -144,10 +152,12 @@ public:
     const float MAX_LOAD_RATE = 0.5f;
     const float MIN_LOAD_RATE = 0.1f;
     const unsigned int DOWNSIZE_THRESHOLD = 16u;
-    UnorderedSet(unsigned int bucket_size = 1u)
-     : _bucket_count(ceilpow2(max(bucket_size, 1u))), _mask(_bucket_count - 1),
+    UnorderedSet(unsigned int bucket_size = 0u)
+     : _bucket_count(ceilpow2(bucket_size)), _mask(_bucket_count - 1),
         _data_count(0u), _buckets(new bucket[_bucket_count + 1]){
-        _buckets[_bucket_count - 1]._last = true, _buckets[_bucket_count]._end = true;
+        if(_bucket_count > 0) _buckets[_bucket_count - 1]._last = true;
+        else _mask = 0;
+        _buckets[_bucket_count]._end = true;
     }
     UnorderedSet(const UnorderedSet& another)
         : _bucket_count(another._bucket_count), _mask(another._mask), _data_count(another._data_count){
@@ -181,26 +191,31 @@ public:
         another._buckets = nullptr;
         return *this;
     }
+    void allocate(unsigned int element_size){
+        rehash(ceilpow2(ceil(element_size / MAX_LOAD_RATE) + 1));
+    }
     ~UnorderedSet(){ delete[] _buckets; }
     friend ostream& operator<< (ostream& os, UnorderedSet& ust) noexcept {
         for(_Key& val : ust) os << val << " ";
         return os;
     }
     void clear(){
-        UnorderedSet new_unordered_set(1u);
+        UnorderedSet new_unordered_set(0u);
         swap(*this, new_unordered_set);
     }
     size_t size() const noexcept { return _data_count; }
     size_t bucket_count() const noexcept { return _bucket_count; }
     bool empty() const noexcept { return (_data_count == 0); }
-    iterator begin() const noexcept {
-        return _buckets->empty() ? iterator(increment(_buckets)) : iterator(_buckets);
+    iterator begin() noexcept {
+        return (_buckets->empty() && _bucket_count > 0) ? iterator(increment(_buckets)) : iterator(_buckets);
     }
-    iterator end() const noexcept { return iterator(_buckets + _bucket_count); }
+    iterator end() noexcept { return iterator(_buckets + _bucket_count); }
     iterator find(const _Key& key) const { return iterator(_find(key)); }
     size_t count(const _Key& key) const { return (_find(key) != _buckets + _bucket_count); }
     iterator insert(const _Key& key){ return iterator(find_insert(key)); }
     iterator insert(_Key&& key){ return iterator(find_insert(move(key))); }
+    template<typename... Args>
+    iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
     iterator erase(const _Key& key){ return iterator(erase_key(key)); }
     iterator erase(const iterator& itr){ return iterator(erase_itr(itr.bucket_ptr)); }
     void simple_erase(const _Key& key){ erase_key(key, false); }
@@ -288,8 +303,9 @@ private:
         }
     };
     inline static unsigned int ceilpow2(unsigned int u) noexcept {
+        if(u == 0u) return 0u;
         --u, u |= u >> 1, u |= u >> 2, u |= u >> 4, u |= u >> 8;
-        return (u | (u >> 16)) + 1;
+        return (u | (u >> 16)) + 1u;
     }
     inline static bucket *increment(bucket *cur) noexcept {
         for(++cur; !cur->_end; ++cur){
@@ -358,6 +374,10 @@ private:
         data_type new_data = forward<Data>(data);
         return insert(cur, move(new_data.first), dist, move(new_data.second));
     }
+    template<typename... Args>
+    bucket *emplace(Args&&... args){
+        return find_insert(data_type(forward<Args>(args)...));
+    }
     bucket *backward_shift(bucket *cur, bool next_ret){
         bucket *next = next_bucket(cur), *ret = cur;
         if(next->_dist < 1) return next_ret ? increment(cur) : cur;
@@ -376,7 +396,7 @@ private:
         return backward_shift(cur, next_ret);
     }
     bucket *erase_itr(bucket *cur, bool next_ret = true){
-        const _Key& key = cur->_key;
+        const _Key key = cur->_key;
         return erase_impl(rehash_check() ? _find(key) : cur, next_ret);
     }
     bucket *erase_key(const _Key& key, bool next_ret = true){
@@ -384,7 +404,10 @@ private:
         return erase_impl(_find(key), next_ret);
     }
     bool rehash_check(){
-        if(load_rate() >= MAX_LOAD_RATE){
+        if(_bucket_count == 0){
+            rehash(1u);
+            return true;
+        }else if(load_rate() >= MAX_LOAD_RATE){
             rehash(_bucket_count * 2u);
             return true;
         }else if(DOWNSIZE){
@@ -422,10 +445,12 @@ public:
     const float MAX_LOAD_RATE = 0.5f;
     const float MIN_LOAD_RATE = 0.1f;
     const unsigned int DOWNSIZE_THRESHOLD = 16u;
-    UnorderedMap(unsigned int bucket_size = 1u)
-     : _bucket_count(ceilpow2(max(bucket_size, 1u))), _mask(_bucket_count - 1),
+    UnorderedMap(unsigned int bucket_size = 0u)
+     : _bucket_count(ceilpow2(bucket_size)), _mask(_bucket_count - 1),
         _data_count(0u), _buckets(new bucket[_bucket_count + 1]){
-        _buckets[_bucket_count - 1]._last = true, _buckets[_bucket_count]._end = true;
+        if(_bucket_count > 0) _buckets[_bucket_count - 1]._last = true;
+        else _mask = 0;
+        _buckets[_bucket_count]._end = true;
     }
     UnorderedMap(const UnorderedMap& another)
         : _bucket_count(another._bucket_count), _mask(another._mask), _data_count(another._data_count){
@@ -459,6 +484,9 @@ public:
         another._buckets = nullptr;
         return *this;
     }
+    void allocate(unsigned int element_size){
+        rehash(ceilpow2(ceil(element_size / MAX_LOAD_RATE) + 1));
+    }
     ~UnorderedMap(){ delete[] _buckets; }
     friend ostream& operator<< (ostream& os, UnorderedMap& ump) noexcept {
         for(auto val : ump) os << '{' << val.first << ',' << val.second << "} ";
@@ -472,17 +500,21 @@ public:
         return res->value();
     }
     void clear(){
-        UnorderedMap new_unordered_map(1u);
+        UnorderedMap new_unordered_map(0u);
         swap(*this, new_unordered_map);
     }
     size_t size() const noexcept { return _data_count; }
     size_t bucket_count() const noexcept { return _bucket_count; }
     bool empty() const noexcept { return (_data_count == 0); }
-    iterator begin() const noexcept { return _buckets->empty() ? iterator(increment(_buckets)) : iterator(_buckets); }
-    iterator end() const noexcept { return iterator(_buckets + _bucket_count); }
+    iterator begin() noexcept {
+        return (_buckets->empty() && _bucket_count > 0) ? iterator(increment(_buckets)) : iterator(_buckets);
+    }
+    iterator end() noexcept { return iterator(_buckets + _bucket_count); }
     iterator find(const _Key& key){ return iterator(_find(key)); }
     iterator insert(const data_type& data){ return iterator(find_insert(data)); }
     iterator insert(data_type&& data){ return iterator(find_insert(move(data))); }
+    template<typename... Args>
+    iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
     iterator erase(const _Key& key){ return iterator(erase_key(key)); }
     iterator erase(const iterator& itr){ return iterator(erase_itr(itr.bucket_ptr)); }
     void simple_erase(const _Key& key){ erase_key(key, false); }

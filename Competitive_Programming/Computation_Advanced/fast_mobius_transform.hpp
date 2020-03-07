@@ -5,7 +5,7 @@ void fast_mobius_transformation(int n, vector<int>& g)
 {
     for(int i = 0; i < n; ++i){
         for(int j = 0; j < (1 << n); ++j){
-            if(!(j & (1 << i))) g[j] -= g[j | (1 << i)];
+            if(!(j >> i & 1)) g[j] -= g[j ^ (1 << i)];
         }
     }
 }
@@ -15,7 +15,7 @@ void fast_mobius_transformation(int n, vector<int>& g)
 {
     for(int i = 0; i < n; ++i){
         for(int j = 0; j < (1 << n); ++j){
-            if(j & (1 << i)) g[j] -= g[j ^ (1 << i)];
+            if(j >> i & 1) g[j] -= g[j ^ (1 << i)];
         }
     }
 }
