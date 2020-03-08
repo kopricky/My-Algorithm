@@ -192,7 +192,7 @@ public:
     _Tp& operator[](_Key&& key){ return _find(move(key), true)->get_data(); }
     const _Tp& at(const _Key& key){
         node *res = _find(key);
-        if(res == _M_header) __throw_out_of_range(__N("Map::at"));
+        if(res == _M_header) __throw_out_of_range("Map::at");
         return res->get_data();
     }
     size_t size() const noexcept { return _M_node_count; }
