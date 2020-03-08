@@ -27,9 +27,9 @@ private:
     }
     T factor(const string& s, int& pos){
         if(isdigit(s[pos])) return number(s, pos);
-        pos++; // '('をとばす
+        ++pos; // '('をとばす
         T res = expr(s, pos);
-        pos++; // ')'をとばす
+        ++pos; // ')'をとばす
         return res;
     }
     T number(const string& s, int& pos){
