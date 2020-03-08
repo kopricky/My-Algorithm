@@ -1,16 +1,15 @@
 #include "../header.hpp"
 
 // 四則演算の構文解析
-template<typename T> class Parser
-{
+template<typename T> class Parser {
 private:
     T expr(const string& s, int& pos){
         T res = term(s, pos);
         while(s[pos] == '+' || s[pos] == '-'){
             if(s[pos] == '+'){
-                res += term(s, pos++);
+                res += term(s, ++pos);
             }else{
-                res -= term(s, pos++);
+                res -= term(s, ++pos);
             }
         }
         return res;
@@ -19,9 +18,9 @@ private:
         T res = factor(s, pos);
         while(s[pos] == '*' || s[pos] == '/'){
             if(s[pos] == '*'){
-                res *= term(s, pos++);
+                res *= factor(s, ++pos);
             }else{
-                res /= term(s, pos++);
+                res /= factor(s, ++pos);
             }
         }
         return res;
@@ -41,7 +40,7 @@ private:
         }while(isdigit(s[pos]));
         return res;
     }
-
+ 
 public:
     Parser(){}
     T solve(const string& s){
