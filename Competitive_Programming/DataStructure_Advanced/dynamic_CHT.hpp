@@ -72,7 +72,10 @@ private:
                         cur = cur->left, r = mid, nw->r = mid;
                     }
                 }
-            }else if(nw->r <= mid){
+                continue;
+            }
+            if(nw->isLine(l, r)) swap(cur, nw);
+            if(nw->r <= mid){
                 if(!cur->left){
                     cur->left = new node(nw->a, nw->b, nw->l, nw->r);
                     break;
