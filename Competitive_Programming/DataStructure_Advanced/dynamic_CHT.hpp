@@ -77,33 +77,30 @@ private:
             if(nw->isLine(l, r)) swap(cur, nw);
             if(nw->r <= mid){
                 if(!cur->left){
-                    cur->left = new node(nw->a, nw->b, nw->l, nw->r);
+                    cur->left = new node(*nw);
                     break;
                 }else{
                     cur = cur->left, r = mid;
                 }
             }else if(mid <= nw->l){
                 if(!cur->right){
-                    cur->right = new node(nw->a, nw->b, nw->l, nw->r);
+                    cur->right = new node(*nw);
                     break;
                 }else{
                     cur = cur->right, l = mid;
                 }
             }else{
-                bool use = false;
-                node kp(nw->a, nw->b, nw->l, nw->r);
+                node _nw(nw->a, nw->b, mid, nw->r);
+                nw->r = mid;
                 if(!cur->left){
-                    cur->left = new node(nw->a, nw->b, nw->l, mid);
+                    cur->left = new node(*nw);
                 }else{
-                    use = true, nw->r = mid;
                     _add_segment(cur->left, nw, l, mid);
                 }
                 if(!cur->right){
-                    cur->right = new node(kp.a, kp.b, mid, kp.r);
+                    cur->right = new node(_nw);
                 }else{
-                    if(use) nw = new node(kp);
-                    nw->l = mid;
-                    _add_segment(cur->right, nw, mid, r);
+                    _add_segment(cur->right, &_nw, mid, r);
                 }
                 break;
             }
@@ -138,18 +135,17 @@ public:
     // ~CHT(){ clear(root); }
     // f(x) = a * x + b を挿入
     void add_line(const T a, const T b){
-        node *nw = new node(a, b, lpos, rpos);
-        return _add_line(root, nw, lpos, rpos);
+        node nw(a, b, lpos, rpos);
+        return _add_line(root, &nw, lpos, rpos);
     }
     // f(x) = a * x + b (x ∈ [l, r)) を挿入
     void add_segment(const T a, const T b, const T l, const T r){
         assert(l < r);
-        node *nw = new node(a, b, l, r);
-        return _add_segment(root, nw, lpos, rpos);
+        node nw(a, b, l, r);
+        return _add_segment(root, &nw, lpos, rpos);
     }
     // x = k での最小値
     T query(const T k) const {
         return query(root, k, lpos, rpos);
     }
 };
-
