@@ -131,9 +131,14 @@ private:
         delete root_ver;
         return --_M_node_count, res;
     }
-    node *_erase(const _Key& key){
+    size_t _erase(const _Key& key){
         node *ver = _find(key);
-        return _erase(ver);
+        if(ver == _M_header){
+            return 0;
+        }else{
+            _erase(ver);
+            return 1;
+        }
     }
     node *_lower_bound(const _Key& key){
         confirm_header();
@@ -210,7 +215,7 @@ public:
     iterator insert(data_type&& data){ return iterator(_insert(move(data))); }
     template<typename... Args>
     iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
-    iterator erase(const _Key& key){ return iterator(_erase(key)); }
+    size_t erase(const _Key& key){ return _erase(key); }
     iterator erase(const iterator& itr){ return iterator(_erase(splay(itr.node_ptr))); }
     iterator lower_bound(const _Key& key){ return iterator(_lower_bound(key)); }
     iterator upper_bound(const _Key& key){ return iterator(_upper_bound(key)); }

@@ -1,4 +1,4 @@
-#include "../header.hpp"
+#include <../header.hpp>
 
 template<typename T> class CHT {
 private:
@@ -18,31 +18,8 @@ private:
             return (l == _l) && (r == _r);
         }
     };
-    void swap(node *x, node *y){
+    static void swap(node *x, node *y){
         std::swap(x->a, y->a), std::swap(x->b, y->b), std::swap(x->l, y->l), std::swap(x->r, y->r);
-    }
-    void _add_line(node *cur, node *nw, T l, T r){
-        while(true){
-            if(nw->f(l) < cur->f(l)) swap(cur, nw);
-            if(cur->f(r - 1) <= nw->f(r - 1)) break;
-            const T mid = (l + r) / 2;
-            if(cur->f(mid) <= nw->f(mid)){
-                if(!cur->right){
-                    cur->right = new node(nw->a, nw->b, mid, r);
-                    break;
-                }else{
-                    cur = cur->right, l = mid, nw->l = mid;
-                }
-            }else{
-                swap(cur, nw);
-                if(!cur->left){
-                    cur->left = new node(nw->a, nw->b, l, mid);
-                    break;
-                }else{
-                    cur = cur->left, r = mid, nw->r = mid;
-                }
-            }
-        }
     }
     void _add_segment(node *cur, node *nw, T l, T r){
         while(true){

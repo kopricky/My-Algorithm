@@ -135,9 +135,15 @@ private:
         const _Key key = cur->get_key();
         return erase_impl(rehash_check() ? _find(key) : cur, next_ret);
     }
-    bucket *erase_key(const _Key& key, bool next_ret = true){
+    size_t erase_key(const _Key& key){
         rehash_check();
-        return erase_impl(_find(key), next_ret);
+        bucket *cur = _find(key);
+        if(static_cast<size_t>(cur - _buckets) == _bucket_count){
+            return 0;
+        }else{
+            erase_impl(_find(key), false);
+            return 1;
+        }
     }
     bool rehash_check(){
         if(_bucket_count == 0){
@@ -253,9 +259,9 @@ public:
     iterator insert(data_type&& data){ return iterator(find_insert(move(data))); }
     template<typename... Args>
     iterator emplace(Args&&... args){ return iterator(_emplace(forward<Args>(args)...)); }
-    iterator erase(const _Key& key){ return iterator(erase_key(key)); }
+    size_t erase(const _Key& key){ return erase_key(key); }
     iterator erase(const iterator& itr){ return iterator(erase_itr(itr.bucket_ptr)); }
-    void simple_erase(const _Key& key){ erase_key(key, false); }
+    void simple_erase(const _Key& key){ erase_key(key); }
     void simple_erase(const iterator& itr){ erase_itr(itr.bucket_ptr, false); }
 
     // DEBUG 用
