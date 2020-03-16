@@ -8,19 +8,17 @@ public:
         T val, al, lazy;
         node *left, *right, *par;
         bool rev;
-        node() : sz(1), val(id2), al(id2), lazy(id1),
+        node(const T _val) : sz(1), val(_val), al(_val), lazy(e1),
             left(nullptr), right(nullptr), par(nullptr), rev(false){}
-        node(T _val) : sz(1), val(_val), al(_val), lazy(id1),
-            left(nullptr), right(nullptr), par(nullptr), rev(false){}
-        inline bool isRoot() const {
+        bool isRoot() const {
             return (!par) || (par->left != this && par->right != this);
         }
         void push(){
-            if(lazy != id1){
+            if(lazy != e1){
                 opr1(val, lazy), al += lazy * sz;
                 if(left) opr1(left->lazy, lazy);
                 if(right) opr1(right->lazy, lazy);
-                lazy = id1;
+                lazy = e1;
             }
             if(!rev) return;
             swap(left, right);
@@ -34,12 +32,11 @@ public:
             if(right) right->push(), sz += right->sz, al = opr2(al, right->al);
         }
     };
-    static const T id1 = (T)0;
-    static const T id2 = (T)0;
-    inline static void opr1(T& arg1, const T arg2){
+    static const T e1 = (T)0;
+    static void opr1(T& arg1, const T arg2){
         arg1 += arg2;
     }
-    inline static T opr2(const T arg1, const T arg2){
+    static T opr2(const T arg1, const T arg2){
         return arg1 + arg2;
     }
 

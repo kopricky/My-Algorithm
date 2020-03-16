@@ -7,7 +7,7 @@ template<typename T> class Dinic {
 private:
     int V;
     vector<int> level,iter;
-    void bfs(int s) {
+    void bfs(int s){
         fill(level.begin(),level.end(),-1);
         queue<int> que;
         level[s] = 0;
