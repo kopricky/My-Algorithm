@@ -31,7 +31,7 @@ unsigned int mod_pow(unsigned long long a, unsigned int b, unsigned int mod, boo
 
 unsigned int rec(unsigned int a, unsigned int b, unsigned int mod)
 {
-    if(a == 0) return ~b & 1;
+    if(a == 0) return !(b & 1);
     if(a == 1 || mod == 1) return 1;
     if(b == 1) return (a >= mod) ? (a % mod + mod) : a;
     if(b == 2) return mod_pow(a % mod, a, mod, (a >= mod));
