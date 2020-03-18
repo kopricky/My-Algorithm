@@ -6,7 +6,14 @@
 unsigned int phi(unsigned int n)
 {
     unsigned int res = n;
-    for(unsigned int i = 2; i * i <= n; ++i){
+    if(n % 2 == 0){ res = res / 2; while(n % 2 == 0) n /= 2; }
+    if(n % 3 == 0){ res = res / 3 * 2; while(n % 3 == 0) n /= 3; }
+    for(unsigned int i = 5; i * i <= n; i += 4){
+        if(n % i == 0){
+            res = res / i * (i - 1);
+            while(n % i == 0) n /= i;
+        }
+        i += 2;
         if(n % i == 0){
             res = res / i * (i - 1);
             while(n % i == 0) n /= i;
@@ -35,7 +42,7 @@ unsigned int rec(unsigned int a, unsigned int b, unsigned int mod)
     if(a == 1 || mod == 1) return 1;
     if(b == 1) return (a >= mod) ? (a % mod + mod) : a;
     if(b == 2) return mod_pow(a % mod, a, mod, (a >= mod));
-    const unsigned int phi_val = phi(mod);
+    const unsigned phi_val = phi(mod);
     const unsigned int res = rec(a, b-1, phi_val);
     return mod_pow(a % mod, res, mod, (res >= phi_val));
 }
