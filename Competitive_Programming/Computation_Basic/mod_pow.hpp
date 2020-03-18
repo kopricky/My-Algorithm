@@ -2,10 +2,10 @@
 
 #define MOD 1000000007
 
-long long mod_pow(long long a,long long b)
+long long mod_pow(long long a, long long b)
 {
     a %= MOD;
-    long long res = 1;
+    long long res = 1 % MOD;
     while(b){
         if(b & 1){
             res = res * a % MOD;
