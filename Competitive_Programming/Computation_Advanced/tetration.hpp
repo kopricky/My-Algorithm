@@ -42,7 +42,7 @@ unsigned int rec(unsigned int a, unsigned int b, unsigned int mod)
     if(a == 1 || mod == 1) return 1;
     if(b == 1) return (a >= mod) ? (a % mod + mod) : a;
     if(b == 2) return mod_pow(a % mod, a, mod, (a >= mod));
-    const unsigned phi_val = phi(mod);
+    const unsigned int phi_val = phi(mod);
     const unsigned int res = rec(a, b-1, phi_val);
     return mod_pow(a % mod, res, mod, (res >= phi_val));
 }
