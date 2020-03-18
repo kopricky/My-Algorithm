@@ -3,42 +3,46 @@
 // a↑↑b % mod を求めるプログラム
 // 何度も a↑↑b % mod を計算する場合は phi 関数の値を持っておいたほうがよい
 
-int phi(int n)
+unsigned int phi(unsigned int n)
 {
-	int res = n;
-	for(int i = 2; i * i <= n; ++i){
-		if(n % i == 0){
-			res = res / i * (i - 1);
-			while(n % i == 0) n /= i;
-		}
-	}
-	if(n != 1) res = res / n * (n - 1);
-	return res;
-}
-
-int mod_pow(int a, int b, int mod)
-{
-    int res = 1;
-    while(b){
-        if(b & 1){
-            res = (long long)res * a % mod;
+    unsigned int res = n;
+    for(unsigned int i = 2; i * i <= n; ++i){
+        if(n % i == 0){
+            res = res / i * (i - 1);
+            while(n % i == 0) n /= i;
         }
-        a = (long long)a * a % mod;
-        b >>= 1;
     }
+    if(n != 1) res = res / n * (n - 1);
     return res;
 }
 
-int rec(int a, int b, int mod)
+unsigned int mod_pow(unsigned long long a, unsigned int b, unsigned int mod, bool flag)
 {
-    if(a == 1 || b == 0) return 1;
-    if(mod == 1) return 0;
-    int ans = rec(a, b-1, phi(mod)), ad = mod;
-    if(ans <= 32 && a < mod && pow((double)a, ans) < mod) ad = 0;
-    return mod_pow(a % mod, ans, mod) + ad;
+    unsigned long long res = 1;
+    while(b){
+        if(b & 1){
+            if((res *= a) >= mod) res %= mod, flag = true;
+        }
+        if((a *= a) >= mod) a %= mod, flag = true;
+        b >>= 1;
+    }
+    return res + (flag ? mod : 0);
 }
 
-inline int tetration(int a, int b, int mod)
+unsigned int rec(unsigned int a, unsigned int b, unsigned int mod)
 {
-    return rec(a, b, mod) % mod;
+    if(a == 0) return ~b & 1;
+    if(a == 1 || mod == 1) return 1;
+    if(b == 1) return (a >= mod) ? (a % mod + mod) : a;
+    if(b == 2) return mod_pow(a % mod, a, mod, (a >= mod));
+    const unsigned int phi_val = phi(mod);
+    const unsigned int res = rec(a, b-1, phi_val);
+    return mod_pow(a % mod, res, mod, (res >= phi_val));
+}
+
+unsigned int tetration(unsigned int a, unsigned int b, unsigned int mod)
+{
+    if(b == 0) return (mod != 1);
+    const unsigned int res = rec(a, b, mod);
+    return (res >= mod) ? (res - mod) : res;
 }

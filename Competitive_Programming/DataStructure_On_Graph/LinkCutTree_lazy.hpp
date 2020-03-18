@@ -119,7 +119,7 @@ private:
         access(u);
         opr1(u->lazy, x), u->push();
     }
-    void toRoot_query(node* u){
+    T toRoot_query(node* u){
         access(u);
         return u->al;
     }
@@ -165,7 +165,7 @@ public:
     // id から根までの間にある頂点すべてに x を足す
     void toRoot_range(int id, const T x){ return toRoot_range(arr[id], x); }
     // id から根までの間にある頂点すべてのコストの総和を求める
-    void toRoot_query(int id){ return toRoot_query(arr[id]); }
+    T toRoot_query(int id){ return toRoot_query(arr[id]); }
     // id1 と id2 の間にある頂点すべてに x を足す
     void range(int id1, int id2, const T x){ return range(arr[id1], arr[id2], x); }
     // id1 と id2 の間にある頂点すべてのコストの総和を求める

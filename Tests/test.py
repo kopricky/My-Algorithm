@@ -34,7 +34,6 @@ def main():
             print('Testcase {}: AC'.format(header['serial']))
         else:
             print('Testcase {}: WA'.format(header['serial']))
-            break
 
 if __name__ == '__main__':
     main()
