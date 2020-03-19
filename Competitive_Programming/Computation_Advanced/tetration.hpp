@@ -6,17 +6,17 @@
 unsigned int phi(unsigned int n)
 {
     unsigned int res = n;
-    if(n % 2 == 0){ res = res / 2; while(n % 2 == 0) n /= 2; }
-    if(n % 3 == 0){ res = res / 3 * 2; while(n % 3 == 0) n /= 3; }
+    if(n % 2 == 0){ res = res / 2; do{ n /= 2; }while(n % 2 == 0); }
+    if(n % 3 == 0){ res = res / 3 * 2; do{ n /= 3; }while(n % 3 == 0); }
     for(unsigned int i = 5; i * i <= n; i += 4){
         if(n % i == 0){
             res = res / i * (i - 1);
-            while(n % i == 0) n /= i;
+            do{ n /= i; }while(n % i == 0);
         }
         i += 2;
         if(n % i == 0){
             res = res / i * (i - 1);
-            while(n % i == 0) n /= i;
+            do{ n /= i; }while(n % i == 0);
         }
     }
     if(n != 1) res = res / n * (n - 1);
