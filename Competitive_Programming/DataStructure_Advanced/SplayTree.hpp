@@ -52,15 +52,15 @@ node<_Key, _Tp>* splay(node<_Key, _Tp>* u) noexcept {
     if(!u) return nullptr;
     while(!(u->isRoot())){
         node<_Key, _Tp> *p = u->par, *gp = p->par;
-        if(p->isRoot()){ // zig
+        if(p->isRoot()){
             p->push(), u->push();
             u->rotate((u == p->left));
         }else{
             gp->push(), p->push(), u->push();
             bool flag = (u == p->left);
-            if((u == p->left) == (p == gp->left)){ // zig-zig
+            if((u == p->left) == (p == gp->left)){
                 p->rotate(flag), u->rotate(flag);
-            }else{ // zig-zag
+            }else{
                 u->rotate(flag), u->rotate(!flag);
             }
         }
