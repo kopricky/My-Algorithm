@@ -14,6 +14,19 @@ public:
     void clear(){ iota(node.begin() + N, node.end(), N); }
 };
 
+// class Queue {
+// private:
+//     const int N, H;
+//     vector<int> node, last;
+// public:
+//     Queue(const int _N, const int _H) : N(_N), H(_H), node(N+H), last(H){ clear(); }
+//     bool empty(const int h) const { return node[N+h] == N+h; }
+//     int top(const int h) const { return node[N+h]; }
+//     void pop(const int h){ node[N+h] = node[node[N+h]]; if(empty(h)) last[h] = N+h; }
+//     void push(const int h, const int u){ node[node[last[h]] = u] = N+h, last[h] = u; }
+//     void clear(){ iota(node.begin() + N, node.end(), N); iota(last.begin(), last.end(), N); }
+// };
+
 class List {
 public:
     struct node {
