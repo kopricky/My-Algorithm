@@ -15,20 +15,20 @@ public:
     void clear(){ sz = 0, iota(node.begin() + N, node.end(), N); }
 };
 
-class Queue {
-private:
-    const int N, H;
-	int sz;
-    vector<int> node, last;
-public:
-    Queue(const int _N, const int _H) : N(_N), H(_H), node(N+H), last(H){ clear(); }
-    bool empty() const { return sz == 0; }
-    bool empty(const int h) const { return node[N+h] == N+h; }
-    int top(const int h) const { return node[N+h]; }
-    void pop(const int h){ --sz, node[N+h] = node[node[N+h]]; if(empty(h)) last[h] = N+h; }
-    void push(const int h, const int u){ ++sz, node[node[last[h]] = u] = N+h, last[h] = u; }
-    void clear(){ sz = 0, iota(node.begin() + N, node.end(), N), iota(last.begin(), last.end(), N); }
-};
+// class Queue {
+// private:
+//     const int N, H;
+// 	int sz;
+//     vector<int> node, last;
+// public:
+//     Queue(const int _N, const int _H) : N(_N), H(_H), node(N+H), last(H){ clear(); }
+//     bool empty() const { return sz == 0; }
+//     bool empty(const int h) const { return node[N+h] == N+h; }
+//     int top(const int h) const { return node[N+h]; }
+//     void pop(const int h){ --sz, node[N+h] = node[node[N+h]]; if(empty(h)) last[h] = N+h; }
+//     void push(const int h, const int u){ ++sz, node[node[last[h]] = u] = N+h, last[h] = u; }
+//     void clear(){ sz = 0, iota(node.begin() + N, node.end(), N), iota(last.begin(), last.end(), N); }
+// };
 
 template <typename T> class PushRelabel {
 public:
