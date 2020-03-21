@@ -22,7 +22,7 @@ private:
     vector<int> node, last;
 public:
     Queue(const int _N, const int _H) : N(_N), H(_H), node(N+H), last(H){ clear(); }
-	bool empty() const { return sz == 0; }
+    bool empty() const { return sz == 0; }
     bool empty(const int h) const { return node[N+h] == N+h; }
     int top(const int h) const { return node[N+h]; }
     void pop(const int h){ --sz, node[N+h] = node[node[N+h]]; if(empty(h)) last[h] = N+h; }
