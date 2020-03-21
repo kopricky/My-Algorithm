@@ -63,6 +63,7 @@ private:
     vector<int> potential, cur_edge, que;
     List all_ver;
     Stack act_ver;
+    // Queue act_ver;
     int calc_active(){
         pot_max = -1;
         for(int i = 0; i < V; ++i){
