@@ -46,291 +46,159 @@ typedef vector<string> vs;
 
 const int MAX_N = 100005;
 
-template<typename T> class Node {
+class Stack {
+private:
+    const int N, H;
+    int sz;
+    vector<int> node;
 public:
-    pair<T, int> val, al;
-    T lazy;
-    Node *left, *right, *par;
-    Node() : val((T)0, -1), al((T)0, -1),
-        lazy(0), left(nullptr), right(nullptr), par(nullptr){}
-    void reset(){
-        left = right = par = nullptr;
-    }
-    bool isRoot() const {
-        return (!par) || (par->left != this && par->right != this);
-    }
-    void push(){
-        if(lazy){
-            val.first += lazy, al.first += lazy;
-            if(left) left->lazy += lazy;
-            if(right) right->lazy += lazy;
-            lazy = 0;
-        }
-    }
-    void eval(){
-        al = val;
-        if(left){
-            left->push();
-            if((left->al).first < al.first) al = left->al;
-        }
-        if(right){
-            right->push();
-            if((right->al).first <= al.first) al = right->al;
-        }
-    }
-    void rotate(bool right){
-        Node *p = this->par, *g = p->par;
-        if(right){
-            if((p->left = this->right)) this->right->par = p;
-            this->right = p, p->par = this;
-        }else{
-            if((p->right = this->left)) this->left->par = p;
-            this->left = p, p->par = this;
-        }
-        p->eval(), this->eval(), this->par = g;
-        if(!g) return;
-        if(g->left == p) g->left = this;
-        if(g->right == p) g->right = this;
-        g->eval();
-    }
-    void splay(){
-        while(!(this->isRoot())){
-            Node *p = this->par, *gp = p->par;
-            if(p->isRoot()){
-                p->push(), this->push();
-                this->rotate((this == p->left));
-            }else{
-                gp->push(), p->push(), this->push();
-                bool flag = (this == p->left);
-                if((this == p->left) == (p == gp->left)){
-                    p->rotate(flag), this->rotate(flag);
-                }else{
-                    this->rotate(flag), this->rotate(!flag);
-                }
-            }
-        }
-        this->push();
-    }
+    Stack(const int _N, const int _H) : N(_N), H(_H), node(N+H){ clear(); }
+    bool empty() const { return sz == 0; }
+    bool empty(const int h) const { return node[N+h] == N+h; }
+    int top(const int h) const { return node[N+h]; }
+    void pop(const int h){ --sz, node[N+h] = node[node[N+h]]; }
+    void push(const int h, const int u){ ++sz, node[u] = node[N+h], node[N+h] = u; }
+    void clear(){ sz = 0, iota(node.begin() + N, node.end(), N); }
 };
 
-template<typename T> class Dinic2 {
+#define base 3
+
+template <typename T> class PushRelabel {
+public:
+    static_assert(std::is_integral<T>::value, "Integral required.");
+    struct edge {
+        const int to, rev;
+        T cap;
+        edge(const int _to, const int _rev, const T _cap) : to(_to), rev(_rev), cap(_cap){}
+    };
 private:
     const int V;
-    vector<int> que, level, iter, used;
-	vector<Node<T> > arr;
-    void access(Node<T> *u){
-        Node<T> *last = nullptr;
-        for(Node<T>* v = u; v; v = v->par){
-            if((v->val).second == -1){
-                last->par = nullptr;
-                break;
-            }
-            v->splay();
-            v->right = last;
-            v->eval();
-            last = v;
-        }
-        u->splay();
+    int s, t, checker;
+    vector<T> excess;
+    vector<int> potential, cur_edge, que;
+    Stack act_ver;
+    static unsigned long long ceil2(unsigned long long v){
+        --v;
+        v = v | (v >> 1), v = v | (v >> 2);
+        v = v | (v >> 4), v = v | (v >> 8);
+        v = v | (v >> 16), v = v | (v >> 32);
+        return ++v;
     }
-    void link(Node<T> *u, Node<T> *v){
-        access(u), u->right = v, u->eval(), v->par = u;
-    }
-    void set(Node<T> *u, const T x, const int id){
-        u->val = {x, id}, u->eval();
-    }
-    int prev(Node<T> *u){
-        // if(!u->right){
-            // show(u->val);
-            // assert(false);
-        // }
-        (u = u->right)->push();
-        while(u->left){
-            u = u->left;
-            u->push();
-        }
-        u->splay();
-        return (u->val).second;
-    }
-    int top(Node<T> *u){
-        while(u->left){
-            u = u->left;
-            u->push();
-        }
-        u->splay();
-        return (u->val).second;
-    }
-    void range(Node<T> *u, const T x){
-        u->lazy += x, u->push();
-    }
-    void cut_and_reflect(const int ver){
-        Node<T> *u = &arr[ver];
-        u->splay();
-        if(u->left) u->left->par = nullptr, u->left = nullptr, u->eval();
-        edge& e = G[ver][iter[ver]++];
-        G[e.to][e.rev].rev_cap += e.rev_cap - (u->val).first, e.rev_cap = (u->val).first;
-    }
-	void bst_build(vector<int>& index){
-        // show(index);
-        const int last = index.back();
-        index.pop_back();
-        reverse(index.begin(), index.end());
-        int i = 2, n = (int)index.size(), st = 2, isolate = ((n%4==1) ? (n-1) : -1);
-        while(st <= n){
-            for(i = st-1; i < n; i += 2*st){
-                arr[index[i]].left = &arr[index[i-st/2]], arr[index[i-st/2]].par = &arr[index[i]];
-                if(i+st/2 < n){
-                    arr[index[i]].right = &arr[index[i+st/2]], arr[index[i+st/2]].par = &arr[index[i]];
-                }else if(isolate >= 0){
-                    arr[index[i]].right = &arr[index[isolate]], arr[index[isolate]].par = &arr[index[i]];
-                }
-                arr[index[i]].eval();
-            }
-            isolate = ((n % (4*st) >= st && (n % (4*st) < 2*st)) ? (i-2*st) : isolate);
-            st <<= 1;
-        }
-        // assert(!arr[index[i-st]].par);
-        // show(used[index[i - st]]);
-        // cout << last << " " << index[i - st] << endl;
-        arr[last].right = &arr[index[i-st]], arr[last].eval(), arr[index[i-st]].par = &arr[last];
-		return;
-	}
-	void bfs(const int s, const int t){
-        level[s] = 0, used[s] = 1;
-		int qh = 0, qt = 0;
-        for(que[qt++] = s; qh < qt;){
-            int v = que[qh++];
-            for(edge& e : G[v]){
-                if(level[e.to] < 0 && G[e.to][e.rev].rev_cap > 0){
-					level[e.to] = level[v] + 1, used[e.to] = 1, que[qt++] = e.to;
-                }
-            }
-        }
-    }
-	T block_flow_naive(const int s, int cur, T f){
-		if(s == cur) return f;
-		T flow = 0;
-		for(int& i = iter[cur]; i < (int)G[cur].size(); ++i){
-			edge& e = G[cur][i];
-			if(e.rev_cap > 0 && level[e.to] < level[cur]){
-				T d = block_flow_naive(s, e.to, min(f, e.rev_cap));
-				if(d > 0){
-					e.rev_cap -= d, G[e.to][e.rev].rev_cap += d;
-					f -= d, flow += d;
-					if(f == 0) break;
-				}
-			}
-		}
-		return flow;
-	}
-    T block_flow(const int s, const int t){
-        T flow = 0;
-        bool find = false;
-        int cur = t;
-		vector<int> index = {t};
-        while(true){
-            // 先頭が一番上に来てないとどこがめんどくさくなる？
-            if(find){
-                const pair<T, int>& res = arr[cur].al;
-                flow += res.first;
-                range(&arr[cur], -res.first);
-                cut_and_reflect(cur = res.second);
-                find = false;
-            }
-            used[cur] = 2;
-            bool update = false;
-            for(int& i = iter[cur]; i < (int)G[cur].size(); ++i){
-                edge& e = G[cur][i];
-                if(e.rev_cap > 0 && level[e.to] < level[cur] && used[e.to] >= 1){
-                    update = true;
-                    set(&arr[cur], e.rev_cap, cur);
-                    if(e.to == s){
-                        find = true;
-						if(index.size() > 1) bst_build(index);
-                        index.clear();
-                        break;
-                    }
-                    if(used[e.to] == 1){
-						if(index.empty()){
-							arr[e.to].right = &arr[cur], arr[e.to].eval();
-							arr[cur].par = &arr[e.to];
-						}
-                        index.push_back(cur = e.to);
-                        break;
-                    }else{
-						if(index.size() > 1) bst_build(index);
-                        index.clear();
-					}
-					link(&arr[e.to], &arr[cur]);
-                    const pair<T, int>& res = arr[e.to].al;
-                    if(res.first == 0){
-                        cut_and_reflect(cur = res.second);
-                    }else{
-                        if(level[cur = top(&arr[e.to])] == 1) find = true;
-                        else cut_and_reflect(cur);
-                    }
-                    break;
-                }
-            }
-            if(update) continue;
-            used[cur] = -1, (arr[cur].val).second = -1;
-            if(cur == t) break;
-            if(index.size() > 1){
-                index.pop_back(), cur = index.back();
-                if((int)index.size() > 1) bst_build(index);
-                iter[cur]++;
-            }else{
-                cut_and_reflect(cur = prev(&arr[cur]));
-            }
-            index.clear();
-        }
-        return flow;
-    }
-    void update_dfs(Node<T>* u, auto& G, const vector<int>& iter, vector<int>& used){
-        u->push();
-        if(u->left) update_dfs(u->left, G, iter, used);
-        if(u->right) update_dfs(u->right, G, iter, used);
-        const int id = (u->val).second;
-        if(iter[id] < (int)G[id].size()){
-            auto& e = G[id][iter[id]];
-            G[e.to][e.rev].rev_cap += e.rev_cap - (u->val).first;
-            e.rev_cap = (u->val).first;
-        }
-		used[id] = 0;
-        u->reset();
-    }
-    void update_and_clear(auto& G, const vector<int>& iter, vector<int>& used){
+    int calc_active(const T delta){
+        int pot_min = V;
         for(int i = 0; i < V; ++i){
-            if(used[i] == 2 && arr[i].isRoot()) update_dfs(&arr[i], G, iter, used);
-			else if(used[i] == -1) arr[i].reset();
+            if(potential[i] < V){
+                if(excess[i] >= delta && i != t){
+                    act_ver.push(potential[i], i);
+                    pot_min = min(pot_min, potential[i]);
+                }
+            }else{
+                potential[i] = V + 1;
+            }
         }
+        return pot_min;
+    }
+    void bfs(){
+        for(int i = 0; i < V; ++i) potential[i] = max(potential[i], V);
+        potential[t] = 0;
+        int qh = 0, qt = 0;
+        for(que[qt++] = t; qh++ < qt;){
+            int u = que[qh - 1];
+            for(const edge& e : G[u]){
+                if(potential[e.to] == V && G[e.to][e.rev].cap > 0){
+                    potential[e.to] = potential[u] + 1, que[qt++] = e.to;
+                }
+            }
+        }
+    }
+    T init(){
+        T mx = 0;
+        potential[s] = V + 1;
+        bfs();
+        for(edge& e : G[s]){
+            if(potential[e.to] < V){
+                G[e.to][e.rev].cap = e.cap, excess[s] -= e.cap, excess[e.to] += e.cap;
+                mx = max(mx, e.cap), e.cap = 0;
+            }
+        }
+        return mx;
+    }
+    int global_relabel(const T delta){
+        bfs();
+        act_ver.clear();
+        return calc_active(delta);
+    }
+    int discharge(const int u, const T delta){
+        for(int& i = cur_edge[u]; i < (int)G[u].size(); ++i){
+            edge& e = G[u][i];
+            if(potential[u] == potential[e.to] + 1 && e.cap > 0){
+                return push(u, e, delta) ? potential[e.to] : potential[u];
+            }
+        }
+        return relabel(u);
+    }
+    bool push(const int u, edge& e, const T delta){
+        const int v = e.to;
+        T f = min(e.cap, excess[u]);
+        if(v != t) f = min(f, base * delta - 1 - excess[v]);
+        e.cap -= f, excess[u] -= f;
+        G[v][e.rev].cap += f, excess[v] += f;
+        if(excess[u] >= delta) act_ver.push(potential[u], u);
+        if(excess[v] >= delta && v != t){
+            act_ver.push(potential[v], v);
+            return true;
+        }else{
+            return false;
+        }
+    }
+    int relabel(const int u){
+        ++checker;
+        int prv = potential[u], cur = V;
+        for(int i = 0; i < (int)G[u].size(); ++i){
+            const edge& e = G[u][i];
+            if(cur > potential[e.to] + 1 && e.cap > 0){
+                cur_edge[u] = i, cur = potential[e.to] + 1;
+            }
+        }
+        if((potential[u] = cur) == V) return potential[u] = V + 1, prv;
+        act_ver.push(cur, u);
+        return prv;
     }
 
 public:
-    struct edge {
-        const int to, rev;
-        T rev_cap;
-        edge(const int _to, const int _rev, const T _rev_cap) :
-            to(_to), rev(_rev), rev_cap(_rev_cap){}
-    };
     vector<vector<edge> > G;
-    Dinic2(const int node_size)
-        : V(node_size), que(V), level(V), iter(V), used(V), arr(V), G(V){}
-    void add_edge(const int from, const int to, const T cap){
-        G[from].emplace_back(to, (int)G[to].size(), (T)0);
-        G[to].emplace_back(from, (int)G[from].size() - 1, cap);
+    PushRelabel(const int node_size)
+        : V(node_size), checker(0), excess(V, (T)0),
+            potential(V, 0), cur_edge(V), que(V), act_ver(V, V), G(V){}
+    void add_edge(const int _from, const int _to, const T _cap){
+        G[_from].emplace_back(_to, (int)G[_to].size(), _cap);
+        G[_to].emplace_back(_from, (int)G[_from].size() - 1, 0);
     }
-    T solve(const int s, const int t){
-        T flow = 0;
-        while(true){
-            fill(level.begin(), level.end(), -1);
-            fill(used.begin(), used.end(), 0);
-            bfs(s, t);
-            if(level[t] < 0) break;
-            fill(iter.begin(), iter.end(), 0);
-			flow += block_flow(s, t);
-			update_and_clear(G, iter, used);
+    T solve(const int source, const int sink){
+        s = source, t = sink;
+        const T U = init();
+        T delta = 1;
+        while(delta <= U) delta *= base;
+        delta /= base;
+        int level = calc_active(delta);
+        while(delta > 0){
+            while(!act_ver.empty()){
+                if(act_ver.empty(level)){
+                    ++level;
+                    continue;
+                }
+                const int u = act_ver.top(level);
+                act_ver.pop(level);
+                level = discharge(u, delta);
+                if(checker >= V / 2){
+                    level = global_relabel(delta);
+                    checker = 0;
+                }
+            }
+            if(delta == 1) break;
+            delta = max(delta / base, 1), level = calc_active(delta);
         }
-        return flow;
+        return excess[t];
     }
 };
 
@@ -340,12 +208,12 @@ int main()
     ios::sync_with_stdio(false);
     int n, m;
     cin >> n >> m;
-    Dinic2<int> dn(n);
+    PushRelabel<int> pr(n);
     rep(i,m){
-        int a, b, c;
+        int a,b,c;
         cin >> a >> b >> c;
-        dn.add_edge(a, b, c);
+        pr.add_edge(a, b, c);
     }
-    cout << dn.solve(0, n-1) << "\n";
+    cout << pr.solve(0, n-1) << "\n";
     return 0;
 }
