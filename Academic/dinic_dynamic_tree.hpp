@@ -5,8 +5,7 @@ public:
     pair<T, int> val, al;
     T lazy;
     Node *left, *right, *par;
-    Node() : val((T)0, -1), al((T)0, -1), lazy(0),
-        left(nullptr), right(nullptr), par(nullptr){}
+    Node() : lazy(0), left(nullptr), right(nullptr), par(nullptr){}
     void reset(){
         left = right = par = nullptr;
     }
