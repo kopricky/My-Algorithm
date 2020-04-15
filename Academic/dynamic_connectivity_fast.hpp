@@ -577,7 +577,7 @@ public:
     BSTNode *left, *right, *par;
     UnorderedSet<int, murmur_hash32, true> adjacent;
     BSTNode(const int _ver) noexcept :
-        from(_ver), to(_ver), sz(0), subtree_edge(false), subofftree_edge(false),
+        from(_ver), to(_ver), sz(1), subtree_edge(false), subofftree_edge(false),
             exact_level(false), left(nullptr), right(nullptr), par(nullptr){}
     BSTNode(const int _from, const int _to, const bool _flag) noexcept :
         from(_from), to(_to), sz(0), subtree_edge(false), subofftree_edge(false),
@@ -830,9 +830,6 @@ public:
     DynamicConnectivity(const int node_size) noexcept : V(node_size), depth(1){
         et.emplace_back(V);
     }
-    // ~DynamicConnectivity(){
-    //     delete[] et;
-    // }
     bool link(int node1_id, int node2_id) noexcept {
         if(node1_id > node2_id) swap(node1_id, node2_id);
         detect_layer[EulerTourTree::pair_to_ll(node1_id, node2_id)] = 0;
