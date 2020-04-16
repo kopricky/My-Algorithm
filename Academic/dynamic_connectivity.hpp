@@ -97,9 +97,53 @@ public:
             return lhs^(rhs+0x9e3779b9+(lhs<<6)+(lhs>>2));
         }
     };
+    const int V;
     BSTNode** vertex_set;
     unordered_map<pair<int, int>, pair<BSTNode*, BSTNode*>, pair_hash> edge_set;
 private:
+    void dfs(const int u, const int p, const BSTNode *cur,
+        bool *visit, vector<BSTNode*>& nodes, const vector<vector<int> >& G) noexcept {
+        visit[u] = true;
+        nodes.push_back(vertex_set[u]);
+        for(auto& v : G[u]){
+            if(!visit[v]){
+                BSTNode* e1 = new BSTNode(u, v, true);
+                nodes.push_back(e1);
+                dfs(v, u, cur, visit, nodes, G);
+                BSTNode* e2 = new BSTNode(v, u, true);
+                if(u < v) edge_set[{u, v}] = {e1, e2};
+                else edge_set[{v, u}] = {e2, e1};
+                nodes.push_back(e2);
+            }else if(v != p){
+                vertex_set[u]->adjacent.insert(v);
+                vertex_set[u]->subofftree_edge = true;
+            }
+        }
+    }
+    void bst_build(vector<BSTNode*>& nodes) noexcept {
+        int i, n = (int)nodes.size(), st = 2, isolate = ((n % 4 == 1) ? (n-1) : -1);
+        while(st <= n){
+            for(i = st-1; i < n; i += 2*st){
+                nodes[i]->left = nodes[i-st/2], nodes[i-st/2]->par = nodes[i];
+                if(i+st/2 < n) nodes[i]->right = nodes[i+st/2], nodes[i+st/2]->par = nodes[i];
+                else if(isolate >= 0) nodes[i]->right = nodes[isolate], nodes[isolate]->par = nodes[i];
+                nodes[i]->eval();
+            }
+            isolate = ((n % (4*st) >= st && (n % (4*st) < 2*st)) ? (i-2*st): isolate);
+            st <<= 1;
+        }
+    }
+    void build_forest(const vector<vector<int> >& G){
+        bool *visit = new bool[V]();
+        for(int i = 0; i < V; ++i){
+            if(!visit[i]){
+                vector<BSTNode*> nodes;
+                BSTNode *cur = nullptr;
+                dfs(i, -1, cur, visit, nodes, G);
+                bst_build(nodes);
+            }
+        }
+    }
     BSTNode *reroot(BSTNode *ver) noexcept {
         BSTNode *res = splay(ver)->left;
         if(!res) return ver;
@@ -139,7 +183,13 @@ private:
     }
     int component_size(BSTNode *ver) noexcept { return splay(ver)->sz; }
 public:
-    int V;
+    EulerTourTree(const int node_size) : V(node_size), vertex_set(new BSTNode*[V]){
+        for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode(i);
+    }
+    EulerTourTree(const vector<vector<int> >& G) : V((int)G.size()), vertex_set(new BSTNode*[V]){
+        for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode(i);
+        build_forest(G);
+    }
     // ~EulerTourTree(){
     //     for(auto it : edge_set){
     //         delete (it.second).first;
@@ -148,10 +198,6 @@ public:
     //     for(int i = 0; i < V; ++i) delete vertex_set[i];
     //     delete[] vertex_set;
     // }
-    EulerTourTree(const int node_size) noexcept {
-        V = node_size, vertex_set = new BSTNode*[V];
-        for(int i = 0; i < V; i++) vertex_set[i] = new BSTNode(i);
-    }
     void reroot(const int node_id) noexcept { reroot(vertex_set[node_id]); }
     void link(int node1_id, int node2_id, bool flag=true) noexcept {
         if(node1_id > node2_id) swap(node1_id, node2_id);
@@ -256,6 +302,14 @@ public:
     unordered_map<pair<int, int>, int, EulerTourTree::pair_hash> detect_layer;
     DynamicConnectivity(const int node_size) noexcept : V(node_size), depth(1){
         et.emplace_back(V);
+    }
+    DynamicConnectivity(const vector<vector<int> >& G) noexcept : V((int)G.size()), depth(1){
+        for(int i = 0; i < V; ++i){
+            for(const int j : G[i]){
+                if(i < j) detect_layer[{i, j}] = 0;
+            }
+        }
+        et.emplace_back(G);
     }
     bool link(int node1_id, int node2_id) noexcept {
         if(node1_id > node2_id) swap(node1_id, node2_id);
