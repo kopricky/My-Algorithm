@@ -46,8 +46,7 @@ private:
     }
     node *insert(node *cur, node *new_node, int depth, bool& balanced){
         if(!cur){
-            const int sz = size() + 1;
-            balanced = (depth <= floor(log_val * log2(sz)));
+            balanced = (depth <= floor(log_val * log2(max_element_size)));
             return new_node;
         }else if(cur->key <= new_node->key){
             cur->right = insert(cur->right, new_node, depth + 1, balanced);
@@ -108,9 +107,9 @@ public:
     size_t size() const { return empty() ? 0 : root->size; }
     bool find(const _Key& key) const { return find(root, key); }
     void insert(const _Key& key){
+        max_element_size = max(max_element_size, size() + 1);
         bool balanced = true;
         root = insert(root, new node(key), 0, balanced);
-        max_element_size = max(max_element_size, size());
         assert(balanced);
     }
     bool erase(const _Key& key){
