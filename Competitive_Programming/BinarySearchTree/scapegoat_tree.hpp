@@ -27,7 +27,7 @@ private:
     }
     node *build_pbbt_rec(const int l, const int r, const vector<node*>& euler_tour){
         if(r - l == 0) return nullptr;
-        if(r - l == 1){
+        else if(r - l == 1){
             node * const cur = euler_tour[l];
             cur->left = cur->right = nullptr;
             return cur->eval(), cur;
@@ -47,10 +47,9 @@ private:
     node *insert(node *cur, node *new_node, int depth, bool& balanced){
         if(!cur){
             const int sz = size() + 1;
-            balanced = (depth <= floor(log_val * log2(sz)) + 1);
+            balanced = (depth <= floor(log_val * log2(sz)));
             return new_node;
-        }
-        if(cur->key <= new_node->key){
+        }else if(cur->key <= new_node->key){
             cur->right = insert(cur->right, new_node, depth + 1, balanced);
             cur->eval();
             if(balanced || cur->right->size <= alpha * cur->size) return cur;
@@ -64,7 +63,7 @@ private:
     }
     node *join(node *left, node *right){
         if(!left || !right) return left ? left : right;
-        if(left->size < right->size){
+        else if(left->size < right->size){
             right->left = join(left, right->left);
             return right->eval(), right;
         }else{
@@ -79,7 +78,7 @@ private:
     }
     pair<node*, bool> erase(node *cur, const _Key& key){
         if(!cur) return {nullptr, false};
-        if(cur->key == key){
+        else if(cur->key == key){
             node *res = join(cur->left, cur->right);
             delete cur;
             return {res, true};
