@@ -1,6 +1,6 @@
 #include "../../header.hpp"
 
-//区間更新と区間加算の2種類の遅延伝播を処理できる(ならしO(log(n)))
+//区間更新と区間加算の2種類の遅延伝播を処理できる(O(log(n)))
 //verifyはしていません(verify問題を知らない)
 
 template<typename T> class segtree {
