@@ -101,7 +101,7 @@ public:
     }
     int rank() const {
         int res = 0;
-        mat<double> B(r, c);
+        mat B(r, c);
         for(int i = 0; i < r; i++){
             for(int j = 0; j < c; j++){
                 B[i][j] = (*this)[i][j];
