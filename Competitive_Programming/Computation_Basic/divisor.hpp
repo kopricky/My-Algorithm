@@ -8,7 +8,7 @@ vector<T> divisor(T n)
         if(n%i==0){
             res.push_back(i);
             if(i != n/i){
-                res.push_backs(n/i);
+                res.push_back(n/i);
             }
         }
     }
