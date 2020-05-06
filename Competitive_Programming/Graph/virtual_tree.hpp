@@ -81,15 +81,15 @@ public:
         int lca = solve(u,v);
         return depth[u] + depth[v] - 2*depth[lca];
     }
-    int construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& graph);
+    int construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& virtual_tree);
 };
 
-// ver_list 内の頂点から構成されるグラフの virtual tree を graph に格納し, その root(graph の頂点番号[0,...,m]) を返す.
-// mapping: 元の頂点番号[0,...,n] → graph の頂点番号[0,...,m] (ver_list が逆変換) (引数の mapping の長さは元のグラフの頂点数以上あることを仮定)
-// graph は根つき木(根から子に向かう向きの辺しかない)
-int LCA::construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& graph){
+// ver_list 内の頂点から構成されるグラフの virtual tree を virtual_tree に格納し, その root(virtual_tree の頂点番号[0,...,m]) を返す.
+// mapping: 元の頂点番号[0,...,n] → virtual_tree の頂点番号[0,...,m] (ver_list が逆変換) (引数の mapping の長さは元のグラフの頂点数以上あることを仮定)
+// virtual_tree は根つき木(根から子に向かう向きの辺しかない)
+int LCA::construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& virtual_tree){
     const int n = (int)ver_list.size();
-    graph.resize(n);
+    virtual_tree.resize(n);
     sort(ver_list.begin(), ver_list.end(), [&](const int a, const int b){ return id[a] < id[b]; });
     stack<int> st;
     st.push(ver_list[0]), mapping[ver_list[0]] = 0;
@@ -102,14 +102,14 @@ int LCA::construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vec
                 st.pop();
                 if(st.empty() || depth[u] >= depth[st.top()]) break;
                 const int tmp = mapping[st.top()];
-                graph[tmp].push_back(mapped_ver), mapped_ver = tmp;
+                virtual_tree[tmp].push_back(mapped_ver), mapped_ver = tmp;
             }
             if(st.empty() || st.top() != u){
                 st.push(u), ver_list.push_back(u);
-                graph.push_back({mapped_ver});
+                virtual_tree.push_back({mapped_ver});
                 mapping[u] = id++;
             }else{
-                graph[mapping[u]].push_back(mapped_ver);
+                virtual_tree[mapping[u]].push_back(mapped_ver);
             }
         }
         st.push(ver_list[i+1]), mapping[ver_list[i+1]] = i+1;
@@ -118,7 +118,7 @@ int LCA::construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vec
     while(st.size() > 1){
         st.pop();
         const int tmp = mapping[st.top()];
-        graph[tmp].push_back(mapped_ver), mapped_ver = tmp;
+        virtual_tree[tmp].push_back(mapped_ver), mapped_ver = tmp;
     }
     return mapping[st.top()];
 }
