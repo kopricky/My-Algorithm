@@ -745,7 +745,7 @@ private:
             if(edge2->right) edge2->right->par = nullptr;
             join(edge1->left, edge2->right);
         }
-        // delete edge1; delete edge2;
+        delete edge1; delete edge2;
     }
     bool connected(BSTNode *ver1, BSTNode *ver2) noexcept {
         splay(ver1), splay(ver2);
