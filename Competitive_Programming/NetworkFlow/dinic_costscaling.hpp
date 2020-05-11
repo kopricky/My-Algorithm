@@ -10,6 +10,7 @@ public:
     };
 private:
     const int V;
+    T max_cap;
     vector<int> level, iter, que;
     static unsigned long long floor2(unsigned long long v){
         v = v | (v >> 1), v = v | (v >> 2);
@@ -52,14 +53,15 @@ private:
 public:
     vector<vector<edge> > G;
 
-    Dinic(const int node_size) : V(node_size), level(V), iter(V), que(V), G(V){}
+    Dinic(const int node_size) : V(node_size), max_cap(0), level(V), iter(V), que(V), G(V){}
     //辺を張る
     void add_edge(const int from, const int to, const T cap) {
         G[from].push_back((edge){to, cap, (int)G[to].size()});
         G[to].push_back((edge){from, (T)0, (int)G[from].size()-1});
+        max_cap = max(max_cap, cap);
     }
     //最大流を計算(max_cap は辺の容量の上限)
-    T solve(const int s, const int t, const T max_cap){
+    T solve(const int s, const int t){
         T flow = 0;
         for(T base = floor2(max_cap); base >= 1;){
             bfs(s, base);
@@ -73,3 +75,4 @@ public:
         return flow;
     }
 };
+
