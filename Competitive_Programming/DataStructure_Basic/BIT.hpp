@@ -24,7 +24,7 @@ public:
 	BIT(){}
 	//初期値がすべて0の場合
 	BIT(int sz) : n(sz+1), bit(n, 0){}
-	BIT(vector<T>& v) : n((int)v.size()+1), bit(n, 0){
+	BIT(const vector<T>& v) : n((int)v.size()+1), bit(n, 0){
 		for(int i = 0; i < n-1; i++){
 			add(i,v[i]);
 		}
