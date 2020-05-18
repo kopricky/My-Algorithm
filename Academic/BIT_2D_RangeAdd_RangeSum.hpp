@@ -8,45 +8,32 @@
 //具体的にはd次元について計算量はO(4^d*log^d(n))
 //Mishra 2013 を参照
 
-template<typename T> class BIT {
+template<typename T> class BIT_2D_RangeAdd_RangeSum {
 private:
-    const int n,m;
-    vector<vector<T> > bit;
-public:
+    const int n, m;
+    vector<vector<T> > bitxy, bitx, bity, bitc;
+    void add(const int i, const int j, const T valxy, const T valx, const T valy, const T valc){
+        for(int i_ = i+1; i_ < n; i_ += i_ & -i_)
+            for(int j_ = j+1; j_ < m; j_ += j_ & -j_)
+                bitxy[i_][j_] += valxy, bitx[i_][j_] += valx, bity[i_][j_] += valy, bitc[i_][j_] += valc;
+    }
     // [0, i] x [0, j]
     T sum(const int i, const int j){
         T s = 0;
         for(int i_ = i+1; i_ > 0; i_ -= i_ & -i_)
             for(int j_ = j+1; j_ > 0; j_ -= j_ & -j_)
-                s += bit[i_][j_];
+                s += bitxy[i_][j_] * i * j + bitx[i_][j_] * i + bity[i_][j_] * j + bitc[i_][j_];
         return s;
-    }
-    void add(const int i, const int j, const T val){
-        for(int i_ = i+1; i_ < n; i_ += i_ & -i_)
-            for(int j_ = j+1; j_ < m; j_ += j_ & -j_)
-                bit[i_][j_] += val;
-    }
-    BIT(const int sz1, const int sz2) : n(sz1 + 1), m(sz2 + 1), bit(n, vector<T>(m, 0)){}
-};
-
-template<typename T> class BIT_2D_RangeAdd_RangeSum {
-private:
-    const int n, m;
-    BIT<T> bitxy, bitx, bity, bitc;
-    // [0, x] x [0, y]
-    T sum(const int x, const int y){
-        return bitxy.sum(x, y) * x * y + bitx.sum(x, y) * x + bity.sum(x, y) * y + bitc.sum(x, y);
     }
 public:
     BIT_2D_RangeAdd_RangeSum(const int sz1, const int sz2) : n(sz1 + 1), m(sz2 + 1),
-            bitxy(n, m), bitx(n, m), bity(n, m), bitc(n, m){}
+            bitxy(n, vector<T>(m, 0)), bitx(n, vector<T>(m, 0)), bity(n, vector<T>(m, 0)), bitc(n, vector<T>(m, 0)){}
     // [lx, rx)×[ly, ry) に val を足す
     void add(const int lx, const int ly, const int rx, const int ry, const T val){
-        bitxy.add(lx, ly, val), bitxy.add(rx, ly, -val), bitxy.add(lx, ry, -val), bitxy.add(rx, ry, val);
-        bitx.add(lx, ly, -val * (ly - 1)), bitx.add(rx, ly, val * (ly - 1)), bitx.add(lx, ry, val * (ry - 1)), bitx.add(rx, ry, -val * (ry - 1));
-        bity.add(lx, ly, -val * (lx - 1)), bity.add(rx, ly, val * (rx - 1)), bity.add(lx, ry, val * (lx - 1)), bity.add(rx, ry, -val * (rx - 1));
-        bitc.add(lx, ly, val * (lx - 1) * (ly - 1)), bitc.add(rx, ly, -val * (rx - 1) * (ly - 1));
-        bitc.add(lx, ry, -val * (lx - 1) * (ry - 1)), bitc.add(rx, ry, val * (rx - 1) * (ry - 1));
+        add(lx, ly, val, -val * (ly - 1), -val * (lx - 1), val * (lx - 1) * (ly - 1));
+        add(rx, ly, -val, val * (ly - 1), val * (rx - 1), -val * (rx - 1) * (ly - 1));
+        add(lx, ry, -val, val * (ry - 1), val * (lx - 1), -val * (lx - 1) * (ry - 1));
+        add(rx, ry, val, -val * (ry - 1), -val * (rx - 1), val * (rx - 1) * (ry - 1));
     }
     // [lx, rx)×[ly, ry) の和を求める
     T sum(const int lx, const int ly, const int rx, const int ry){
