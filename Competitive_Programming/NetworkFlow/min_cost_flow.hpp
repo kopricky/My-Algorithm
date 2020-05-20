@@ -18,7 +18,7 @@ public:
     vector<vector<edge> > G;
     vector<Cot> h, dist;
     vector<int> prevv, preve;
-    MinCostFlow(int node_size) : V(node_size), inf(numeric_limits<Cot>::max() / 4),
+    MinCostFlow(int node_size) : V(node_size), inf(numeric_limits<Cot>::max()),
         G(V), h(V, 0), dist(V), prevv(V), preve(V){}
     void add_edge(int from, int to, Cat cap, Cot cost){
         G[from].push_back((edge){to, cap, cost, (int)G[to].size()});
@@ -47,7 +47,7 @@ public:
             }
             if(dist[t] == inf) return -1;
             for(int i = 0; i < V; i++){
-                h[i] += dist[i];
+                if(dist[i] != inf) h[i] += dist[i];
             }
             Cat d = f;
             for(int v = t; v != s; v = prevv[v]){

@@ -20,9 +20,10 @@ public:
     vector<vector<edge> > G;
     vector<Cot> h, dist;
     vector<int> deg, ord, prevv, preve;
-    MinCostFlowDAG(const int node_size) : V(node_size), inf(numeric_limits<Cot>::max() / 4),
+    MinCostFlowDAG(const int node_size) : V(node_size), inf(numeric_limits<Cot>::max()),
         G(V), h(V, inf), dist(V), deg(V, 0), prevv(V), preve(V){}
     void add_edge(const int from, const int to, const Cat cap, const Cot cost){
+        if(cap == 0) return;
         G[from].push_back((edge){to, (int)G[to].size(), cap, cost});
         G[to].push_back((edge){from, (int)G[from].size() - 1, 0, -cost});
         ++deg[to];
@@ -46,7 +47,7 @@ public:
         h[s] = 0;
         for(const int v : ord){
             if(h[v] == inf) continue;
-            for(edge& e : G[v]){
+            for(const edge& e : G[v]){
                 if(e.cap > 0) h[e.to] = min(h[e.to], h[v] + e.cost);
             }
         }
@@ -73,7 +74,7 @@ public:
     }
     void update(const int s, const int t, Cat& f, Cot& res){
         for(int i = 0; i < V; i++){
-            h[i] += dist[i];
+            if(dist[i] != inf) h[i] += dist[i];
         }
         Cat d = f;
         for(int v = t; v != s; v = prevv[v]){
