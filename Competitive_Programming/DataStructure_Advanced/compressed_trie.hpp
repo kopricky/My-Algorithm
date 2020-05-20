@@ -23,7 +23,6 @@ private:
             return cur ? lsb(cur) : CHARACTER_SIZE;
         }
         inline static unsigned int end(){ return CHARACTER_SIZE; }
-        inline bool exist(const unsigned int v) const { return adj >> v & 1u; }
         inline bool isExist(const unsigned int v) const { return adj >> v & 1u; }
         inline bool isFinal() const { return !s; }
         void direct_push(string&& _s, unsigned int index){
