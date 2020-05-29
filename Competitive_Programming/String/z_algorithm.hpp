@@ -4,7 +4,7 @@
 void z_algorithm(const string& S, vector<int>& res)
 {
     int sz = (int)S.size();
-    res.resize(sz, 0);
+    res.resize(sz, sz);
     int i = 1, j = 0;
     while(i < sz){
         while(i+j < sz && S[j] == S[i+j]) j++;
