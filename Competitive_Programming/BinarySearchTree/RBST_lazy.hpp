@@ -102,7 +102,6 @@ pair<RBSTNode<_Tp>*, _Tp> query(RBSTNode<_Tp> *root, const unsigned l, const uns
     return make_pair(join(join(sl.first, sr.first), sr.second), res);
 }
 
-
 // ヘルパー関数
 template<typename _Tp>
 RBSTNode<_Tp> *bst_build(vector<RBSTNode<_Tp>*>& vec){
