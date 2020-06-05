@@ -5,7 +5,7 @@
 template<typename T>
 vector<pair<T, T> > EraseOuterInterval(vector<pair<T, T> > vec)
 {
-    sort(vec.begin(), vec.end(), [](const pair<T, T>& a,const pair<T, T>& b){
+    sort(vec.begin(), vec.end(), [](const pair<T, T>& a, const pair<T, T>& b){
         return (a.second == b.second) ? (a.first < b.first) : (a.second > b.second);
     });
     vector<pair<T, T> > res;
@@ -25,7 +25,7 @@ vector<pair<T, T> > EraseOuterInterval(vector<pair<T, T> > vec)
 template<typename T>
 vector<pair<T, T> > EraseInnerInterval(vector<pair<T, T> > vec)
 {
-    sort(vec.begin(), vec.end(), [](const pair<T, T>& a,const pair<T, T>& b){
+    sort(vec.begin(), vec.end(), [](const pair<T, T>& a, const pair<T, T>& b){
         return (a.second == b.second) ? (a.first > b.first) : (a.second < b.second);
     });
     vector<pair<T, T> > res;
