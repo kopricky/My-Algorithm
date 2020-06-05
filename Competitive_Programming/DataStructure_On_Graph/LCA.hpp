@@ -82,3 +82,52 @@ public:
         return depth[u] + depth[v] - 2*depth[lca];
     }
 };
+
+// 重みつき版
+// template<typename T> class LCA{
+// public:
+//     struct edge {
+//         int to; T cost;
+//         edge(int _to, T _cost) : to(_to), cost(_cost){}
+//     };
+//     int V;
+//     vector<vector<edge> > G;
+//     vector<T> depth;
+//     vector<int> ord, id;
+//     segtree<T> st;
+//     LCA(int node_size) : V(node_size), G(V), depth(V), id(V, -1){}
+//     void add_edge(int from, int to, T cost){
+//         G[from].emplace_back(to, cost),G[to].emplace_back(from, cost);
+//     }
+//     void dfs(int u, int p, T k){
+//         id[u] = (int)ord.size();
+//         ord.push_back(u);
+//         depth[u] = k;
+//         for(const edge& e : G[u]){
+//             if(e.to != p){
+//                 dfs(e.to, u, k + e.cost);
+//                 ord.push_back(u);
+//             }
+//         }
+//     }
+//     void build(){
+//         ord.reserve(2*V-2);
+//         for(int i = 0; i < V; i++){
+//             if(id[i] < 0){
+//                 dfs(i, -1, 0);
+//             }
+//         }
+//         vector<T> stvec(2*V-2);
+//     	for(int i = 0; i < 2*V-2; i++){
+//     		stvec[i] = depth[ord[i]];
+//     	}
+//         st.resize(stvec);
+//     }
+//     int solve(int u,int v){
+//         return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
+//     }
+//     T dist(int u,int v){
+//         int lca = solve(u,v);
+//         return depth[u] + depth[v] - 2*depth[lca];
+//     }
+// };
