@@ -63,7 +63,6 @@ bool check(unsigned int n){
 //     return res;
 // }
 
-// check if n is prime
 // bool check(unsigned long long n){
 //     if(n < 2) return false;
 //     unsigned long long d = n - 1, s = 0;

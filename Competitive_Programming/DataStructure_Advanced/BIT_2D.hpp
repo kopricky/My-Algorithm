@@ -4,6 +4,7 @@ template<typename T> class BIT {
 private:
     int n,m; vector<vector<T> > bit;
 public:
+    // (i, j) に val を加算する
     void add(int i, int j, T val){
         for(int i_ = i+1; i_ < n; i_ += i_ & -i_)
             for(int j_ = j+1; j_ < m; j_ += j_ & -j_)
@@ -28,8 +29,8 @@ public:
     BIT(vector<vector<T> >& v){
         n = (int)v.size()+1, m = (int)v[0].size()+1;
         bit.resize(n, vector<T>(m, 0));
-        for(int i = 0; i < n; i++)
-            for(int j = 0; j < m; j++)
+        for(int i = 0; i < n - 1; i++)
+            for(int j = 0; j < m - 1; j++)
                 add(i, j, v[i][j]);
     }
     void print(){
