@@ -27,7 +27,7 @@ public:
         bit.resize(n, vector<T>(m, 0));
     }
     BIT(vector<vector<T> >& v){
-        n = (int)v.size()+1, m = (int)v[0].size()+1;
+        n = (int)v.size() + 1, m = (int)v[0].size() + 1;
         bit.resize(n, vector<T>(m, 0));
         for(int i = 0; i < n - 1; i++)
             for(int j = 0; j < m - 1; j++)

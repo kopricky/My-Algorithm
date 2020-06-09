@@ -4,10 +4,10 @@ struct slope{
     slope(){}
     slope(int a,int b) : x(a), y(b){}
     bool operator< (const slope& another) const {
-        if((ll)x*another.x > 0){
-            return (ll)y*another.x < (ll)x*another.y;
-        }else if((ll)x*another.x < 0){
-            return (ll)y*another.x > (ll)x*another.y;
+        if((long long)x*another.x > 0){
+            return (long long)y*another.x < (long long)x*another.y;
+        }else if((long long)x*another.x < 0){
+            return (long long)y*another.x > (long long)x*another.y;
         }else{
             return (x==0)?((y<0)&&(another.x||(another.y>0))):(another.y>0);
         }
@@ -23,10 +23,10 @@ struct slope{
         x = a, y = b;
     }
     bool operator< (const slope& another) const {
-        if((ll)x*another.x > 0){
-            return (ll)y*another.x < (ll)x*another.y;
-        }else if((ll)x*another.x < 0){
-            return (ll)y*another.x > (ll)x*another.y;
+        if((long long)x*another.x > 0){
+            return (long long)y*another.x < (long long)x*another.y;
+        }else if((long long)x*another.x < 0){
+            return (long long)y*another.x > (long long)x*another.y;
         }else{
             return (x==0)?((y<0)&&(another.x||(another.y>0))):(another.y>0);
         }
