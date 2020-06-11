@@ -1,7 +1,7 @@
 #include "../header.hpp"
 
 // 使う文字は 31 文字以下の文字コード上で連続する文字の列とする.
-template<unsigned int CHARACTER_SIZE, char START_CHARACTER>
+template<char START_CHARACTER, unsigned int CHARACTER_SIZE>
 class CompressedTrie {
 private:
     struct node {
@@ -33,7 +33,7 @@ private:
     void make_node(string& orgs, unsigned int start, node*& to, bool is_end){
         string tmp = orgs.substr(0, start);
         orgs.erase(orgs.begin(), orgs.begin() + start);
-        to = new node(move(orgs), to, orgs[0] - START_CHARACTER, to->sub, is_end);
+        to = new node(move(orgs), to, orgs[0] - START_CHARACTER, to->sub + is_end, is_end);
         orgs = move(tmp);
     }
     void new_push(const string& s, unsigned int index, node *to){
@@ -46,6 +46,10 @@ private:
     }
     template<typename String>
     void push(node *cur, String&& news){
+        if(news.size() == 0u){
+            ++cur->sub, ++cur->cnt;
+            return;
+        }
         const unsigned int _ls = news.size();
         unsigned int index = 0u, prefix;
         while(true){
@@ -83,26 +87,65 @@ private:
     // }
 public:
     node* root;
-    CompressedTrie() : root(new node()){}
+    CompressedTrie() : root(new node()){ --root->cnt; }
     // ~CompressedTrie(){ clear_dfs(root); }
     // CompressedTrie 木に s を加える
     void add(const string& s){ push(root, s); }
     void add(string&& s){ push(root, move(s)); }
-    //何らかのクエリ
-    int recur_query(node *cur, unsigned int d, int *index, const string& s){
-        int res = 0;
+    // 文字列 s がいくつ含まれるか
+    int query1(const string& s){
+        if(s.size() == 0u) return root->cnt;
+        node *cur = root;
+        int i, d = 0;
         while(true){
+            if(d == (int)s.size()) return cur->cnt;
             if(cur->isFinal()) break;
             const unsigned int next = s[d] - START_CHARACTER;
-            for(unsigned int i = cur->begin(); i != cur->end(); i = cur->next(i)){
-                if(index[i] < index[next]) res += cur->to[i]->sub;
+            if(!cur->isExist(next)) return 0;
+            for(i = 0; i < (int)cur->s[next].size(); ++i){
+                if(d + i >= (int)s.size() || s[d + i] != cur->s[next][i]) return 0;
             }
-            d += cur->s[next].size();
+            d += (int)cur->s[next].size();
+            cur = cur->to[next];
+        }
+        return 0;
+    }
+    // 文字列 s を prefix とする文字列はいくつか
+    int query2(const string& s){
+        node *cur = root;
+        int d = 0;
+        while(true){
+            if(d >= (int)s.size()) return cur->sub;
+            if(cur->isFinal()) break;
+            const unsigned int next = s[d] - START_CHARACTER;
+            if(!cur->isExist(next)) return 0;
+            for(int i = 0; i < min((int)cur->s[next].size(), (int)s.size() - d); ++i){
+                if(s[d + i] != cur->s[next][i]) return 0;
+            }
+            d += (int)cur->s[next].size();
+            cur = cur->to[next];
+        }
+        return 0;
+    }
+    // 辞書順で文字列 s 以下の文字列はいくつか
+    int query3(const string& s){
+        node *cur = root;
+        int d = 0, res = 0;
+        while(true){
+            if(d <= (int)s.size()) res += cur->cnt;
+            if(d >= (int)s.size() || cur->isFinal()) break;
+            const unsigned int next = s[d] - START_CHARACTER;
+            for(unsigned int i = cur->begin(); i < next; i = cur->next(i)){
+                res += cur->to[i]->sub;
+            }
+            if(!cur->isExist(next)) break;
+            for(int i = 0; i < min((int)cur->s[next].size(), (int)s.size() - d); ++i){
+                if(s[d + i] < cur->s[next][i]) return res;
+                else if(s[d + i] > cur->s[next][i]) return res + cur->to[next]->sub;
+            }
+            d += (int)cur->s[next].size();
             cur = cur->to[next];
         }
         return res;
-    }
-    int query(int *index, const string& s){
-        return recur_query(root, 0u, index, s);
     }
 };
