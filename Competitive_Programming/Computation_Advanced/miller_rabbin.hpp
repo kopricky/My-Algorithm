@@ -1,8 +1,7 @@
 #include "../header.hpp"
 
-const vector<unsigned int> numset = {2,7,61}; // < 4,759,123,141 ≒ 4×10^9
-// const vector<unsigned int> numset = {2,3,5,7,11,13,17}; // < 341,550,071,728,321 ≒　3*10^14
-// const vector<unsigned int> numset = {2,3,5,7,11,13,17,19,23,29,31,37}; // 2^64までいける
+const vector<unsigned int> numset = {2,7,61}; // < 4,759,123,141 ≒ 4×10^9 までは決定的
+// const vector<unsigned long long> numset = {2, 325, 9375, 28178, 450775, 9780504, 1795265022ULL}; // 少なくとも 2^64 までは決定的
 
 // int 型の素数判定の場合
 
@@ -16,7 +15,6 @@ unsigned int mod_pow(unsigned int x, unsigned int k, unsigned int mod){
     return res;
 }
 
-// check if n is prime
 bool check(unsigned int n){
     if(n < 2) return false;
     unsigned int d = n - 1, s = 0;
@@ -70,8 +68,8 @@ bool check(unsigned int n){
 //         d /= 2;
 //         s++;
 //     }
-//     for(unsigned int a : numset){
-//         if(a == n) return true;
+//     for(unsigned long long a : numset){
+//         if(a % n == 0) return true;
 //         unsigned long long res = mod_pow(a, d, n);
 //         if(res == 1) continue;
 //         bool ok = true;
