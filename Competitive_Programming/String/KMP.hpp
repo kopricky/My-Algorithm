@@ -28,16 +28,13 @@ public:
     }
 };
 
-// 上記のコードは通常の KMP より若干効率よく動作するように table を構築していた.
-// ただその結果 $i + 1 - table[i + 1]$ で求まるはずの最小周期長が求まらなくなってしまったので一応本来の KMP も載せておく.
-// table[j]: j でミスったときにどこに移動したら良いか s[0, j-1] の最小周期長分左の位置にずらすことと同値
-class KMP
+class MP
 {
 public:
     string pattern;
     int plen;
     vector<int> table;
-    KMP(const string& s) : pattern(s), plen((int)pattern.size()), table(plen + 1){
+    MP(const string& s) : pattern(s), plen((int)pattern.size()), table(plen + 1){
         table[0] = -1;
         int j = -1;
         for(int i = 0; i < plen; ++i){
@@ -63,12 +60,12 @@ public:
         }
     }
 };
-
+ 
 // 文字列 s[0, i] の最小周期の長さ
 void minimum_cycle(const string& s, vector<int>& res){
-	KMP kmp(s);
+	MP mp(s);
 	res.resize((int)s.size());
 	for(int i = 0; i < (int)s.size(); ++i){
-		res[i] = i + 1 - kmp.table[i+1];
+		res[i] = i + 1 - mp.table[i+1];
 	}
 }

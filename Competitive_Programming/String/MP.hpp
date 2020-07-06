@@ -8,12 +8,4 @@ void MP(const string& S, vector<int>& res){
         while(S[i+1] != S[j] && --j >= 0) j = res[j];
         res[i+1] = ++j;
     }
-    // KMP 法
-    // vi next(n, 0);
-    // for(int i = 0; i < n-1; i++){
-    //     while(S[i+1] != S[j] && --j >= 0) j = next[j];
-    //     res[i+1] = ++j;
-    //     if(S[i+2] == S[j]) next[i+1] = (j > 0) ? next[j-1] : 0;
-    //     else next[i+1] = j;
-    // }
 }
