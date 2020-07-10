@@ -69,6 +69,7 @@ private:
 
 public:
     SMAWK(const Func& _func) : func(_func){}
+    // クエリの対象となる row, column
     // ans: (min, arg_min)
     template<typename T>
     void solve(const vector<int>& row, const vector<int>& column, vector<pair<T, int> >& ans){
@@ -77,7 +78,7 @@ public:
     }
 };
 
-// examle
+// examle(コスト関数を明示的に行列で与えている)
 template<typename T> class Func {
 public:
     const vector<vector<T> > A;
