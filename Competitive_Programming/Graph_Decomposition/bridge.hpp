@@ -50,7 +50,7 @@ public:
         for(int i = 0; i < V; ++i) cmp[i] = kind - 1 - cmp[i];
         return kind;
     }
-    // 2(辺)連結成分を頂点とする木(tree) を作る(事前に detect_bridge() を呼んでおく必要がある).
+    // 2(辺)連結成分を頂点とする木(tree) を作る(事前に identify_bridge() を呼んでおく必要がある).
     // 木の頂点数を返す.
     // cmp[i] は元の頂点 i の含まれる頂点(2(辺)連結成分) を表す.
     int make_bctree()
