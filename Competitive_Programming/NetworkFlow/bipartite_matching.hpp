@@ -4,93 +4,88 @@
 //BM bm(n,m);
 //適宜add_edge(２つの集合間のedgeのみaddする)
 //BM.solve() で最大マッチングの数を計算
-//allocate() で最大マッチングを復元する
-
 class BM {
 private:
-    struct edge {
-        int to,cap,rev;
-    };
-    int U,V;
-    vector<vector<edge> > G;
-    vector<int> level;
-    vector<int> iter;
-
+    const int U, V;
+    vector<vector<int> > G;
+    vector<int> level, que, prv, ralloc;
+    int bfs(){
+        int last = -1;
+        fill(level.begin(), level.end(), -1);
+        int qh = 0, qt = 0;
+        for(int i = 0; i < U; ++i){
+            if(alloc[i] < 0) level[i] = 0, que[qt++] = i, prv[i] = -1;
+        }
+        while(qh < qt){
+            const int u = que[qh++];
+            if(u >= U){
+                const int v = ralloc[u - U];
+                if(v >= 0) level[v] = level[u] + 1, que[qt++] = v, prv[v] = u;
+                else last = u;
+            }else{
+                for(const int v : G[u]){
+                    if(level[v] < 0) level[v] = level[u] + 1, que[qt++] = v, prv[v] = u;
+                }
+            }
+        }
+        return last;
+    }
+    bool dfs(const int u){
+        const int tmp = level[u];
+        level[u] = -1;
+        if(u >= U){
+            if(ralloc[u - U] < 0) return true;
+            else return dfs(ralloc[u - U]);
+        }else{
+            for(const int v : G[u]){
+                if(tmp < level[v]){
+                    if(dfs(v)){
+                        alloc[u] = v - U, ralloc[v - U] = u;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    void hin_search(int cur, int& flow){
+        ++flow;
+        while(cur >= 0){
+            level[cur] = -1;
+            if(cur >= U) alloc[prv[cur]] = cur - U, ralloc[cur - U] = prv[cur];
+            cur = prv[cur];
+        }
+    }
 public:
-    BM(int u,int v) : U(u), V(v), G(U+V+2){
-        for(int i = 0; i < U; i++){
-            init_edge(0,i+1);
-        }
-        for(int i = 0; i < V; i++){
-            init_edge(U+i+1,U+V+1);
-        }
+    BM(const int u, const int v)
+         : U(u), V(v), G(U + V), level(U + V), que(U + V), prv(U + V), ralloc(V, -1), alloc(U, -1){}
+    void add_edge(const int from, const int to){
+        G[from].push_back(U + to);
     }
-    void init_edge(int from,int to) {
-        G[from].push_back((edge){to,1,(int)G[to].size()});
-    	G[to].push_back((edge){from,0,(int)G[from].size()-1});
-    }
-    void add_edge(int from,int to) {
-        from += 1,to += U+1;
-    	G[from].push_back((edge){to,1,(int)G[to].size()});
-    	G[to].push_back((edge){from,0,(int)G[from].size()-1});
-    }
-    void bfs(int s) {
-        fill(level.begin(),level.end(),-1);
-    	queue<int> que;
-    	level[s] = 0;
-    	que.push(s);
-    	while(!que.empty()){
-            int v = que.front();
-            que.pop();
-            for(auto& e : G[v]){
-                if(e.cap > 0 && level[e.to] < 0){
-                    level[e.to] = level[v] + 1;
-                    que.push(e.to);
-                }
-            }
-        }
-    }
-    int dfs(int v,int t,int f) {
-        if(v==t){
-            return f;
-        }
-        for(int &i = iter[v];i<(int)G[v].size();i++){
-            edge &e = G[v][i];
-            if(e.cap > 0 && level[v] < level[e.to]){
-                int d = dfs(e.to,t,min(f,e.cap));
-                if(d>0){
-                    e.cap -= d;
-                    G[e.to][e.rev].cap += d;
-                    return d;
-                }
-            }
-        }
-        return 0;
-    }
-    int solve() {
-        level.resize(U+V+2), iter.resize(U+V+2);
+    // alloc に左側頂点がどの右側頂点とマッチングされるかが格納される
+    vector<int> alloc;
+    int solve(){
         int flow = 0;
-        int s=0,t=U+V+1;
         for(;;){
-            bfs(s);
-            if(level[t] < 0) return flow;
-            fill(iter.begin(),iter.end(),0);
-            int f;
-            while((f=dfs(s,t,numeric_limits<int>::max())) > 0){
-                flow += f;
+            const int cur = bfs();
+            if(cur < 0) break;
+            hin_search(cur, flow);
+            for(int i = 0; i < U; ++i){
+                if(alloc[i] < 0) flow += dfs(i);
             }
         }
+        return flow;
     }
-    vector<int> allocate() {
-        vector<int> res(U, -1);
-        for(int i = 0; i < U; i++){
-            for(auto& e : G[i+1]){
-                if(e.cap == 0 && e.to != 0){
-                    res[i] = e.to-U-1;
-                    break;
-                }
-            }
+    // solve() を呼び出した後に呼び出す(左側頂点 i の添字は U(右側頂点数) + i とする)
+    vector<int> minimum_vertex_cover(){
+        vector<int> mvc;
+        for(int i = 0; i < U; ++i){
+            if(level[i] < 0) mvc.push_back(i);
         }
-        return res;
+        for(int i = U; i < U + V; ++i){
+            if(level[i] >= 0) mvc.push_back(i);
+        }
+        return mvc;
     }
 };
+
