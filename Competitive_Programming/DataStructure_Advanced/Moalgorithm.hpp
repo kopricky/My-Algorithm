@@ -49,15 +49,11 @@ public:
 void Mo::add(const int id)
 {
     ++cnt[a[id]];
-    if(cnt[a[id]] == 0){
-        res++;
-    }
+    if(cnt[a[id]] == 1) ++res;
 }
 
 void Mo::del(const int id)
 {
     --cnt[a[id]];
-    if(cnt[a[id]] == 1){
-        res--;
-    }
+    if(cnt[a[id]] == 0) --res;
 }
