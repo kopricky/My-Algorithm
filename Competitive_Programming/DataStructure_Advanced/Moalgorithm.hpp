@@ -48,16 +48,16 @@ public:
 //idは元の配列のインデックス
 void Mo::add(const int id)
 {
+    ++cnt[a[id]];
     if(cnt[a[id]] == 0){
-        cnt[a[id]]++;
         res++;
     }
 }
 
 void Mo::del(const int id)
 {
+    --cnt[a[id]];
     if(cnt[a[id]] == 1){
-        cnt[a[id]]--;
         res--;
     }
 }
