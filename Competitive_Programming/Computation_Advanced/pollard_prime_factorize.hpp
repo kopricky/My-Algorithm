@@ -2,21 +2,16 @@
 
 const unsigned long long numset[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022ULL};
 
-inline unsigned long long mod_comp(unsigned __int128 a, unsigned long long b) {
-  unsigned long long q, r;
-  __asm__ (
-    "divq\t%4"
-    : "=a"(q), "=d"(r)
-    : "0"((unsigned long long)(a)), "1"((unsigned long long)(a >> 64)), "rm"(b)
-  );
-  return r;
+unsigned long long mod_mul(unsigned long long a, unsigned long long b, unsigned long long mod) {
+	long long ret = a * b - mod * (unsigned long long)((long double)(a) * (long double)(b) / (long double)(mod));
+	return ret + mod * (ret < 0) - mod * (ret >= (ll)mod);
 }
 
 unsigned long long mod_pow(unsigned long long x, unsigned long long k, unsigned long long mod){
     unsigned long long res = 1;
     while(k){
-        if(k & 1) res = mod_comp((unsigned __int128)res * x, mod);
-        x = mod_comp((unsigned __int128)x * x, mod);
+        if(k & 1) res = mod_mul(res, x, mod);
+        x = mod_mul(x, x, mod);
         k >>= 1;
     }
     return res;
@@ -36,7 +31,7 @@ bool miller_rabbin(unsigned long long n){
                 ok = false;
                 break;
             }
-            res = mod_comp((unsigned __int128)res * res, n);
+            res = mod_mul(res, res, n);
         }
         if(ok) return false;
     }
@@ -44,7 +39,8 @@ bool miller_rabbin(unsigned long long n){
 }
 
 inline unsigned long long pollard_f(unsigned long long x, unsigned long long n){
-    return mod_comp((unsigned __int128)x * x + 1, n);
+    const unsigned long long res = mod_mul(x, x, n);
+    return (res == n - 1) ? 0 : (res + 1);
 }
 
 unsigned long long gcd(unsigned long long a, unsigned long long b){
@@ -57,7 +53,7 @@ unsigned long long pollard(unsigned long long n){
     unsigned long long x = 0, y = 0, t = 0, i = 2, prod = 2, res;
     while((t++) % 50 || gcd(prod, n) == 1){
         if(x == y) x = i++, y = pollard_f(x, n);
-        res = mod_comp((unsigned __int128)prod * ((x > y) ? (x - y) : (y - x)), n);
+        res = mod_mul(prod, (x > y) ? (x - y) : (y - x), n);
         if(res > 0) prod = res;
         x = pollard_f(x, n), y = pollard_f(pollard_f(y, n), n);
     }
