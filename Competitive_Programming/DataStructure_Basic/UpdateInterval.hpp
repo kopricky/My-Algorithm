@@ -10,7 +10,7 @@ public:
     set<ptt> st;
     UpdateInterval(){};
     //[l,r)をk(0,1)に更新
-    void update(T l,T r,int k){
+    void update(T l, T r, int k){
         T lb = l, rb = r;
         while(1){
             auto it = st.lower_bound(ptt(l, numeric_limits<T>::min()));
@@ -18,13 +18,13 @@ public:
                 break;
             }
             ptt p = *it;
-            if(p.fi > r){
+            if(p.first > r){
                 break;
             }
             st.erase(it);
-            if(p.se > r){
-                rb = max(rb, p.se);
-                if(!k) st.insert(ptt(r,p.se));
+            if(p.second > r){
+                rb = max(rb, p.second);
+                if(!k) st.insert(ptt(r, p.second));
                 break;
             }
         }
@@ -32,16 +32,16 @@ public:
         if(it != st.begin()){
             --it;
             ptt p = *it;
-            if(p.se >= l){
+            if(p.second >= l){
                 st.erase(it);
-                if(!k) st.insert(ptt(p.fi,l));
-                lb = min(lb, p.fi);
+                if(!k) st.insert(ptt(p.first, l));
+                lb = min(lb, p.first);
             }
-            if(p.se > r){
-                if(!k) st.insert(ptt(r,p.se));
-                rb = max(rb, p.se);
+            if(p.second > r){
+                if(!k) st.insert(ptt(r, p.second));
+                rb = max(rb, p.second);
             }
         }
-        if(k) st.insert(ptt(lb,rb));
+        if(k) st.insert(ptt(lb, rb));
     }
 };
