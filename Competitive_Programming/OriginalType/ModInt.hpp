@@ -59,7 +59,7 @@ public:
     }
     friend ostream& operator<<(ostream& os, const ModInt& n){ return (os << n()); }
     friend ModInt mod_pow(ModInt x, long long n){
-        ModInt ans = 1;
+        ModInt ans = ((mod == 1) ? 0 : 1);
         while(n){
             if(n & 1) ans *= x;
             x *= x, n >>= 1;
