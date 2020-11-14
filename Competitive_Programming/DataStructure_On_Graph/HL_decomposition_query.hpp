@@ -15,7 +15,10 @@ public:
     void BuildStsize(int u, int p){
         stsize[u] = 1, parent[u] = p;
         for(int& v : G[u]){
-            if(v == p) continue;
+            if(v == p){
+                if(v == G[u].back()) break;
+                else swap(v, G[u].back());
+            }
             BuildStsize(v, u);
             stsize[u] += stsize[v];
             if(stsize[v] > stsize[G[u][0]]) swap(v, G[u][0]);
