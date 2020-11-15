@@ -19,15 +19,7 @@ public:
             node[i] = min(node[2*i], node[2*i+1]);
         }
     }
-    void update(int k, T a)
-    {
-    	node[k+=n] = make_pair(a, k);
-    	while(k>>=1){
-            node[k] = min(node[2*k], node[2*k+1]);
-    	}
-    }
-    pair<T, int> query(int a,int b)
-    {
+    pair<T, int> query(int a,int b) const {
         pair<T, int> res1 = make_pair(numeric_limits<T>::max(), -1);
         pair<T, int> res2 = make_pair(numeric_limits<T>::max(), -1);
         a += n, b += n;
@@ -74,51 +66,59 @@ public:
     	}
         st.resize(stvec);
     }
-    int solve(int u,int v){
+    int solve(int u,int v) const {
         return ord[st.query(min(id[u],id[v]),max(id[u],id[v])+1).second];
     }
-    int dist(int u,int v){
+    int dist(int u,int v) const {
         int lca = solve(u,v);
         return depth[u] + depth[v] - 2*depth[lca];
     }
-    int construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& virtual_tree);
 };
 
-// ver_list 内の頂点から構成されるグラフの virtual tree を virtual_tree に格納し, その root(virtual_tree の頂点番号[0,...,m]) を返す.
-// mapping: 元の頂点番号[0,...,n] → virtual_tree の頂点番号[0,...,m] (つまり ver_list の逆変換) (引数の mapping の長さは元のグラフの頂点数以上あることを仮定)
-// virtual_tree は根つき木(根から子に向かう向きの辺しかない)
-int LCA::construct_virtual_tree(vector<int>& ver_list, vector<int>& mapping, vector<vector<int> >& virtual_tree){
-    const int n = (int)ver_list.size();
-    virtual_tree.resize(n);
-    sort(ver_list.begin(), ver_list.end(), [&](const int a, const int b){ return id[a] < id[b]; });
-    stack<int> st;
-    st.push(ver_list[0]), mapping[ver_list[0]] = 0;
-    int id = n;
-    for(int i = 0; i < n-1; ++i){
-        const int u = solve(ver_list[i], ver_list[i+1]);
-        if(u != ver_list[i]){
-            int mapped_ver = mapping[st.top()];
-            while(true){
-                st.pop();
-                if(st.empty() || depth[u] >= depth[st.top()]) break;
-                const int tmp = mapping[st.top()];
-                virtual_tree[tmp].push_back(mapped_ver), mapped_ver = tmp;
+ class VirtualTree {
+public:
+    // ver_list 内の頂点から構成されるグラフの virtual tree を virtual_tree に格納し, その 根(virtual_tree 上の頂点番号) を返す.
+    // mp: "元の木上の頂点番号" から "virtual_tree 上の頂点番号" へのマッピング (つまり ver_list の逆変換)
+    // virtual_tree は根から子に向かう一方向の辺しかない
+    const LCA& lca;
+    vector<vector<int> > virtual_tree;
+    vector<int> mp;
+    VirtualTree(const LCA& _lca) : lca(_lca), mp(_lca.V){}
+    int construct_virtual_tree(vector<int> ver_list){
+        const int n = (int)ver_list.size();
+        virtual_tree.clear(), virtual_tree.resize(n);
+        const auto& index = lca.id;
+        const auto& depth = lca.depth;
+        sort(ver_list.begin(), ver_list.end(), [&](const int a, const int b){ return index[a] < index[b]; });
+        stack<int> st;
+        st.push(ver_list[0]), mp[ver_list[0]] = 0;
+        int id = n;
+        for(int i = 0; i < n-1; ++i){
+            const int u = lca.solve(ver_list[i], ver_list[i+1]);
+            if(u != ver_list[i]){
+                int mapped_ver = mp[st.top()];
+                while(true){
+                    st.pop();
+                    if(st.empty() || depth[u] >= lca.depth[st.top()]) break;
+                    const int tmp = mp[st.top()];
+                    virtual_tree[tmp].push_back(mapped_ver), mapped_ver = tmp;
+                }
+                if(st.empty() || st.top() != u){
+                    st.push(u), ver_list.push_back(u);
+                    virtual_tree.push_back({mapped_ver});
+                    mp[u] = id++;
+                }else{
+                    virtual_tree[mp[u]].push_back(mapped_ver);
+                }
             }
-            if(st.empty() || st.top() != u){
-                st.push(u), ver_list.push_back(u);
-                virtual_tree.push_back({mapped_ver});
-                mapping[u] = id++;
-            }else{
-                virtual_tree[mapping[u]].push_back(mapped_ver);
-            }
+            st.push(ver_list[i+1]), mp[ver_list[i+1]] = i+1;
         }
-        st.push(ver_list[i+1]), mapping[ver_list[i+1]] = i+1;
+        int mapped_ver = ((st.size() > 1) ? mp[st.top()] : -1);
+        while(st.size() > 1){
+            st.pop();
+            const int tmp = mp[st.top()];
+            virtual_tree[tmp].push_back(mapped_ver), mapped_ver = tmp;
+        }
+        return mp[st.top()];
     }
-    int mapped_ver = ((st.size() > 1) ? mapping[st.top()] : -1);
-    while(st.size() > 1){
-        st.pop();
-        const int tmp = mapping[st.top()];
-        virtual_tree[tmp].push_back(mapped_ver), mapped_ver = tmp;
-    }
-    return mapping[st.top()];
-}
+};
