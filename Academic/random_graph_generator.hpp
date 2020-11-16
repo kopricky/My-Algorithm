@@ -299,7 +299,7 @@ void random_simple_connected_graph(const int node_size, int edge_size, vector<ve
 }
 
 // ランダムな木 (計算量 O(n))
-void random_tree(const int node_size, const int edge_size, vector<vector<int> >& graph){
+void random_tree(const int node_size, vector<vector<int> >& graph){
     random_device rnd;
     mt19937 mt(rnd());
     vector<int> ver(node_size);
