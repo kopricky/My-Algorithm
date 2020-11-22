@@ -42,3 +42,4 @@ struct RH {
 };
 vector<int> RH::pm[2];
 int RH::mod[2] = {1000000007, 1000000009}, RH::mul[2] = {10009, 10007};
+// unsigned int imul[2] = {66829853, 74148097};
