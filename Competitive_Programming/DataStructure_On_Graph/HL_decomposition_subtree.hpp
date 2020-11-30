@@ -5,10 +5,9 @@
 
 class HLdecomposition{
 private:
-    int V;
+    int V, root;
     vector<vector<int> > G;
     vector<int> stsize, parent, pathtop, in, out;
-    int root;
     void BuildStsize(int u, int p){
         stsize[u] = 1, parent[u] = p;
         for(int& v : G[u]){

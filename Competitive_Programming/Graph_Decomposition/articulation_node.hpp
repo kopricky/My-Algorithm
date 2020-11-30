@@ -76,7 +76,7 @@ public:
     vector<bool> art;
     struct bcnode {
         bool isBlock; // true: block, false: cut
-        vector<pair<int, int> > component;
+        vector<pair<int, int> > component; // edge set
         bcnode(bool _isBlock, vector<pair<int, int> >&& _component)
             : isBlock(_isBlock), component(move(_component)){}
     };
@@ -94,6 +94,11 @@ public:
         vector<int> bcnode_id(V, -1); // bcnode_id[original vertex] = cut vertex;
         for(int i = 0; i < V; ++i){
 			if(ord[i] < 0) dfs(i, -1, tm, used, st, bcnode_id);
+            if(G[i].empty()){
+                // isolated vertex
+                bctree.push_back(vector<int>());
+                bcnodes.emplace_back(true, vector<pair<int, int> >());
+            }
 		}
         delete[] used;
         return (int)bctree.size();
