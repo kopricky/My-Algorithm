@@ -1,6 +1,6 @@
 #include "../../header.hpp"
 
-class segtree {
+class RangeMexQuery {
 private:
     int n, m;
     vector<array<int, 3> > ptr;
@@ -38,7 +38,7 @@ private:
         else return query(ptr[cur][1], cri, mid, r);
     }
 public:
-    segtree(const vector<int>& vec) : n((int)vec.size()), arr(2 * n + 1), st(n + 1){
+    RangeMexQuery(const vector<int>& vec) : n((int)vec.size()), arr(2 * n + 1), st(n + 1){
         preprocessing(vec);
     }
     int query(const int l, const int r){
