@@ -33,6 +33,28 @@ struct slope{
     }
 };
 
+// ラジアンベース
+// https://judge.yosupo.jp/problem/sort_points_by_argument
+struct slope{
+    int x, y;
+    slope(const int a, const int b) : x(a), y(b){}
+    bool operator<(const slope& s) const {
+        if((long long)y * s.y <= 0){
+            if(y == 0 && s.y == 0) return (x > s.x);
+            if(y == 0 && s.y > 0) return (x >= 0);
+            if(y > 0 && s.y == 0)  return (s.x < 0);
+            return (y < s.y);
+        }else if(((long long)x * s.x <= 0)){
+            return (y > 0) ? (x > s.x) : (x < s.x);
+        }else{
+            return ((long long)y * s.x < (long long)x * s.y);
+        }
+    }
+    friend ostream& operator<<(ostream& os, const slope& s){
+        return (os << "{" << s.x << "," << s.y << "}");
+    }
+};
+
 map<slope,vector<int> > mp;
 
 int main()
