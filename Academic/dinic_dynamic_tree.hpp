@@ -1,4 +1,4 @@
-#include "../header.hpp"
+#include "./header.hpp"
 
 template<typename T> class Node {
 public:
@@ -125,22 +125,22 @@ private:
             }
         }
     }
-    T block_flow_naive(const int s, int cur, T f){
-        if(s == cur) return f;
-        T flow = 0;
-        for(int& i = iter[cur]; i < (int)G[cur].size(); ++i){
-            edge& e = G[cur][i];
-            if(e.rev_cap > 0 && level[e.to] < level[cur]){
-                T d = block_flow_naive(s, e.to, min(f, e.rev_cap));
-                if(d > 0){
-                    e.rev_cap -= d, G[e.to][e.rev].rev_cap += d;
-                    f -= d, flow += d;
-                    if(f == 0) break;
-                }
-            }
-        }
-        return flow;
-    }
+    // T block_flow_naive(const int s, int cur, T f){
+    //     if(s == cur) return f;
+    //     T flow = 0;
+    //     for(int& i = iter[cur]; i < (int)G[cur].size(); ++i){
+    //         edge& e = G[cur][i];
+    //         if(e.rev_cap > 0 && level[e.to] < level[cur]){
+    //             T d = block_flow_naive(s, e.to, min(f, e.rev_cap));
+    //             if(d > 0){
+    //                 e.rev_cap -= d, G[e.to][e.rev].rev_cap += d;
+    //                 f -= d, flow += d;
+    //                 if(f == 0) break;
+    //             }
+    //         }
+    //     }
+    //     return flow;
+    // }
     T block_flow(const int s, const int t){
         T flow = 0;
         bool find = false;
