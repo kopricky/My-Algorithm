@@ -7,7 +7,7 @@ private:
     vector<vector<int> > G;
     vector<vector<array<int, 2> > > memo;
     bool *flag;
-    void process_high_degree(vector<array<int, 3> >& ans){
+    void process_high_degree(){
         for(int i = 0; i < V; ++i){
             if((int)G[i].size() <= threshold) continue;
             for(const int u : G[i]) flag[u] = true;
@@ -19,7 +19,7 @@ private:
             for(const int u : G[i]) flag[u] = false;
         }
     }
-    void process_low_degree(vector<array<int, 3> >& ans){
+    void process_low_degree(){
         for(int i = 0; i < V; ++i){
             if((int)G[i].size() > threshold) continue;
             for(const int u : G[i]){
@@ -37,6 +37,8 @@ private:
         }
     }
 public:
+    // ans に三角形 (a, b, c) (a < b < c) が重複なく格納される
+    vector<array<int, 3> > ans;
     EnumeratingC3(const int node_size)
          : V(node_size), threshold(0), G(V), memo(V), flag(new bool[V]()){}
     ~EnumeratingC3(){ delete[] flag; }
@@ -45,9 +47,9 @@ public:
         else G[v].push_back(u);
         ++threshold;
     }
-    void solve(vector<array<int, 3> >& ans){
+    void solve(){
         threshold = floor(sqrt(threshold)) / 2;
-        process_high_degree(ans);
-        process_low_degree(ans);
+        process_high_degree();
+        process_low_degree();
     }
 };
