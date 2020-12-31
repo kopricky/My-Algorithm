@@ -48,7 +48,7 @@ private:
         }
         return false;
     }
-    void hin_search(int cur, int& flow){
+    void hint_search(int cur, int& flow){
         ++flow;
         while(cur >= 0){
             level[cur] = -1;
@@ -69,7 +69,7 @@ public:
         for(;;){
             const int cur = bfs();
             if(cur < 0) break;
-            hin_search(cur, flow);
+            hint_search(cur, flow);
             for(int i = 0; i < U; ++i){
                 if(asg[i] < 0) flow += dfs(i);
             }
