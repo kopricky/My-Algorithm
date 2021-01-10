@@ -64,7 +64,7 @@ public:
     }
 };
 
-//cri以上の値のスタートインデックス
+// 接尾辞配列上で辞書順 cri 以上となる初めのインデックス
 int stsearch(suffixarray& ag,string& cri)
 {
     int n = ag.sz;
@@ -91,7 +91,7 @@ int stsearch(suffixarray& ag,string& cri)
     return r;
 }
 
-//cri以下の値のエンドインデックス+1(開区間的な)
+// 接尾辞配列上で辞書順 cri より大となる初めのインデックス
 int edsearch(suffixarray& ag,string& cri)
 {
     int n = ag.sz;

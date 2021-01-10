@@ -37,9 +37,9 @@ public:
         ans.resize(sz);
         for(const int id : ord){
             while(nl > left[id]) add(--nl);
-            while(nr < right[id]) add(nr++);  //add
+            while(nr < right[id]) add(nr++);
             while(nl < left[id]) del(nl++);
-            while(nr > right[id]) del(--nr);  //del
+            while(nr > right[id]) del(--nr);
             ans[id] = res;
         }
     }
