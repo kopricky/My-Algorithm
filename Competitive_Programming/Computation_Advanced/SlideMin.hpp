@@ -7,7 +7,7 @@ public:
     vector<int> deq;
     vector<T> res;
     int n,k;
-    SlideMin(vector<T> Array,int sz) : n((int)Array.size()), k(sz), deq(n), res(n-k+1){
+    SlideMin(const vector<T>& Array, int sz) : n((int)Array.size()), k(sz), deq(n), res(n-k+1){
         int s = 0, t = 0;
         for(int i = 0; i < n; i++){
             //iを追加した場合に添字deq[t-1]の値がa[i]以上のときdeqから削除されるまで採用されることはないので

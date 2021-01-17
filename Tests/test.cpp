@@ -1,219 +1,188 @@
 #include <bits/stdc++.h>
-#define ll long long
-#define INF 1000000005
-#define MOD 1000000007
-#define EPS 1e-10
-#define rep(i,n) for(int i=0;i<(int)(n);++i)
-#define rrep(i,n) for(int i=(int)(n)-1;i>=0;--i)
-#define srep(i,s,t) for(int i=(int)(s);i<(int)(t);++i)
-#define each(a,b) for(auto& (a): (b))
-#define all(v) (v).begin(),(v).end()
-#define len(v) (int)(v).size()
-#define zip(v) sort(all(v)),v.erase(unique(all(v)),v.end())
-#define cmx(x,y) x=max(x,y)
-#define cmn(x,y) x=min(x,y)
-#define fi first
-#define se second
-#define pb push_back
-#define show(x) cout<<#x<<" = "<<(x)<<endl
-#define sar(a,n) {cout<<#a<<":";rep(pachico,n)cout<<" "<<a[pachico];cout<<endl;}
 
 using namespace std;
 
-template<typename S,typename T>auto&operator<<(ostream&o,pair<S,T>p){return o<<"{"<<p.fi<<","<<p.se<<"}";}
-template<typename T>auto&operator<<(ostream&o,set<T>s){for(auto&e:s)o<<e<<" ";return o;}
-template<typename S,typename T,typename U>
-auto&operator<<(ostream&o,priority_queue<S,T,U>q){while(!q.empty())o<<q.top()<<" ",q.pop();return o;}
-template<typename K,typename T>auto&operator<<(ostream&o,map<K,T>&m){for(auto&e:m)o<<e<<" ";return o;}
-template<typename T>auto&operator<<(ostream&o,vector<T>v){for(auto&e:v)o<<e<<" ";return o;}
-void ashow(){cout<<endl;}template<typename T,typename...A>void ashow(T t,A...a){cout<<t<<" ";ashow(a...);}
-template<typename S,typename T,typename U>
-struct TRI{S fi;T se;U th;TRI(){}TRI(S f,T s,U t):fi(f),se(s),th(t){}
-bool operator<(const TRI&_)const{return(fi==_.fi)?((se==_.se)?(th<_.th):(se<_.se)):(fi<_.fi);}};
-template<typename S,typename T,typename U>
-auto&operator<<(ostream&o,TRI<S,T,U>&t){return o<<"{"<<t.fi<<","<<t.se<<","<<t.th<<"}";}
+using int64 = long long;
+const int mod = (int) (1e9 + 7);
 
-typedef pair<int, int> P;
-typedef pair<ll, ll> pll;
-typedef TRI<int, int, int> tri;
-typedef vector<int> vi;
-typedef vector<ll> vl;
-typedef vector<vi> vvi;
-typedef vector<vl> vvl;
-typedef vector<P> vp;
-typedef vector<double> vd;
-typedef vector<string> vs;
+const int64 infll = (1LL << 62) - 1;
+const int inf = (1 << 30) - 1;
 
-const int MAX_N = 100005;
-
-class Stack {
-private:
-    const int N, H;
-    int sz;
-    vector<int> node;
-public:
-    Stack(const int _N, const int _H) : N(_N), H(_H), node(N+H){ clear(); }
-    bool empty() const { return sz == 0; }
-    bool empty(const int h) const { return node[N+h] == N+h; }
-    int top(const int h) const { return node[N+h]; }
-    void pop(const int h){ --sz, node[N+h] = node[node[N+h]]; }
-    void push(const int h, const int u){ ++sz, node[u] = node[N+h], node[N+h] = u; }
-    void clear(){ sz = 0, iota(node.begin() + N, node.end(), N); }
-};
-
-#define base 3
-
-template <typename T> class PushRelabel {
-public:
-    static_assert(std::is_integral<T>::value, "Integral required.");
-    struct edge {
-        const int to, rev;
-        T cap;
-        edge(const int _to, const int _rev, const T _cap) : to(_to), rev(_rev), cap(_cap){}
-    };
-private:
-    const int V;
-    int s, t, checker;
-    vector<T> excess;
-    vector<int> potential, cur_edge, que;
-    Stack act_ver;
-    static unsigned long long ceil2(unsigned long long v){
-        --v;
-        v = v | (v >> 1), v = v | (v >> 2);
-        v = v | (v >> 4), v = v | (v >> 8);
-        v = v | (v >> 16), v = v | (v >> 32);
-        return ++v;
-    }
-    int calc_active(const T delta){
-        int pot_min = V;
-        for(int i = 0; i < V; ++i){
-            if(potential[i] < V){
-                if(excess[i] >= delta && i != t){
-                    act_ver.push(potential[i], i);
-                    pot_min = min(pot_min, potential[i]);
-                }
-            }else{
-                potential[i] = V + 1;
-            }
-        }
-        return pot_min;
-    }
-    void bfs(){
-        for(int i = 0; i < V; ++i) potential[i] = max(potential[i], V);
-        potential[t] = 0;
-        int qh = 0, qt = 0;
-        for(que[qt++] = t; qh++ < qt;){
-            int u = que[qh - 1];
-            for(const edge& e : G[u]){
-                if(potential[e.to] == V && G[e.to][e.rev].cap > 0){
-                    potential[e.to] = potential[u] + 1, que[qt++] = e.to;
-                }
-            }
-        }
-    }
-    T init(){
-        T mx = 0;
-        potential[s] = V + 1;
-        bfs();
-        for(edge& e : G[s]){
-            if(potential[e.to] < V){
-                G[e.to][e.rev].cap = e.cap, excess[s] -= e.cap, excess[e.to] += e.cap;
-                mx = max(mx, e.cap), e.cap = 0;
-            }
-        }
-        return mx;
-    }
-    int global_relabel(const T delta){
-        bfs();
-        act_ver.clear();
-        return calc_active(delta);
-    }
-    int discharge(const int u, const T delta){
-        for(int& i = cur_edge[u]; i < (int)G[u].size(); ++i){
-            edge& e = G[u][i];
-            if(potential[u] == potential[e.to] + 1 && e.cap > 0){
-                return push(u, e, delta) ? potential[e.to] : potential[u];
-            }
-        }
-        return relabel(u);
-    }
-    bool push(const int u, edge& e, const T delta){
-        const int v = e.to;
-        T f = min(e.cap, excess[u]);
-        if(v != t) f = min(f, base * delta - 1 - excess[v]);
-        e.cap -= f, excess[u] -= f;
-        G[v][e.rev].cap += f, excess[v] += f;
-        if(excess[u] >= delta) act_ver.push(potential[u], u);
-        if(excess[v] >= delta && v != t){
-            act_ver.push(potential[v], v);
-            return true;
-        }else{
-            return false;
-        }
-    }
-    int relabel(const int u){
-        ++checker;
-        int prv = potential[u], cur = V;
-        for(int i = 0; i < (int)G[u].size(); ++i){
-            const edge& e = G[u][i];
-            if(cur > potential[e.to] + 1 && e.cap > 0){
-                cur_edge[u] = i, cur = potential[e.to] + 1;
-            }
-        }
-        if((potential[u] = cur) == V) return potential[u] = V + 1, prv;
-        act_ver.push(cur, u);
-        return prv;
-    }
-
-public:
-    vector<vector<edge> > G;
-    PushRelabel(const int node_size)
-        : V(node_size), checker(0), excess(V, (T)0),
-            potential(V, 0), cur_edge(V), que(V), act_ver(V, V), G(V){}
-    void add_edge(const int _from, const int _to, const T _cap){
-        G[_from].emplace_back(_to, (int)G[_to].size(), _cap);
-        G[_to].emplace_back(_from, (int)G[_from].size() - 1, 0);
-    }
-    T solve(const int source, const int sink){
-        s = source, t = sink;
-        const T U = init();
-        T delta = 1;
-        while(delta <= U) delta *= base;
-        delta /= base;
-        int level = calc_active(delta);
-        while(delta > 0){
-            while(!act_ver.empty()){
-                if(act_ver.empty(level)){
-                    ++level;
-                    continue;
-                }
-                const int u = act_ver.top(level);
-                act_ver.pop(level);
-                level = discharge(u, delta);
-                if(checker >= V / 2){
-                    level = global_relabel(delta);
-                    checker = 0;
-                }
-            }
-            if(delta == 1) break;
-            delta = max(delta / base, 1), level = calc_active(delta);
-        }
-        return excess[t];
-    }
-};
-
-int main()
-{
-    cin.tie(0);
-    ios::sync_with_stdio(false);
-    int n, m;
-    cin >> n >> m;
-    PushRelabel<int> pr(n);
-    rep(i,m){
-        int a,b,c;
-        cin >> a >> b >> c;
-        pr.add_edge(a, b, c);
-    }
-    cout << pr.solve(0, n-1) << "\n";
-    return 0;
+template< typename T1, typename T2 >
+ostream &operator<<(ostream &os, const pair< T1, T2 > &p) {
+  os << p.first << " " << p.second;
+  return os;
 }
+
+template< typename T1, typename T2 >
+istream &operator>>(istream &is, pair< T1, T2 > &p) {
+  is >> p.first >> p.second;
+  return is;
+}
+
+template< typename T >
+ostream &operator<<(ostream &os, const vector< T > &v) {
+  for(int i = 0; i < (int) v.size(); i++) {
+    os << v[i] << (i + 1 != v.size() ? " " : "");
+  }
+  return os;
+}
+
+template< typename T >
+istream &operator>>(istream &is, vector< T > &v) {
+  for(T &in : v) is >> in;
+  return is;
+}
+
+template< typename T1, typename T2 >
+inline bool chmax(T1 &a, T2 b) { return a < b && (a = b, true); }
+
+template< typename T1, typename T2 >
+inline bool chmin(T1 &a, T2 b) { return a > b && (a = b, true); }
+
+template< typename T = int64 >
+vector< T > make_v(size_t a) {
+  return vector< T >(a);
+}
+
+template< typename T, typename... Ts >
+auto make_v(size_t a, Ts... ts) {
+  return vector< decltype(make_v< T >(ts...)) >(a, make_v< T >(ts...));
+}
+
+template< typename T, typename V >
+typename enable_if< is_class< T >::value == 0 >::type fill_v(T &t, const V &v) {
+  t = v;
+}
+
+template< typename T, typename V >
+typename enable_if< is_class< T >::value != 0 >::type fill_v(T &t, const V &v) {
+  for(auto &e : t) fill_v(e, v);
+}
+
+template< typename F >
+struct FixPoint : F {
+  FixPoint(F &&f) : F(forward< F >(f)) {}
+
+  template< typename... Args >
+  decltype(auto) operator()(Args &&... args) const {
+    return F::operator()(*this, forward< Args >(args)...);
+  }
+};
+
+template< typename F >
+inline decltype(auto) MFP(F &&f) {
+  return FixPoint< F >{forward< F >(f)};
+}
+
+
+// NW
+template< typename T, typename Compare = greater< T > >
+vector< T > knapsack_limitations(const vector< int > &w, const vector< int > &m, const vector< T > &v,
+                                 const int &W, const T &NG, const Compare &comp = Compare()) {
+  const int N = (int) w.size();
+  vector< T > dp(W + 1, NG), deqv(W + 1);
+  dp[0] = T();
+  vector< int > deq(W + 1);
+  for(int i = 0; i < N; i++) {
+    for(int a = 0; a < w[i]; a++) {
+      int s = 0, t = 0;
+      for(int j = 0; w[i] * j + a <= W; j++) {
+        if(dp[w[i] * j + a] != NG) {
+          auto val = dp[w[i] * j + a] - j * v[i];
+          while(s < t && comp(val, deqv[t - 1])) --t;
+          deq[t] = j;
+          deqv[t++] = val;
+        }
+        if(s < t) {
+          dp[j * w[i] + a] = deqv[s] + j * v[i];
+          if(deq[s] == j - m[i]) ++s;
+        }
+      }
+    }
+  }
+  return dp;
+}
+
+int cnt[55];
+
+template< typename T >
+T knapsack_limitations(const vector< T > &w, const vector< T > &m, const vector< int > &v, const T &W) {
+  const int N = (int) w.size();
+  auto v_max = *max_element(begin(v), end(v));
+  if(v_max == 0) return 0;
+  vector< int > ma(N);
+  vector< T > mb(N);
+//   for(int i = 0; i < N; i++) {
+//     ma[i] = min< T >(m[i], v_max - 1);
+//     mb[i] = m[i] - ma[i];
+//   }
+//   T sum = 0;
+//   for(int i = 0; i < N; i++) sum += ma[i] * v[i];
+//   T sum = 0;
+//   for(int i = 0; i < N; i++) {
+//     ma[i] = min< T >(m[i], max(0, v_max - 1 - cnt[v[i]]));
+//     sum += ma[i] * v[i];
+//     mb[i] = m[i] - ma[i];
+//     cnt[v[i]] += ma[i];
+//   }
+// T sum = 0, ad = N;
+// for(int i = 0; i < N; i++) {
+//   ma[i] = min< T >({m[i], max(0, v_max - 1 - cnt[v[i]]), ad});
+//   sum += ma[i] * v[i];
+//   mb[i] = m[i] - ma[i];
+//   cnt[v[i]] += ma[i];
+//   ad -= ma[i];
+// }
+T sum = 0;
+// int ad = N;
+// for(int i = 0; i < N; i++) {
+//   ma[i] = min< T >(m[i], max({v_max - 1, ad, 2}));
+//   mb[i] = m[i] - ma[i];
+//   ad -= ma[i];
+//   sum += ma[i] * v[i];
+// }
+int ad = N;
+for(int i = 0; i < N; i++) {
+  ma[i] = min< T >(m[i], max(min(v_max - 1, ad), 2));
+  mb[i] = m[i] - ma[i];
+  ad -= ma[i];
+  sum += ma[i] * v[i];
+}
+  auto dp = knapsack_limitations(v, ma, w, sum, T(-1), less<>());
+  T ret = T();
+  for(int i = 0; i < (int)dp.size(); i++) {
+    if(dp[i] > W || dp[i] == -1) continue;
+    T rest = W - dp[i], cost = i;
+    for(int p = 0; p < N; ++p){
+      auto get = min(mb[p], rest / w[p]);
+      if(get == 0) break;
+      cost += get * v[p];
+      rest -= get * w[p];
+    }
+    ret = max(ret, cost);
+  }
+  return ret;
+}
+
+
+int main() {
+  int N;
+  int64 W;
+  cin >> N >> W;
+  vector< int > v(N);
+  vector< int64 > w(N), m(N);
+  for(int i = 0; i < N; i++) {
+    cin >> v[i] >> w[i] >> m[i];
+  }
+  vector< int > ord(N);
+  iota(begin(ord), end(ord), 0);
+  sort(begin(ord), end(ord), [&](int a, int b) {
+      return v[a] * w[b] > v[b] * w[a];
+  });
+  vector<int> nv(N);
+  vector< int64 > nw(N), nm(N);
+    for(int i = 0; i < N; ++i) nv[i] = v[ord[i]], nw[i] = w[ord[i]], nm[i] = m[ord[i]];
+  cout << knapsack_limitations(nw, nm, nv, W) << endl;
+}
+

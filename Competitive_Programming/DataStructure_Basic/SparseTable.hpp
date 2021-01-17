@@ -11,7 +11,7 @@ public:
             LogTable[i] = LogTable[i >> 1] + 1;
         }
         Table.resize(LogTable[sz]+1, vector<T>(sz));
-        rep(i,sz){
+        for(int i = 0; i < sz; i++){
             Table[0][i] = v[i];
         }
         for(int k = 1; (1 << k) <= sz; k++){
