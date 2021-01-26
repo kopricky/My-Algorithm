@@ -114,12 +114,12 @@ node<_Tp>* splay(node<_Tp>* u) noexcept {
     return u;
 }
 
-// root を根とする木の頂点で k 番目のものを探索する
+// root を根とする木の頂点で k(0-indexed) 番目のものを探索する
 // 返り値は (木の根, k 番目が存在するかしないか(0/1))
 template<typename _Tp>
 pair<node<_Tp>*, bool> get(const int k, node<_Tp>* root) noexcept {
-    if(size(root) < k) return make_pair(root, false);
-    int sum = 0;
+    if(size(root) <= k) return make_pair(root, false);
+    int sum = k + 1;
     node<_Tp> *cur = nullptr, *nx = root;
     while(nx){
         cur = nx, cur->push();
@@ -143,11 +143,31 @@ node<_Tp>* join(node<_Tp>* root1, node<_Tp>* root2) noexcept {
     return ver;
 }
 
+// 添字での split ([0, ..., k) と [k, ..., n)) (0-indexed)
+template<typename _Tp>
+pair<node<_Tp>*, node<_Tp>*> split(const int k, node<_Tp>* root) noexcept {
+    if(size(root) <= k) return make_pair(root, nullptr);
+    int sum = k + 1;
+    node<_Tp> *cur = nullptr, *nx = root;
+    while(nx){
+        cur = nx, cur->push();
+        if(size(cur->left) < sum - 1){
+            nx = cur->right, sum -= size(cur->left) + 1;
+        }else if(size(cur->left) >= sum){
+            nx = cur->left;
+        }else{
+            node<_Tp> *res = cur->left;
+            if(res) cur->left->par = nullptr, cur->left = nullptr;
+            cur->eval();
+            return make_pair(res, cur);
+        }
+    }
+}
+
 // (target 未満) と (target 以上) に split する
 template<typename _Tp>
 pair<node<_Tp>*, node<_Tp>* > split_lower_bound(node<_Tp>* target) noexcept {
-    splay(target);
-    node<_Tp> *res = target->left;
+    node<_Tp> *res = splay(target)->left;
     if(res) target->left->par = nullptr, target->left = nullptr;
     target->eval();
     return make_pair(res, target);
@@ -156,8 +176,7 @@ pair<node<_Tp>*, node<_Tp>* > split_lower_bound(node<_Tp>* target) noexcept {
 // (target 以下) と (target より大) に split する
 template<typename _Tp>
 pair<node<_Tp>*, node<_Tp>* > split_upper_bound(node<_Tp>* target) noexcept {
-    splay(target);
-    node<_Tp> *res = target->right;
+    node<_Tp> *res = splay(target)->right;
     if(res) target->right->par = nullptr, target->right = nullptr;
     target->eval();
     return make_pair(target, res);

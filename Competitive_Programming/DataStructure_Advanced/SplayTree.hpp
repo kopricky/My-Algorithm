@@ -69,12 +69,12 @@ node<_Key, _Tp>* splay(node<_Key, _Tp>* u) noexcept {
     return u;
 }
 
-// root を根とする木の頂点で k 番目に小さいキー値のものを探索する
+// root を根とする木の頂点で k(0-indexed) 番目に小さいキー値のものを探索する
 // 返り値は (木の根, k 番目が存在するかしないか(0/1))
 template<typename _Key, typename _Tp>
 pair<node<_Key, _Tp>*, bool> get(const int k, node<_Key, _Tp>* root) noexcept {
-    if(size(root) < k) return make_pair(root, false);
-    int sum = 0;
+    if(size(root) <= k) return make_pair(root, false);
+    int sum = k + 1;
     node<_Key, _Tp> *cur = nullptr, *nx = root;
     while(nx){
         cur = nx, cur->push();
