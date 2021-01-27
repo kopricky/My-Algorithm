@@ -18,7 +18,7 @@ private:
     T opr2(T arg1,T arg2){
         return min(arg1,arg2);
     }
-    int nw_size;
+    static int nw_size;
     static const int POOL_SIZE = 2000000;
     static const int MAX_SIZE = 1000000001;
     static node *root;
@@ -88,5 +88,6 @@ public:
         return opr2(vl, vr);
     }
 };
+template<typename T> int dynamic_segtree<T>::nw_size = 0;
 template<typename T> class dynamic_segtree<T>::node* dynamic_segtree<T>::root;
 template<typename T> class dynamic_segtree<T>::node dynamic_segtree<T>::pool[POOL_SIZE];
