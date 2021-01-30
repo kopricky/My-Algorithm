@@ -1,5 +1,6 @@
 #include "./header.hpp"
 
+// 流量 0 とかだとヤバい...
 template<class edge> class Dinic {
 private:
     using Cat = decltype(edge::cap);
