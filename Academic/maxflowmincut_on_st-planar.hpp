@@ -126,8 +126,8 @@ public:
     
     vector<vector<flow_edge> > G;
 
-    MaxFlowMinCut_on_STPlanar(const vector<pair<int, int> >& candidate)
-        : V((int)candidate.size()), pos(V), pts(candidate), G(V){}
+    MaxFlowMinCut_on_STPlanar(const vector<pair<int, int> >& points)
+        : V((int)points.size()), pos(V), pts(points), G(V){}
     void add_edge(const int u, const int v, const T cap){
         pos[u].emplace_back(pts[v].first - pts[u].first, pts[v].second - pts[u].second, v, cap);
         pos[v].emplace_back(pts[u].first - pts[v].first, pts[u].second - pts[v].second, u, cap);

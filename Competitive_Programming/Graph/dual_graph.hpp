@@ -81,8 +81,8 @@ public:
     };
     vector<vector<edge> > DG;
     vector<vector<int> > faces;
-    DualGraph(const vector<pair<int, int> >& candidate)
-        : V((int)candidate.size()), pos(V), G(V), pts(candidate){}
+    DualGraph(const vector<pair<int, int> >& points)
+        : V((int)points.size()), pos(V), G(V), pts(points){}
     void add_edge(const int u, const int v){
         pos[u].emplace_back(pts[v].first - pts[u].first, pts[v].second - pts[u].second, v);
         pos[v].emplace_back(pts[u].first - pts[v].first, pts[u].second - pts[v].second, u);
