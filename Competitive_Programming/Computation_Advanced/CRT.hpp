@@ -1,7 +1,5 @@
 #include "../header.hpp"
 
-//中国剰余定理
-
 template<typename T>
 T gcd(T a,T b)
 {
@@ -11,7 +9,7 @@ T gcd(T a,T b)
         return gcd(b,a%b);
     }
 }
-
+ 
 template <typename T>
 void extgcd(T a, T b, T& x, T& y)
 {
@@ -23,14 +21,7 @@ void extgcd(T a, T b, T& x, T& y)
         y = 0;
     }
 }
-
-//mod が ll のときに以下のようなものが使えるらしい (a * b % mod)
-long long mod_prod(long long a, long long b, long long mod) {
-    long long res = (a * b - (long long)((long double)a / mod * b) * mod) % mod;
-    return res < 0 ? res + mod : res;
-}
-
-//modが10^6より大きい値を扱うときはm1*xを__int128にキャストする(上記の mod_prod 使った方がいいかも)(10^12とかまで可能)
+ 
 //(value, mod)
 template <typename T>
 pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
@@ -42,11 +33,11 @@ pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
     extgcd(m1, m2, x, y);
     x *= (v2 - v1), y *= (v2 - v1);
     const T m = m1 * m2;
-    return make_pair((((m1 * x + v1) % m) + m) % m, m);
+    const T res = ((m1 * (x % m2)) + v1) % m;
+    return make_pair((res >= 0 ? res : res + m), m);
 }
-
+ 
 //modどうしが互いに素でないとき
-//modが10^6より大きい値を扱うときはm1*xを__int128にキャストする(10^12とかまで可能)
 //(value, mod)
 // template <typename T>
 // pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
@@ -61,5 +52,6 @@ pair<T, T> CRT(const pair<T, T>& a1, const pair<T, T>& a2)
 //     extgcd(m1 / g, m2 / g, x, y);
 //     x *= dev, y *= dev;
 //     const T m = m1 / g * m2;
-//     return make_pair((((m1 * x + v1) % m) + m) % m, m);
+//     const T res = ((m1 * (x % (m2 / g))) + v1) % m;
+//     return make_pair((res >= 0 ? res : res + m), m);
 // }

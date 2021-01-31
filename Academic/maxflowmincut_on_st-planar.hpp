@@ -5,9 +5,9 @@
 // 点が重なったり, 辺が交差したり, 辺が重なったりしないものとする.
 template<typename T> class MaxFlowMinCut_on_STPlanar {
 private:
-	struct info {
+    struct info {
         int x, y, z;
-		T cap;
+        T cap;
         info(const int _x, const int _y, const int _z, const T _cap)
 			 : x(_x), y(_y), z(_z), cap(_cap){}
         bool operator<(const info& s) const {
@@ -52,32 +52,32 @@ private:
             else if(mxy == pts[i].second && pts[i].first < mnx) mnx = pts[i].first, id = i;
         }
         pair<int, int> goal(id, 0);
-		int cur = G[id][0].to, index = G[id][0].rev;
-		while(cur != s){
-			index = (index < (int)G[cur].size() - 1) ? (index + 1) : (0);
-			const auto& e = G[cur][index];
-			goal = {cur, index}, cur = e.to, index = e.rev;
-		}
-		while(cur != t){
-			index = (index < (int)G[cur].size() - 1) ? (index + 1) : (0);
-			auto& e = G[cur][index];
-			e.face = 0, cur = e.to, index = e.rev;
-		}
+        int cur = G[id][0].to, index = G[id][0].rev;
+        while(cur != s){
+            	index = (index < (int)G[cur].size() - 1) ? (index + 1) : (0);
+        	const auto& e = G[cur][index];
+        	goal = {cur, index}, cur = e.to, index = e.rev;
+        }
+        while(cur != t){
+            	index = (index < (int)G[cur].size() - 1) ? (index + 1) : (0);
+        	auto& e = G[cur][index];
+        	e.face = 0, cur = e.to, index = e.rev;
+        }
         search(cur, index, 1, goal);
     }
     void search(int cur, int id, const int f, const pair<int, int>& goal){
-		while(true){
-			id = (id < (int)G[cur].size() - 1) ? (id + 1) : (0);
-			auto& e = G[cur][id];
-			e.face = f;
-		   if(cur == goal.first && id == goal.second) break;
-		   cur = e.to, id = e.rev;
-		}
+        while(true){
+        	id = (id < (int)G[cur].size() - 1) ? (id + 1) : (0);
+            auto& e = G[cur][id];
+            e.face = f;
+            if(cur == goal.first && id == goal.second) break;
+            cur = e.to, id = e.rev;
+        }
     }
     void construct_dgraph(const int node_size){
         DG.resize(node_size);
         for(int i = 0; i < V; ++i){
-			for(int j = 0; j < (int)G[i].size(); ++j){
+            for(int j = 0; j < (int)G[i].size(); ++j){
 				const flow_edge& e = G[i][j];
                 DG[e.face].emplace_back(G[e.to][e.rev].face, e.flow, make_pair(i, j));
             }
@@ -108,9 +108,9 @@ private:
 		return make_pair(dist[1], res);
 	}
     void construct_flow_graph(vector<T>& dist){
-        for(int i = 0; i < (int)dist.size(); ++i){
-            for(const auto& e : DG[i]){
-                G[(e.memo).first][(e.memo).second].flow = max(dist[e.to] - dist[i], (T)0);
+            for(int i = 0; i < (int)dist.size(); ++i){
+                for(const auto& e : DG[i]){
+                    G[(e.memo).first][(e.memo).second].flow = max(dist[e.to] - dist[i], (T)0);
             }
         }
     }
@@ -119,7 +119,7 @@ public:
     struct flow_edge {
 		// face:右側の面
         int to, rev, face;
-		T flow;
+        T flow;
         flow_edge(const int _to, const int _rev, const T _flow)
              : to(_to), rev(_rev), face(-1), flow(_flow){}
     };
@@ -145,7 +145,7 @@ public:
             }
         }
         construct_dgraph(cnt);
-    	vector<T> dist(cnt, numeric_limits<T>::max());
+        vector<T> dist(cnt, numeric_limits<T>::max());
         const auto res = solve(dist);
         // construct_flow_graph(dist);
         return res;
