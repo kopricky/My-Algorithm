@@ -128,9 +128,13 @@ public:
 
     MaxFlowMinCut_on_STPlanar(const vector<pair<int, int> >& points)
         : V((int)points.size()), pos(V), pts(points), G(V){}
-    void add_edge(const int u, const int v, const T cap){
-        pos[u].emplace_back(pts[v].first - pts[u].first, pts[v].second - pts[u].second, v, cap);
-        pos[v].emplace_back(pts[u].first - pts[v].first, pts[u].second - pts[v].second, u, cap);
+    void add_undirected_edge(const int u, const int v, const T cap1){
+        pos[u].emplace_back(pts[v].first - pts[u].first, pts[v].second - pts[u].second, v, cap1);
+        pos[v].emplace_back(pts[u].first - pts[v].first, pts[u].second - pts[v].second, u, cap1);
+    }
+    void add_directed_edge(const int u, const int v, const T cap1, const T cap2=0){
+        pos[u].emplace_back(pts[v].first - pts[u].first, pts[v].second - pts[u].second, v, cap1);
+        pos[v].emplace_back(pts[u].first - pts[v].first, pts[u].second - pts[v].second, u, cap2);
     }
     // (最小カットのコスト, 最小カットを構成する辺集合)
     // flow graph G を構築する場合はコメントアウトを外す
