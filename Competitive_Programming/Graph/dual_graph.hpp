@@ -55,7 +55,7 @@ private:
         while(true){
             id = (id < (int)G[cur].size() - 1) ? (id + 1) : (0);
             auto& e = G[cur][id];
-            e.face = f;
+            faces[e.face = f].push_back(cur);
            if(cur == goal.first && id == goal.second) break;
            cur = e.to, id = e.rev;
         }
