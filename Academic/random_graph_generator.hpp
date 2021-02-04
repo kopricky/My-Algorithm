@@ -335,4 +335,7 @@ void uniformly_random_tree(const int node_size, vector<vector<int> >& graph){
             unused.insert(prufer_code[i]);
         }
     }
+    const int ver1 = *unused.begin(), ver2 = *next(unused.begin(), 1);
+    graph[ver1].push_back(ver2);
+    graph[ver2].push_back(ver1);
 }
