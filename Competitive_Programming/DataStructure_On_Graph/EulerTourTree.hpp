@@ -278,8 +278,7 @@ public:
             return query((it->second).first, (it->second).second);
         }
     }
-
-private:
+    // DEBUG 用
     void check_dfs(const BSTNode<T>* cur) const noexcept {
         cur->push();
         if(cur->left) check_dfs(cur->left);
