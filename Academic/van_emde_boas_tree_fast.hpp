@@ -3,7 +3,6 @@
 class vanEmdeBoasTree
 {
 private:
-    static const uint32_t  LENGTH = 1073741824;
     uint32_t  _size;
     #define msb(u) (63 - __builtin_clzll(u))
     #define lsb(u) (__builtin_ctzll(u))
@@ -66,13 +65,16 @@ private:
                 return true;
             }
         }
-        void erase(int32_t value) noexcept {
-            if(_max == _min){
-                _max = -1, _min = 1073741824;
-                return;
-            }else if(value == _min){
+        size_t erase(int32_t value) noexcept {
+            if(value == _min){
+                if(_max == _min){
+                    _max = -1, _min = 1073741824;
+                    return 1;
+                }
                 const int32_t id = summary->min();
-                 _min = value = (id << 6) + lsb(data[id]);
+                _min = value = (id << 6) + lsb(data[id]);
+            }else if(!((data[value >> 6] >> (value & 63)) & 1ULL)){
+                return 0;
             }
             const int32_t id = (value >> 6);
             data[id] ^= (1ULL << (value & 63));
@@ -84,6 +86,7 @@ private:
                     _max = (id << 6) + msb(data[id]);
                 }
             }
+            return 1;
         }
         int32_t predecessor(const int32_t value) const noexcept {
             if(_min >= value) return -1;
@@ -272,6 +275,7 @@ private:
     };
     first_layer base_layer;
 public:
+    static const uint32_t  LENGTH = 1073741824;
     vanEmdeBoasTree() : _size(0), base_layer(){}
     vanEmdeBoasTree(const vanEmdeBoasTree&) = default;
     vanEmdeBoasTree(vanEmdeBoasTree&&) = default;
@@ -294,13 +298,15 @@ public:
     }
     int32_t max() const noexcept { return base_layer.max(); }
     int32_t min() const noexcept { return base_layer.min(); }
-    void insert(const uint32_t value){
+    bool insert(const uint32_t value){
         assert(value < LENGTH);
-        _size += base_layer.insert(value);
+        bool res = base_layer.insert(value);
+        return _size += res, res;
     }
-    void erase(const uint32_t value){
+    size_t erase(const uint32_t value){
         assert(value < LENGTH);
-        base_layer.erase(value), --_size;
+        size_t res = base_layer.erase(value);
+        return _size -= res, res;
     }
     int32_t predecessor(const int32_t value) const noexcept {
         return base_layer.predecessor(value);
@@ -309,3 +315,4 @@ public:
         return base_layer.successor(value);
     }
 };
+
