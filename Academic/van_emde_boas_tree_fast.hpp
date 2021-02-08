@@ -315,4 +315,3 @@ public:
         return base_layer.successor(value);
     }
 };
-
