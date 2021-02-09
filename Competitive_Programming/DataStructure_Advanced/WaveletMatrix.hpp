@@ -141,7 +141,7 @@ public:
                             a, b, mid, r, x + 1, val + (1 << (height - x - 1)));
         else return res;
     }
-    // [l,r) で値が [a,b) 内に最小の数を返す(数が存在しない場合は -1 を返す)
+    // [l,r) で値が [a,b) 内で値が最小の数を返す(数が存在しない場合は -1 を返す)
     int rangemin(int l, int r, int a, int b){
         return rangemin(l, r, a, b, 0, 1 << height, 0, 0);
     }
