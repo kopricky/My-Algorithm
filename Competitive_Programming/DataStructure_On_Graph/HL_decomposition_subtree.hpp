@@ -1,8 +1,8 @@
 #include "../header.hpp"
 
 // 部分木についてのクエリとパスについてのクエリが一つのセグ木で対応可能
+// build を忘れない!!
 // 部分木:O(log(n)), パス:O(log^2(n))
-
 class HLdecomposition{
 private:
     int V, root;
