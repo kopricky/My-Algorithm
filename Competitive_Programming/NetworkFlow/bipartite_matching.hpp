@@ -10,7 +10,7 @@ private:
     vector<vector<int> > G;
     vector<int> level, que, prv, rasg;
     int bfs(){
-        int last = -1, dist = numeric_limits<int>::max();
+        int last = -1;
         fill(level.begin(), level.end(), -1);
         int qh = 0, qt = 0;
         for(int i = 0; i < U; ++i){
@@ -21,7 +21,7 @@ private:
             if(u >= U){
                 const int v = rasg[u - U];
                 if(v >= 0) level[v] = level[u] + 1, que[qt++] = v, prv[v] = u;
-                else if(dist > level[u]) dist = level[u], last = u;
+                else last = u;
             }else{
                 for(const int v : G[u]){
                     if(level[v] < 0) level[v] = level[u] + 1, que[qt++] = v, prv[v] = u;
