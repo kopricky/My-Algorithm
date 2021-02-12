@@ -11,10 +11,12 @@ private:
     };
     const int U, V;
     vector<vector<edge> > G;
-    vector<int> que, prv, rasg;
+    vector<int> level, que, prv, rasg;
     set<int> st, pst;
     int bfs(){
-        int last = -1, qh = 0, qt = 0;
+        int last = -1, dist = numeric_limits<int>::max();
+        fill(level.begin(), level.end(), -1);
+        int qh = 0, qt = 0;
         for(int i = 0; i < U; ++i){
             if(asg[i] < 0) que[qt++] = i, prv[i] = -1;
         }
