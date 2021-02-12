@@ -6,11 +6,11 @@
 //BM.solve() で最大マッチングの数を計算
 class BM {
 private:
-    const int U, V;
+    int U, V;
     vector<vector<int> > G;
     vector<int> level, que, prv, rasg;
-    int bfs(){
-        int last = -1;
+    pair<int, int> bfs(){
+        int last = -1, dist = numeric_limits<int>::max();
         fill(level.begin(), level.end(), -1);
         int qh = 0, qt = 0;
         for(int i = 0; i < U; ++i){
@@ -21,25 +21,26 @@ private:
             if(u >= U){
                 const int v = rasg[u - U];
                 if(v >= 0) level[v] = level[u] + 1, que[qt++] = v, prv[v] = u;
-                else last = u;
+                else if(dist > level[u]) dist = level[u], last = u;
             }else{
                 for(const int v : G[u]){
                     if(level[v] < 0) level[v] = level[u] + 1, que[qt++] = v, prv[v] = u;
                 }
             }
         }
-        return last;
+        return {last, dist};
     }
-    bool dfs(const int u){
+    bool dfs(const int u, const int dist){
         const int tmp = level[u];
         level[u] = -1;
+        if(tmp > dist) return false;
         if(u >= U){
             if(rasg[u - U] < 0) return true;
-            else return dfs(rasg[u - U]);
+            else return dfs(rasg[u - U], dist);
         }else{
             for(const int v : G[u]){
                 if(tmp < level[v]){
-                    if(dfs(v)){
+                    if(dfs(v, dist)){
                         asg[u] = v - U, rasg[v - U] = u;
                         return true;
                     }
@@ -67,11 +68,11 @@ public:
     int solve(){
         int flow = 0;
         for(;;){
-            const int cur = bfs();
-            if(cur < 0) break;
-            hint_search(cur, flow);
+            const pair<int, int> p = bfs();
+            if(p.first < 0) break;
+            hint_search(p.first, flow);
             for(int i = 0; i < U; ++i){
-                if(asg[i] < 0) flow += dfs(i);
+                if(asg[i] < 0) flow += dfs(i, p.second);
             }
         }
         return flow;
@@ -88,4 +89,3 @@ public:
         return mvc;
     }
 };
-
