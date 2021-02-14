@@ -43,17 +43,16 @@ private:
 
 public:
     struct edge{
-        int to;
+        int to, rev;
         T cap;
-        int rev;
     };
     vector<vector<edge> > G;
 
     Dinic(const int node_size) : V(node_size), level(V), iter(V), G(V){}
     //辺を張る
     void add_edge(int from,int to,T cap) {
-        G[from].push_back((edge){to,cap,(int)G[to].size()});
-        G[to].push_back((edge){from,(T)0,(int)G[from].size()-1});
+        G[from].push_back((edge){to, (int)G[to].size(), cap});
+        G[to].push_back((edge){from, (int)G[from].size()-1, (T)0});
     }
     //最大流を計算
     T solve(int s,int t) {
