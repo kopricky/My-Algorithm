@@ -49,7 +49,7 @@ public:
     };
     vector<vector<edge> > G;
 
-    Dinic(int node_size) : V(node_size), level(V), iter(V), G(V){}
+    Dinic(const int node_size) : V(node_size), level(V), iter(V), G(V){}
     //辺を張る
     void add_edge(int from,int to,T cap) {
         G[from].push_back((edge){to,cap,(int)G[to].size()});
