@@ -66,41 +66,33 @@ vector<unsigned int> mul(vector<unsigned int> a, vector<unsigned int> b){
 }
 
 //or convolution
-// void fwht(vector<int>& poly, bool rev=false){
+// void fwht(vector<unsigned int>& poly, bool rev=false){
 //     int n = (int)poly.size();
 //     for(int i = 1; i < n; i *= 2){
-//         for(int j = 0; j < i; j++){
-//             for(int k = 0; k < n; k += i*2){
-//                 if(rev){
-//                     poly[j+k+i] = sub(poly[j+k+i], poly[j+k]);
-//                 }else{
-//                     poly[j+k+i] = add(poly[j+k+i], poly[j+k]);
-//                 }
+//         for(int j = 0; j < i; ++j){
+//             for(int k = 0; k < n; k += 2 * i){
+//                 poly[j + k + i] = (rev ? sub(poly[j + k + i], poly[j + k]) : add(poly[j + k + i], poly[j + k]));
 //             }
 //         }
 //     }
 // }
 
 //and convolution
-// void fwht(vector<int>& poly, bool rev=false){
+// void fwht(vector<unsigned int>& poly, bool rev=false){
+//     unsigned int u, v;
 //     int n = (int)poly.size();
 //     for(int i = 1; i < n; i *= 2){
-//         for(int j = 0; j < i; j++){
-//             for(int k = 0; k < n; k += i*2){
-//                 int u = poly[j+k], v = poly[j+k+i];
-//                 if(rev){
-//                     poly[j+k] = sub(v, u);
-//                     poly[j+k+i] = u;
-//                 }else{
-//                     poly[j+k] = v;
-//                     poly[j+k+i] = add(u, v);
-//                 }
+//         for(int j = 0; j < i; ++j){
+//             for(int k = 0; k < n; k += 2 * i){
+//                 u = poly[j+k], v = poly[j+k+i];
+//                 if(rev) poly[j + k] = sub(v, u), poly[j + k + i] = u;
+//                 else poly[j + k] = v, poly[j + k + i] = add(u, v);
 //             }
 //         }
 //     }
 // }
 
-vector<int> mul(vector<int> a, vector<int> b){
+vector<unsigned int> mul(vector<unsigned int> a, vector<unsigned int> b){
     int sm = (int)a.size() + (int)b.size() - 1, size_ = 1;
     while(size_ < sm) size_ *= 2;
     a.resize(size_, 0), b.resize(size_, 0);
