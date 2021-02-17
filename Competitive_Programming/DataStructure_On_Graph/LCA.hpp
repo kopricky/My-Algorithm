@@ -5,7 +5,7 @@ private:
     int n,sz;
     vector<pair<T, int> > node;
 public:
-    void resize(vector<T>& v){
+    void resize(const vector<T>& v){
         sz = (int)v.size();
         n = 1;
         while(n < sz){
@@ -18,13 +18,6 @@ public:
         for(int i=n-1; i>=1; i--){
             node[i] = min(node[2*i], node[2*i+1]);
         }
-    }
-    void update(int k, T a)
-    {
-    	node[k+=n] = make_pair(a, k);
-    	while(k>>=1){
-            node[k] = min(node[2*k], node[2*k+1]);
-    	}
     }
     pair<T, int> query(int a,int b)
     {
