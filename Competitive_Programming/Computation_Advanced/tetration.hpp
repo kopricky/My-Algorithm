@@ -24,7 +24,7 @@ unsigned int phi(unsigned int n)
     return res;
 }
 
-// a ^ b % mod
+// (a ^ b) % mod
 // precondition: a >= 2, a < 2^32, b >= 0, mod >= 2, mod < 2^31
 unsigned int mod_pow(unsigned long long a, unsigned int b, unsigned int mod, bool flag)
 {
