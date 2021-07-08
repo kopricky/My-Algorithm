@@ -36,7 +36,6 @@ unsigned int solve(int deg, long long num, vector<int>& val)
 {
 	if((num %= MOD) < 0) num += MOD;
 	if(num <= deg) return val[num];
-	unsigned int ue = 1;
 	vector<unsigned int> lf(deg + 2), rg(deg + 2);
 	lf[0] = rg[deg + 1] = 1;
 	for(int i = deg; i >= 0; --i){
