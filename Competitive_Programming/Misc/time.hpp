@@ -11,13 +11,4 @@ struct SW {
     }
 };
 
-struct SW {
-    chrono::high_resolution_clock::time_point st,ed;
-    void start() {
-        st = chrono::high_resolution_clock::now();
-    }
-    void end() {
-        ed = chrono::high_resolution_clock::now();
-        cout << chrono::duration_cast<chrono::milliseconds>(ed - st).count() << " msec" << endl;
-    }
-};
+
